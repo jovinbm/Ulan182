@@ -1,0 +1,65 @@
+{
+  "name": "UberLAN",
+  "version": "0.0.0",
+  "authors": [
+    "Jovin Mwilanga <jovinbeda@hotmail.com>"
+  ],
+  "description": "AN Uber trip planner",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "uber",
+    "transport"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "toastr": "~2.1.0",
+    "angular-moment": "~0.10.0",
+    "ngFx": "~1.1.0",
+    "angular-utils-disqus": "~0.2.0",
+    "textAngular": "1.3.0",
+    "angular-ui-utils": "bower",
+    "respond": "~1.4.2",
+    "angular-ui": "~0.4.0",
+    "angular-ui-router": "~0.2.15",
+    "angular-scroll": "~0.7.0",
+    "gsap": "~1.16.1",
+    "ng-tags-input": "~2.3.0",
+    "animate.css": "~3.3.0",
+    "bootstrap": "3.3.2",
+    "angular-bootstrap": "~0.13.0",
+    "ng-file-upload": "~4.2.4",
+    "ngDialog": "~0.4.0",
+    "angular-ui-select": "~0.12.0",
+    "css-spinners": "~2.0.2",
+    "spinkit": "~1.0.1",
+    "object-fit": "~0.4.2",
+    "underscore": "~1.8.3",
+    "ng-table": "~0.8.0",
+    "bootstrap-sass": "~3.3.5",
+    "fluidvids": "https://github.com/toddmotto/fluidvids.git#~2.4.1",
+    "geolocator": "~1.2.9",
+    "angular-local-storage": "~0.2.2",
+    "underscore.string": "~3.1.1",
+    "classie": "~1.0.1",
+    "matchheight": "~0.6.0",
+    "angular-toastr": "~1.5.0",
+    "angular-sanitize": "~1.4.7",
+    "angular-loading-bar": "~0.8.0",
+    "jquery-ui": "~1.11.4",
+    "angular-google-maps": "~2.2.1",
+    "lodash": "~3.10.1"
+  },
+  "resolutions": {
+    "angular": "1.3.8"
+  }
+}

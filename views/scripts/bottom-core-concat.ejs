@@ -1,0 +1,19 @@
+<% if (settings.env === 'production') { %>
+<script type="text/javascript"
+        src="<%= getAssetUrl("/public/jsmin/bottomCoreProd.min.js") %>"></script>
+<% }else { %>
+<script type="text/javascript"
+        src="<%= getAssetUrl("/public/jsmin/bottomCoreDev.min.js") %>"></script>
+<% } %>
+
+<!--google plus deferred execution-->
+<script>
+    window.___gcfg = {
+        lang: 'en-US',
+        parsetags: 'onload'
+    };
+</script>
+<script src="https://apis.google.com/js/platform.js"
+        async
+        defer>
+</script>

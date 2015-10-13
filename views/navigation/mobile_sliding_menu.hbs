@@ -1,0 +1,87 @@
+<% var nameOfActiveCategory = postCategoryName %>
+<nav id="mobileSlidingNav">
+    <ul class="menu">
+        <% if (state == 'home') { %>
+        <li class="active">
+            <% } else { %>
+        <li>
+            <% } %>
+            <a href="/"
+               target="_self"
+               title="Home">Home</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('politics', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('politics', allPostCategoriesArray) %>"
+               target="_self"
+               title="Politics">Politics</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('tech', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('technology', allPostCategoriesArray) %>"
+               target="_self"
+               title="Technology">Tech</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('entrepreneurship', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('entrepreneurship', allPostCategoriesArray) %>"
+               target="_self"
+               title="Entrepreneurship">Entrepreneurship</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('business', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('business', allPostCategoriesArray) %>"
+               target="_self"
+               title="Business">Business</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('markets', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('markets', allPostCategoriesArray) %>"
+               target="_self"
+               title="Markets">Markets</a>
+        </li>
+        <li class="<%= checkActiveNavigationCategory('culture', nameOfActiveCategory) %>">
+            <a href="<%= getCategoryPathFromCategoryName('culture', allPostCategoriesArray) %>"
+               target="_self"
+               title="Culture & Life">Culture &amp; Life</a>
+        </li>
+        <li class="c-menu__item">
+            <a href="/"
+               target="_self"
+               title="Videos">Videos</a>
+        </li>
+        <li class="c-menu__item">
+            <a href="/"
+               target="_self"
+               title="Shop Art">Shop</a>
+        </li>
+        <li class="highlight-link">
+            <a href="/about"
+               target="_self"
+               class="about"
+               title="About Us">About Us</a>
+        </li>
+
+        <% if (theUser) { %>
+
+        <li class="highlight-link">
+            <a href="<%= getUserPrivateProfileUrl(theUser) %>"
+               target="_self"
+               title="<%= theUser.firstName %>"><i class="fa fa-user"></i> <%= theUser.firstName %></a>
+        </li>
+        <li class="highlight-link">
+            <a target="_self"
+               title="Logout"
+               href="/api/logoutClient">Logout</a>
+        </li>
+        <% } else { %>
+
+        <li class="highlight-link">
+            <a href="/account/login"
+               target="_self"
+               title="Sign In">Sign In</a>
+        </li>
+        <li class="highlight-link">
+            <a href="/account/create"
+               target="_self"
+               title="Register">Register</a>
+        </li>
+
+        <% } %>
+    </ul>
+</nav>

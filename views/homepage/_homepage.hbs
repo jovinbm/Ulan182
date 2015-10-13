@@ -1,0 +1,23 @@
+<script
+        type="text/ng-template"
+        id="_homepage.html">
+
+    <div class="container-fluid main"
+         ng-controller="homeCoreController">
+
+        <div class="col-md-3 leftCol clearfix">
+
+            <div ui-view></div>
+
+        </div>
+
+        <div class="col-md-9 mapCol clearfix"
+             main-map-scope>
+            <div id="map"
+                 style="height: 900px;"></div>
+        </div>
+
+
+    </div>
+
+</script>

@@ -1,0 +1,137 @@
+<script
+        type="text/ng-template"
+        id="_price_estimates.html">
+
+    <div class="priceEstimate ng-cloak"
+         ng-controller="priceEstimatorController"
+         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+
+        <div class="header">
+            <h1>Price Calculator</h1>
+
+            <p>Enter the details below</p>
+        </div>
+
+        <hr>
+
+        <div price-estimator>
+            <div class="form1">
+
+                <fieldset ng-disabled="priceEstimator.isBusy">
+                    <form>
+
+                        <div class="start clearfix">
+
+                            <label for="start">Pickup location</label>
+
+                            <input type="text"
+                                   class="geoField"
+                                   name="start"
+                                   id="start"
+                                   value=""
+                                   required="required">
+
+                            <input type="submit"
+                                   class="search-button"
+                                   value="&#xf124;" />
+
+                            <div class="details clearfix">
+                                <span class="hidden lat"
+                                      data-geo="lat"></span>
+                                <span class="hidden lng"
+                                      data-geo="lng"></span>
+                                <span class="hidden formatted_address"
+                                      data-geo="formatted_address"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="end clearfix">
+
+                            <label for="start">Destination</label>
+
+                            <input type="text"
+                                   class="geoField"
+                                   name="end"
+                                   id="end"
+                                   value=""
+                                   required="required">
+
+                            <input type="submit"
+                                   class="search-button"
+                                   value="&#xf124;" />
+
+                            <div class="details clearfix">
+                                <span class="hidden lat"
+                                      data-geo="lat"></span>
+                                <span class="hidden lng"
+                                      data-geo="lng"></span>
+                                <span class="hidden formatted_address"
+                                      data-geo="formatted_address"></span>
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="btnUber center-element"
+                                ng-click="priceEstimator.getPriceEstimate()">CALCULATE
+                        </button>
+
+                    </form>
+                </fieldset>
+
+                <div ng-if="priceEstimator.isBusy">
+
+                    <div class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+
+                    <div class="status">
+                        <p ng-bind="priceEstimator.status"></p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="results">
+            <hr>
+
+            <div class="card"
+                 ng-repeat="obj in priceEstimateArray">
+                <div class="localized_display_name clearfix">
+                    {[{obj.localized_display_name}]}
+                    <span class="price pull-right">
+                        {[{obj.estimate}]}
+                    </span>
+                </div>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td class="field">Surge Multiplier</td>
+                        <td class="val">X{[{obj.surge_multiplier}]}</td>
+                    </tr>
+                    <tr>
+                        <td class="field">Distance</td>
+                        <td class="val">{[{obj.distance}]}</td>
+                    </tr>
+                    <tr>
+                        <td class="field">Duration</td>
+                        <td class="val">{[{obj.duration}]}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</script>

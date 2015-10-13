@@ -1,0 +1,40 @@
+<% if (state == 'user-public-profile') { %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <% include ../scripts/meta-in-head.ejs %>
+    <% include ../scripts/head.ejs %>
+    <link rel="stylesheet"
+          href="<%= getAssetUrl("/public/cssmin/user_public_profile/user_public_profile.min.css") %>" />
+
+    <title><%= title %></title>
+</head>
+
+<body class="user_public_profile">
+<div id="pageTop"></div>
+<% include ../scripts/meta-in-body.ejs %>
+
+<% var container_state = 'container' %>
+
+<% container_state = 'container' %>
+<% include ../navigation/top_nav.ejs %>
+
+<div class="pageHolder">
+    <% include ../user_public_profile/user_public_profile.ejs %>
+</div>
+
+<% include ../navigation/mainFooter.ejs %>
+
+<!-- JAVASCRIPT -->
+<% include ../scripts/bottom-script.ejs %>
+
+<script async
+        type="text/javascript"
+        src=<%= getAssetUrl("/public/js_files/user_public_profile.min.js") %>></script>
+
+</body>
+</html>
+
+<% } %>

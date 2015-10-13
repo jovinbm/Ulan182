@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"
+      ng-app="app"
+      ng-controller="UniversalController">
+<head>
+
+    <% include ../scripts/meta-in-head.ejs %>
+    <% include ../scripts/head.ejs %>
+    <link rel="stylesheet"
+          href="<%= getAssetUrl("/public/cssmin/account/account.min.css") %>" />
+
+    <title>The African Exponent | Login</title>
+</head>
+
+<body class="account-crud ng-cloak">
+<div id="pageTop"></div>
+<% include ../scripts/meta-in-body.ejs %>
+<div toastr-directive></div>
+<div executing-banner></div>
+
+<% var container_state = 'container' %>
+
+<% container_state = 'container' %>
+<% include ../navigation/top_nav.ejs %>
+
+<div class="<%= container_state %>">
+    <% include ../page-widgets/banners/universal_banner.ejs %>
+    <% include ../account/account_status.ejs %>
+</div>
+
+<div class="pageHolder">
+    <% include ../account/sign_in.ejs %>
+</div>
+
+<% include ../navigation/mainFooter.ejs %>
+
+<!-- JAVASCRIPT -->
+<% include ../scripts/bottom-core-concat.ejs %>
+
+<script type="text/javascript"
+        src=<%= getAssetUrl("/public/angular_assets/core_only_min/app.min.js") %>></script>
+
+</body>
+</html>

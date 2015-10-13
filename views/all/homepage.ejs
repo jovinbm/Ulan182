@@ -1,0 +1,49 @@
+<% if (state == 'home') { %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <% include ../scripts/meta-in-head.ejs %>
+    <% include ../scripts/head.ejs %>
+    <link rel="stylesheet"
+          href="<%= getAssetUrl("/public/cssmin/homepage/homepage.min.css") %>" />
+
+    <!--verification stuff-->
+    <meta name="msvalidate.01"
+          content="C3E45023B610711BE1B789DD7E1B9BD0" />
+    <meta name="google-site-verification"
+          content="msrNxcl2tSvXi4SRADXhiM5JKdANq5dP6u3Larr1Cps" />
+    <!--end verification stuff-->
+
+    <title><%= title %></title>
+</head>
+
+<body class="homepage">
+<div id="pageTop"></div>
+<% include ../scripts/meta-in-body.ejs %>
+
+<!--set container state-->
+<% var container_state = 'container' %>
+
+<% container_state = 'container' %>
+<% include ../navigation/top_nav.ejs %>
+
+<div class="pageHolder">
+    <% include ../homepage/homepage.ejs %>
+</div>
+
+<% include ../navigation/mainFooter.ejs %>
+
+<!-- JAVASCRIPT -->
+
+<% include ../scripts/bottom-script.ejs %>
+
+<script async
+        type="text/javascript"
+        src=<%= getAssetUrl("/public/js_files/home.min.js") %>></script>
+
+</body>
+</html>
+
+<% } %>

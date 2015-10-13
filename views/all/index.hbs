@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      ng-app="app"
+      ng-controller="UniversalController">
+<head>
+
+    {{> scripts/meta-in-head}}
+    {{> scripts/head}}
+
+    <link rel="stylesheet"
+          href="{{{getAssetUrl '/public/cssmin/core/core.min.css'}}}" />
+
+    <title>{{title}}</title>
+</head>
+
+<body ng-class="$root.main.classes.body">
+<div toastr-directive></div>
+{{> scripts/meta-in-body}}
+
+{{> navigation/top_nav}}
+
+<div class="pageHolder">
+    {{> navigation/state_navigator}}
+
+    <div ui-view></div>
+
+</div>
+
+{{> scripts/templates}}
+
+<!--js-->
+
+<script type="text/javascript"
+        src="{{{getAssetUrl '/public/uberjs/jsfiles.min.js'}}}"></script>
+
+<script type="text/javascript"
+        src="{{{getAssetUrl '/public/angular_min/core/app.min.js'}}}"></script>
+
+</body>
+</html>

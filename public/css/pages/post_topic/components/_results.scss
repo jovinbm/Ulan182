@@ -1,0 +1,91 @@
+.topicPage {
+    .results {
+        .story {
+            height: 400px;
+            max-height: 400px;
+            margin-bottom: 30px;
+
+            .lead-image {
+                width: 100%;
+                height: 190px;
+                /*remove bottom margin to join with the details*/
+
+                img {
+                    width: 100%;
+                    height: 190px;
+                    object-fit: cover;
+                    overflow: hidden;
+                }
+            }
+
+            .details {
+                padding: 10px;
+                background-color: rgb(235, 238, 235);
+                margin-bottom: 0.8em;
+                height: 210px;
+                max-height: 210px;
+                position: relative;
+            }
+
+            .heading {
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 1.3em;
+                margin-bottom: 0.8em;
+                min-height: 34px;
+            }
+
+            .summary {
+                width: 100%;
+                font-size: .8em;
+                color: #000;
+                margin-bottom: .8em;
+                line-height: 1.4em;
+                min-height: 70px;
+                max-height: 70px;
+                overflow: hidden;
+            }
+
+            .resultType {
+                font-size: 14px;
+                font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+                color: $cgrey;
+                line-height: 1em;
+                margin: 0;
+                font-weight: bold;
+                margin-bottom: 1em;
+
+                @media (max-width: $screen-xs-max) {
+                    font-size: 14px;
+                }
+            }
+
+            .date {
+                font-size: 16px;
+                font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+                color: $cgrey;
+                line-height: 1em;
+                margin: 0;
+                font-weight: bold;
+                margin-bottom: 1em;
+
+                @media (max-width: $screen-xs-max) {
+                    font-size: 14px;
+                }
+            }
+
+            .blur-div {
+                display: block;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 2em;
+                margin: 0;
+                padding: 0;
+                background-image: linear-gradient(to bottom, transparent, rgb(235, 238, 235));
+
+            }
+        }
+    }
+}

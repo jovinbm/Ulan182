@@ -1,0 +1,38 @@
+<script
+        type="text/ng-template"
+        id="_welcome.html">
+
+    <div class="overView ng-cloak"
+         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+
+        <div class="header">
+            <h1>Welcome {[{$root.main.userData.firstName}]}</h1>
+
+            <p>Choose a service below</p>
+        </div>
+
+
+        <ul class="services">
+
+            <li class="service">
+                <a ui-sref="home.priceEstimator">
+                    Get Price Estimates
+                </a>
+            </li>
+
+            <li class="service">
+                <a ui-sref="home.requestUber">
+                    Request an Uber
+                </a>
+            </li>
+
+            <li class="service">
+                <a>
+                    Plan Trip
+                </a>
+            </li>
+        </ul>
+
+    </div>
+
+</script>

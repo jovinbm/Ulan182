@@ -1,0 +1,157 @@
+<nav id="navigation"
+     class="main-navigation desktop visible-lg visible-md navbar-fixed-top"
+     role="navigation">
+
+    <div class="nav-top-strip">
+
+        <div class="container-fluid clearfix">
+
+            <ul class="pull-right ng-cloak">
+
+                <li>
+                    <a ui-sref="index"
+                       target="_self"
+                       title="UberLAN">
+                        UberLAN
+                    </a>
+                </li>
+
+                <li ng-if="$root.main.userData">
+                    <a ui-sref="home"
+                       target="_self"
+                       title="Home">
+                        Home
+                    </a>
+                </li>
+
+                <li ng-if="$root.main.userData">
+                    <a ui-sref="myprofile"
+                       target="_self"
+                       ng-attr-title="{{$root.main.userData.firstName}}"
+                       ng-bind="$root.main.userData.firstName"></a>
+                </li>
+
+                <li ng-if="$root.main.userData"
+                    logout-scope>
+                    <a target="_self"
+                       title="Logout"
+                       ng-click="logout()">Logout</a>
+                </li>
+
+                <li ng-if="!$root.main.userData">
+                    <a ui-sref="register"
+                       target="_self"
+                       title="Register">
+                        Register
+                    </a>
+                </li>
+
+                <li ng-if="!$root.main.userData">
+                    <a ui-sref="login"
+                       target="_self"
+                       title="Sign In">
+                        Sign In
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="nav-header">
+
+        <div class="container-fluid clearfix">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <a href="/"
+                       target="_self"
+                       title="Home">
+
+                        <div class="logo">
+                            <img src="{{{getAssetUrl "/public/uber_assets/UBER BADGE/Source Files/UBER_API_Badge.svg"}}}"
+                                 alt="UberLAN logo">
+                        </div>
+
+                    </a>
+
+                    <a href="/"
+                       target="_self"
+                       title="Home">
+
+                        <div class="name">
+
+                            <h1 class="website-name">
+                                UBER LAN
+                            </h1>
+
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="nav-links hidden">
+
+        <div class="container clearfix">
+            <ul>
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+                <li>
+                    <a href="/"
+                       target="_self"
+                       title="Home">Home</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+
+</nav>

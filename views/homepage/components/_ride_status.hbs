@@ -1,0 +1,160 @@
+<script
+        type="text/ng-template"
+        id="_ride_status.html">
+
+    <div class="rideStatus ng-cloak"
+         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+
+        <div class="header">
+            <h1>Ride status</h1>
+
+            <p>View your recent ride</p>
+        </div>
+
+        <hr>
+
+        <div>
+            <div class="form1">
+
+                <fieldset ng-disabled="requestUberMain.isBusy">
+                    <form>
+
+                        <div class="start clearfix">
+
+                            <label for="start">Pickup location</label>
+
+                            <input type="text"
+                                   class="geoField"
+                                   name="start"
+                                   id="start"
+                                   value=""
+                                   required="required">
+
+                            <input type="submit"
+                                   class="search-button"
+                                   value="&#xf124;" />
+
+                            <div class="details clearfix">
+                                <span class="hidden lat"
+                                      data-geo="lat"></span>
+                                <span class="hidden lng"
+                                      data-geo="lng"></span>
+                                <span class="hidden formatted_address"
+                                      data-geo="formatted_address"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="end clearfix">
+
+                            <label for="start">Destination</label>
+
+                            <input type="text"
+                                   class="geoField"
+                                   name="end"
+                                   id="end"
+                                   value=""
+                                   required="required">
+
+                            <input type="submit"
+                                   class="search-button"
+                                   value="&#xf124;" />
+
+                            <div class="details clearfix">
+                                <span class="hidden lat"
+                                      data-geo="lat"></span>
+                                <span class="hidden lng"
+                                      data-geo="lng"></span>
+                                <span class="hidden formatted_address"
+                                      data-geo="formatted_address"></span>
+                            </div>
+
+                        </div>
+
+                        <p>Type</p>
+
+                        <ul class="products">
+                            <li ng-repeat="product in requestUberControllerMain.products"
+                                ng-click="requestUberMain.changeProductId(product.product_id, product.display_name)"
+                                ng-class="{'selected': requestUberMain.product_id == product.product_id}">
+                                <a>
+                                    {[{product.display_name}]}
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="selectedProductCard">
+
+                            <div class="card"
+                                 ng-show="requestUberMain.selectedProductPriceEstimate.estimate">
+
+                                <div class="localized_display_name clearfix">
+                                    {[{requestUberMain.selectedProductPriceEstimate.localized_display_name}]}
+                                    <span class="price pull-right">
+                                        {[{requestUberMain.selectedProductPriceEstimate.estimate}]}
+                                    </span>
+                                </div>
+
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td class="field">Surge Multiplier</td>
+                                        <td class="val">
+                                            X{[{requestUberMain.selectedProductPriceEstimate.surge_multiplier}]}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Distance</td>
+                                        <td class="val">{[{requestUberMain.selectedProductPriceEstimate.distance}]}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Duration</td>
+                                        <td class="val">{[{requestUberMain.selectedProductPriceEstimate.duration}]}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">Capacity</td>
+                                        <td class="val">{[{requestUberMain.selectedProduct.capacity}]}</td>
+                                    </tr>
+                                    <tr ng-show="requestUberMain.selectedProduct.estimate">
+                                        <td class="field">ETA Pickup</td>
+                                        <td class="val">{[{requestUberMain.selectedProduct.estimate}]} mins</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+                        <button type="submit"
+                                class="btnUber center-element"
+                                ng-click="requestUberMain.requestUber()">REQUEST
+                        </button>
+
+                    </form>
+                </fieldset>
+
+                <div ng-if="requestUberMain.isBusy">
+
+                    <div class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+
+                    <div class="status">
+                        <p ng-bind="requestUberMain.status"></p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</script>

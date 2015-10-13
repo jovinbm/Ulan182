@@ -1,0 +1,21 @@
+<% if (theUser && accountStatusBanner.show) { %>
+
+<div class="ng-cloak account-status padding-top-15">
+    <div class="<%= accountStatusBanner.bannerClass %>">
+        <strong><%= accountStatusBanner.msg %></strong>
+
+        <% if (accountStatusBanner.showResendEmail) { %>
+
+        <div>
+            <p resend-email-scope>Didn't get an email?
+                <a style="text-decoration: underline" ng-click="resendConfirmationEmail(userData.uniqueCuid)"
+                   target="_self">Resend
+                    email</a>
+            </p>
+        </div>
+
+        <% } %>
+    </div>
+</div>
+
+<% } %>
