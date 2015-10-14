@@ -13,46 +13,45 @@
 
         <hr>
 
-
         <div class="ride_details"
-             ng-if="$root.main.uberRideStatus"
-                uber-ride-status-directive>
+             ng-show="uberRideStatusMain.rideStatus"
+             uber-ride-status-directive>
 
             <div class="status clearfix">
-                {[{$root.main.uberRideRequestStatuses[$root.main.uberRideStatus.status]}]}
+                {[{$root.main.uberRideRequestStatuses[uberRideStatusMain.rideStatus.status]}]}
             </div>
 
             <table>
                 <tbody>
                 <tr>
                     <td class="field">ETA</td>
-                    <td class="val">{[{$root.main.uberRideStatus.eta}]} min(s)</td>
+                    <td class="val">{[{uberRideStatusMain.rideStatus.eta}]} min(s)</td>
                 </tr>
                 <tr>
                     <td class="field">Surge Multiplier</td>
-                    <td class="val">x{[{$root.main.uberRideStatus.surge_multiplier}]}</td>
+                    <td class="val">x{[{uberRideStatusMain.rideStatus.surge_multiplier}]}</td>
                 </tr>
                 </tbody>
             </table>
 
             <div class="driver_profile clearfix"
-                 ng-if="$root.main.uberRideStatus.driver">
+                 ng-if="uberRideStatusMain.rideStatus.driver">
 
                 <h1 class="heading">Driver profile</h1>
 
-                <img ng-src="{[{$root.main.uberRideStatus.driver.picture_url}]}">
+                <img ng-src="{[{uberRideStatusMain.rideStatus.driver.picture_url}]}">
 
                 <div class="driver_info">
                     <ul>
                         <li>
-                            <p>{[{$root.main.uberRideStatus.driver.name}]}</p>
+                            <p>{[{uberRideStatusMain.rideStatus.driver.name}]}</p>
                         </li>
                         <li>
                             <i class="fa fa-star"
-                               ng-repeat="i in $root.main.uberRideStatus.driver.ratingArray track by $index"></i>
+                               ng-repeat="i in uberRideStatusMain.rideStatus.driver.ratingArray track by $index"></i>
                         </li>
                         <li>
-                            <p>{[{$root.main.uberRideStatus.driver.phone_number}]}</p>
+                            <p>{[{uberRideStatusMain.rideStatus.driver.phone_number}]}</p>
                         </li>
                     </ul>
                 </div>
@@ -60,22 +59,22 @@
             </div>
 
             <div class="vehicle_profile clearfix"
-                 ng-if="$root.main.uberRideStatus.vehicle">
+                 ng-if="uberRideStatusMain.rideStatus.vehicle">
 
                 <h1 class="heading">Vehicle</h1>
 
-                <img ng-src="{[{$root.main.uberRideStatus.vehicle.picture_url}]}">
+                <img ng-src="{[{uberRideStatusMain.rideStatus.vehicle.picture_url}]}">
 
                 <div class="vehicle_info">
                     <ul>
                         <li>
-                            <p>Make: {[{$root.main.uberRideStatus.vehicle.make}]}</p>
+                            <p>Make: {[{uberRideStatusMain.rideStatus.vehicle.make}]}</p>
                         </li>
                         <li>
-                            <p>Model: {[{$root.main.uberRideStatus.vehicle.model}]}</p>
+                            <p>Model: {[{uberRideStatusMain.rideStatus.vehicle.model}]}</p>
                         </li>
                         <li>
-                            <p>License plate: {[{$root.main.uberRideStatus.vehicle.license_plate}]}</p>
+                            <p>License plate: {[{uberRideStatusMain.rideStatus.vehicle.license_plate}]}</p>
                         </li>
                     </ul>
                 </div>
@@ -86,8 +85,8 @@
 
         <div class="alert alert-info"
              role="alert"
-             ng-if="!$root.main.uberRideStatus">
-            You do not have any active requests.
+             ng-if="!uberRideStatusMain.rideStatus">
+            Your active requests will appear here as soon as they are processed.
         </div>
 
     </div>

@@ -565,7 +565,7 @@ module.exports = {
                             type: 'success',
                             banner: true,
                             bannerClass: 'alert alert-dismissible alert-warning',
-                            msg: 'Your ride is on the way..'
+                            msg: 'We are requesting your ride...'
                         };
                     }
 
@@ -579,7 +579,7 @@ module.exports = {
                         type: 'success',
                         banner: true,
                         bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'Your ride is on the way..'
+                        msg: 'We are requesting your ride...'
                     };
 
                 }

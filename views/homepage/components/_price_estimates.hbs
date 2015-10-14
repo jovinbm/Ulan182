@@ -24,31 +24,8 @@
 
                             <label for="start">Pickup location</label>
 
-                            <input type="text"
-                                   class="geoField"
-                                   name="start"
-                                   id="start"
-                                   value=""
-                                   required="required">
-
-                            <input type="submit"
-                                   class="search-button"
-                                   value="&#xf124;" />
-
-                            <div class="details clearfix">
-                                <input name="lat"
-                                       type=hidden
-                                       value=""
-                                       class="lat">
-                                <input name="lng"
-                                       type=hidden
-                                       value=""
-                                       class="lng">
-                                <input name="formatted_address"
-                                       type=hidden
-                                       value=""
-                                       class="formatted_address">
-                            </div>
+                            <div location-search-box
+                                 location-update="updateStartLocation(lat, lng, formatted_address)"></div>
 
                         </div>
 
@@ -57,31 +34,8 @@
 
                             <label for="end">Destination</label>
 
-                            <input type="text"
-                                   class="geoField"
-                                   name="end"
-                                   id="end"
-                                   value=""
-                                   required="required">
-
-                            <input type="submit"
-                                   class="search-button"
-                                   value="&#xf124;" />
-
-                            <div class="details clearfix">
-                                <input name="lat"
-                                       type=hidden
-                                       value=""
-                                       class="lat">
-                                <input name="lng"
-                                       type=hidden
-                                       value=""
-                                       class="lng">
-                                <input name="formatted_address"
-                                       type=hidden
-                                       value=""
-                                       class="formatted_address">
-                            </div>
+                            <div location-search-box
+                                 location-update="updateEndLocation(lat, lng, formatted_address)"></div>
 
                         </div>
 

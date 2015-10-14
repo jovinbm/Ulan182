@@ -43,7 +43,9 @@ gulp.task('minifyAllImages', function () {
 gulp.task('minifyUberAppJS', function () {
     return gulp.src(['public/angular/core/app.js', 'public/angular/core/**/*.js'])
         .pipe(sourcemaps.init())
-        .pipe(concat('app.min.js'))
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest('public/angular_min/core'))
+        .pipe(rename('app.min.js'))
         .pipe(ngAnnotate())
         .pipe(uglify())
         .pipe(sourcemaps.write('.'))
