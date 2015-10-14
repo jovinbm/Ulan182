@@ -1,0 +1,37 @@
+<script
+        type="text/ng-template"
+        id="_location_search_box.html">
+
+    <div class="location_search_box clearfix">
+
+        <label for="loc">{[{label_heading}]}</label>
+
+        <input type="text"
+               class="geoField"
+               name="loc"
+               id="loc"
+               value=""
+               required="required">
+
+        <input type="submit"
+               class="search-button"
+               value="&#xf124;" />
+
+        <div class="details clearfix">
+            <input name="lat"
+                   type=hidden
+                   value=""
+                   class="lat">
+            <input name="lng"
+                   type=hidden
+                   value=""
+                   class="lng">
+            <input name="formatted_address"
+                   type=hidden
+                   value=""
+                   class="formatted_address">
+        </div>
+
+    </div>
+
+</script>

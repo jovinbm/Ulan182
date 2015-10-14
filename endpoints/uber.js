@@ -10,5 +10,6 @@ module.exports = function (app, rq) {
     app.post('/api/getProducts', middleware.ensureAuthenticatedXhr, middleware.addUserData, routes.uber().getProducts);
     app.post('/api/requestUber', middleware.ensureAuthenticatedXhr, middleware.addUserData, routes.uber().requestUber);
     app.post('/api/getRideStatus', middleware.ensureAuthenticatedXhr, middleware.addUserData, routes.uber().getRideStatus);
+    app.post('/api/updateUberRequestSandbox', middleware.ensureAuthenticatedXhr, middleware.addUserData, routes.uber().updateUberRequestSandbox);
 
 };

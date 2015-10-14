@@ -18,7 +18,90 @@ var errorLogger = function (module, text, err) {
 var passport = require('passport');
 var cuid = require('cuid');
 
+function checkRideActivity(status, request_id) {
+    var validStatuses = ['processing', 'accepted', 'arriving', 'in_progress'];
+    var isActive = true;
+
+    console.log(status);
+
+    return Promise.resolve()
+        .then(function () {
+            if (validStatuses.indexOf(status) == -1) {
+                isActive = false;
+                /*
+                 * means this ride is no longer valid
+                 * */
+
+                var query = new rq.Query();
+                query.findQuery = {
+                    request_id: request_id,
+                    active: true
+                };
+                query.updateQuery = {
+                    active: false
+                };
+
+                return rq.crud_db().update(rq.UberRide(), query)
+                    .then(function () {
+                        return isActive;
+                    });
+            } else {
+                return isActive;
+            }
+        })
+}
+
 module.exports = {
+
+    updateUberRequestSandbox: function (req, res) {
+
+        var status = req.body.status;
+        var theUser = rq.getTheUser(req);
+        var lastRide;
+
+        return Promise.resolve()
+            .then(function () {
+                return rq.catchEmptyArgs([status, theUser]);
+            })
+            .then(function () {
+                var query = new rq.Query();
+                query.findQuery = {
+                    userUniqueCuid: theUser.uniqueCuid,
+                    active: true
+                };
+                query.lean = true;
+                query.sort = {createdAt: -1};
+
+                return rq.crud_db().find(rq.UberRide(), query, true)
+                    .then(function (ride) {
+                        /*
+                         * will be null if not, can check for this on the client side
+                         * */
+                        lastRide = ride;
+                        return true;
+                    });
+            })
+            .then(function () {
+                if (lastRide) {
+                    var options = {
+                        url: 'sandbox/requests/' + lastRide.request_id,
+                        params: {
+                            "status": status
+                        }
+                    };
+                    return rq.functions().request.uberPut(options, theUser.uber.access_token);
+                } else {
+                    return null;
+                }
+            })
+            .then(function (arr) {
+                rq.consoleLogger(successLogger(module));
+                res.status(200).send({})
+            })
+            .catch(function (e) {
+                rq.catchXhrErrors(req, res, e);
+            });
+    },
 
     getPriceEstimate: function (req, res) {
         var app = require('../app.js').app();
@@ -50,7 +133,7 @@ module.exports = {
                 var response = arr[0];
                 var statusCode = arr[1];
 
-                if (parseInt(statusCode) == 200 || parseInt(statusCode) == 201) {
+                if (statusCode >= 200 || statusCode < 300) {
                     rq.consoleLogger(successLogger(module));
                     res.status(200).send({
                         obj: response
@@ -90,7 +173,7 @@ module.exports = {
                 var response = arr[0];
                 var statusCode = arr[1];
 
-                if (parseInt(statusCode) == 200 || parseInt(statusCode) == 201) {
+                if (statusCode >= 200 || statusCode < 300) {
                     rq.consoleLogger(successLogger(module));
                     res.status(200).send({
                         obj: response
@@ -133,7 +216,7 @@ module.exports = {
                          * */
                         lastRide = ride;
                         return true;
-                    })
+                    });
             })
             .then(function () {
                 if (lastRide) {
@@ -147,16 +230,68 @@ module.exports = {
                 }
             })
             .then(function (arr) {
-                var response = arr[0];
-                var statusCode = arr[1];
 
-                if (parseInt(statusCode) == 200 || parseInt(statusCode) == 201) {
-                    rq.consoleLogger(successLogger(module));
-                    res.status(200).send({
-                        obj: response
-                    })
+                if (arr) {
+                    var response = arr[0];
+                    var statusCode = arr[1];
+
+                    return Promise.resolve()
+                        .then(function () {
+                            return checkRideActivity(response.status, lastRide.request_id)
+                        })
+                        .then(function (rideIsActive) {
+
+                            if (rideIsActive) {
+                                /*
+                                 * add in the map url
+                                 * */
+                                return Promise.resolve()
+                                    .then(function () {
+                                        var options = {
+                                            url: 'requests/' + lastRide.request_id + '/map',
+                                            params: {}
+                                        };
+                                        return rq.functions().request.uberGet(options, theUser.uber.access_token);
+                                    })
+                                    .then(function (arr) {
+                                        response.mapDetails = arr[0];
+                                        /*
+                                         * add in the last ride details
+                                         * */
+                                        response.lastRide = lastRide;
+                                        return true;
+                                    })
+                                    .then(function () {
+                                        if (statusCode >= 200 || statusCode < 300) {
+                                            rq.consoleLogger(successLogger(module));
+                                            return res.status(200).send({
+                                                obj: response
+                                            })
+                                        } else {
+                                            return rq.catchUberErrors(req, res, statusCode, response);
+                                        }
+                                    })
+                            } else {
+
+                                /*
+                                 * ride is not active
+                                 * */
+
+                                rq.consoleLogger(successLogger(module));
+                                return res.status(200).send({
+                                    obj: null
+                                })
+                            }
+                        })
                 } else {
-                    return rq.catchUberErrors(req, res, statusCode, response);
+
+                    /*
+                     * ride does not exist
+                     * */
+                    rq.consoleLogger(successLogger(module));
+                    return res.status(200).send({
+                        obj: null
+                    })
                 }
             })
             .catch(function (e) {
@@ -190,7 +325,7 @@ module.exports = {
                 var response = arr[0];
                 var statusCode = arr[1];
 
-                if (statusCode == 200 || statusCode == 201) {
+                if (statusCode >= 200 || statusCode < 300) {
                     rq.consoleLogger(successLogger(module));
                     res.status(200).send({
                         obj: response
@@ -257,7 +392,6 @@ module.exports = {
                 return rq.functions().request.uberPost(options, theUser.uber.access_token);
             })
             .then(function (arr) {
-
                 var response = arr[0];
                 var statusCode = arr[1];
 
@@ -268,7 +402,7 @@ module.exports = {
 
                         responseTemplate = rT;
 
-                        if (statusCode == 200 || statusCode == 201) {
+                        if (statusCode >= 200 || statusCode < 300) {
                             //save the uber ride'
                             var uberRide = new rq.UberRide()({
                                 uniqueCuid: cuid(),

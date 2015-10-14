@@ -396,174 +396,192 @@ module.exports = {
             })
             .catch(function (e) {
 
-                var firstError = resBody.errors[0];
+                var firstError = resBody.errors;
 
-                if (statusCode === 400 && firstError.code == 'unconfirmed_email') {
-                    return {
-                        code: 400,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'Please confirm your email address within the native mobile application or by visiting https://riders.uber.com.'
-                    };
-                } else if (statusCode === 400 && firstError.code == 'invalid_payment') {
-                    return {
-                        code: 400,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'Please update your billing info within the native mobile application or by visiting https://riders.uber.com.'
-                    };
-                } else if (statusCode === 403 && firstError.code == 'forbidden') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'You have been forbidden from making a request at this time Please consult Uber support team by visiting https://help.uber.com or by emailing support@uber.com.'
-                    };
+                if (firstError) {
+                    firstError = firstError[0];
 
-                } else if (statusCode === 403 && firstError.code == 'unverified') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'You have not confirmed your mobile number.Use the native mobile application or by visiting https://riders.uber.com to confirm.'
-                    };
+                    if (statusCode === 400 && firstError.code == 'unconfirmed_email') {
+                        return {
+                            code: 400,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'Please confirm your email address within the native mobile application or by visiting https://riders.uber.com.'
+                        };
+                    } else if (statusCode === 400 && firstError.code == 'invalid_payment') {
+                        return {
+                            code: 400,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'Please update your billing info within the native mobile application or by visiting https://riders.uber.com.'
+                        };
+                    } else if (statusCode === 403 && firstError.code == 'forbidden') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'You have been forbidden from making a request at this time Please consult Uber support team by visiting https://help.uber.com or by emailing support@uber.com.'
+                        };
 
-                } else if (statusCode === 403 && firstError.code == 'product_not_allowed') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'The product being requested is not available. Please select a different product.'
-                    };
+                    } else if (statusCode === 403 && firstError.code == 'unverified') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'You have not confirmed your mobile number.Use the native mobile application or by visiting https://riders.uber.com to confirm.'
+                        };
 
-                } else if (statusCode === 403 && firstError.code == 'pay_balance') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'The product being requested is not available. Please select a different product.'
-                    };
+                    } else if (statusCode === 403 && firstError.code == 'product_not_allowed') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'The product being requested is not available. Please select a different product.'
+                        };
 
-                } else if (statusCode === 403 && firstError.code == 'user_not_allowed') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'There are conflicting balance issues in your account. Please update using the native mobile application or by visiting https://riders.uber.com.'
-                    };
+                    } else if (statusCode === 403 && firstError.code == 'pay_balance') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'The product being requested is not available. Please select a different product.'
+                        };
 
-                } else if (statusCode === 403 && firstError.code == 'too_many_cancelations') {
-                    return {
-                        code: 403,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'You have been temporarily blocked due to cancelling too many times.'
-                    };
+                    } else if (statusCode === 403 && firstError.code == 'user_not_allowed') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'There are conflicting balance issues in your account. Please update using the native mobile application or by visiting https://riders.uber.com.'
+                        };
 
-                } else if (statusCode === 404 && firstError.code == 'not_found') {
-                    return {
-                        code: 404,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'An error occurred while attempting to make the request. Please reload the page.'
-                    };
+                    } else if (statusCode === 403 && firstError.code == 'too_many_cancelations') {
+                        return {
+                            code: 403,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'You have been temporarily blocked due to cancelling too many times.'
+                        };
 
-                } else if (statusCode === 409 && firstError.code == 'no_drivers_available') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'No drivers available for requested product at this time. You can wait or try a different product.'
-                    };
+                    } else if (statusCode === 404 && firstError.code == 'not_found') {
+                        return {
+                            code: 404,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'An error occurred while attempting to make the request. Please reload the page.'
+                        };
 
-                } else if (statusCode === 409 && firstError.code == 'missing_payment_method') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'Please add a payment method by using the native mobile application or by visiting https://riders.uber.com.'
-                    };
+                    } else if (statusCode === 409 && firstError.code == 'no_drivers_available') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'No drivers available for requested product at this time. You can wait or try a different product.'
+                        };
 
-                } else if (statusCode === 409 && firstError.code == 'fare_expired') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'The fare has expired for the requested product. Please get select the product again, confirm the new fare, and then re-request.'
-                    };
+                    } else if (statusCode === 409 && firstError.code == 'missing_payment_method') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'Please add a payment method by using the native mobile application or by visiting https://riders.uber.com.'
+                        };
 
-                } else if (statusCode === 409 && firstError.code == 'retry_request') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'An error occurred while attempting to make the request. Please try again.'
-                    };
+                    } else if (statusCode === 409 && firstError.code == 'fare_expired') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'The fare has expired for the requested product. Please get select the product again, confirm the new fare, and then re-request.'
+                        };
 
-                } else if (statusCode === 409 && firstError.code == 'error') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'An unknown error occurred while attempting to make the request. Please try again.'
-                    };
+                    } else if (statusCode === 409 && firstError.code == 'retry_request') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'An error occurred while attempting to make the request. Please try again.'
+                        };
 
-                } else if (statusCode === 422 && firstError.code == 'mobile_number_conflic') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'Your mobile number has already been claimed by an existing Uber account. You can update your mobile number within the native mobile application, by visiting https://riders.uber.com.'
-                    };
+                    } else if (statusCode === 409 && firstError.code == 'error') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'An unknown error occurred while attempting to make the request. Please try again.'
+                        };
 
-                } else if (statusCode === 422 && firstError.code == 'third_party_account _already_associated') {
-                    return {
-                        code: 409,
-                        notify: true,
-                        type: 'warning',
-                        banner: true,
-                        bannerClass: 'alert alert-dismissible alert-warning',
-                        msg: 'This account is already associated with existing Uber account.'
-                    };
+                    } else if (statusCode === 422 && firstError.code == 'mobile_number_conflic') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'Your mobile number has already been claimed by an existing Uber account. You can update your mobile number within the native mobile application, by visiting https://riders.uber.com.'
+                        };
+
+                    } else if (statusCode === 422 && firstError.code == 'third_party_account _already_associated') {
+                        return {
+                            code: 409,
+                            notify: true,
+                            type: 'warning',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'This account is already associated with existing Uber account.'
+                        };
+                    } else {
+                        return {
+                            code: 200,
+                            notify: true,
+                            type: 'success',
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            msg: 'Your ride is on the way..'
+                        };
+                    }
+
                 } else {
+
+                    //means there are no errors
+
                     return {
                         code: 200,
                         notify: true,
-                        type: 'warning',
+                        type: 'success',
                         banner: true,
                         bannerClass: 'alert alert-dismissible alert-warning',
                         msg: 'Your ride is on the way..'
                     };
+
                 }
             });
     }

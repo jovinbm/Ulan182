@@ -1,48 +1,52 @@
 .homepage {
-    .start {
-        margin-bottom: 30px;
-    }
 
-    .end {
-        margin-bottom: 30px;
-    }
+    .priceEstimate {
 
-    .results {
-
-        .localized_display_name {
-            height: 40px;
-            background-color: $uberPurpleMain;
-            color: white;
-            margin: 0;
-            margin-bottom: 15px;
-            padding: 10px;
-            font-size: 20px;
+        .start {
+            margin-bottom: 30px;
         }
 
-        table {
-            min-width: 100%;
+        .end {
+            margin-bottom: 30px;
         }
 
-        td {
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
+        .results {
 
-        .field {
-            width: 70%;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 0;
-            color: $uberPurpleMain;
-        }
+            .localized_display_name {
+                height: 40px;
+                background-color: $uberPurpleMain;
+                color: white;
+                margin: 0;
+                margin-bottom: 15px;
+                padding: 10px;
+                font-size: 20px;
+            }
 
-        .val {
-            text-align: right;
-            width: 30%;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 1.6em;
-            color: $uberBluer;
+            table {
+                min-width: 100%;
+            }
+
+            td {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .field {
+                width: 70%;
+                font-size: 18px;
+                font-weight: 600;
+                padding: 0;
+                color: $uberPurpleMain;
+            }
+
+            .val {
+                text-align: right;
+                width: 30%;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 1.6em;
+                color: $uberBluer;
+            }
         }
     }
 }

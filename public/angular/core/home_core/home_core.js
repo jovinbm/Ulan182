@@ -23,10 +23,47 @@ angular.module('app')
         });
 
     }])
-    .directive('homeCoreScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .factory("LocationService", function () {
+        var startLocation = {
+            lat: lat,
+            lng: lng
+        };
+
+        var updateTimer = function () {
+            data.lastUpdated = new Date();
+            data.calls += 1;
+            console.log("updateTimer: " + data.lastUpdated);
+
+            $timeout(updateTimer, 500);
+        };
+        updateTimer();
+
+        return {
+            data: data
+        };
+    })
+    .directive('locationSearchBox', ['$rootScope', '$http', function ($rootScope, $http) {
         return {
             restrict: 'AE',
-            link: function ($scope) {
+            scope: {
+                model: '=locationModel', //location-model in html
+                update: '&locationUpdate' //location-update in html
+            },
+            templateUrl: '_location_search_box.html',
+            link: function ($scope, $element) {
+                /*
+                 * auto complete for the input.geoFields
+                 * */
+                angular.element($element.find('input.geoField')).geocomplete({
+                    details: angular.element($element.find('.details'))
+                })
+                    .bind("geocode:result", function () {
+                        var lat = angular.element($element.find('.details input.lat')).val();
+                        var lng = angular.element($element.find('.details input.lng')).val();
+                        var formatted_address = angular.element($element.find('.details input.formatted_address')).val();
+
+                        $scope.update(lat, lng, formatted_address);
+                    });
             }
         };
     }])
@@ -77,12 +114,6 @@ angular.module('app')
         $scope.requestUberControllerMain = {
 
             /*
-             * uberRideStatus will carry the request status of uber after the user
-             * requests an uber
-             * */
-            uberRideStatus: false,
-
-            /*
              * priceEstimateArray contains the data obtained from price estimates
              * including the types of cars available
              * distance etc
@@ -103,7 +134,7 @@ angular.module('app')
 
                 return Promise.resolve()
                     .then(function () {
-                        return $rootScope.map.getMyPosition();
+                        return $rootScope.map._getMyPosition($rootScope.map);
                     })
                     .then(function () {
                         latitude = $rootScope.main.userLocation.latitude;
@@ -159,6 +190,25 @@ angular.module('app')
             restrict: 'AE',
             link: function ($scope, $element, $attr) {
 
+                $scope.testBoxModel = {
+                    lat: 2,
+                    lng: '',
+                    formatted_address: '',
+                    update: function (lat, lng, formatted_address) {
+                        console.log('yes2');
+                        this.lat = lat;
+                        this.lng = lng;
+                        this.formatted_address = formatted_address;
+                    }
+                };
+
+                $scope.$watch(function () {
+                    return $scope.testBoxModel;
+                }, function (val) {
+                    console.log('$scope.testBoxModel');
+                    console.log(JSON.stringify(val));
+                });
+
                 $scope.requestUberMain = {
                     isBusy: false,
                     status: '',
@@ -176,6 +226,7 @@ angular.module('app')
 
                     changeProductId: function (newId, product_display_name) {
                         if (newId) {
+
                             $scope.requestUberMain.product_id = newId;
 
                             //get the selected product
@@ -184,6 +235,7 @@ angular.module('app')
                                     $scope.requestUberMain.selectedProduct = product;
                                 }
                             });
+
 
                             $scope.requestUberControllerMain.priceEstimateArray.forEach(function (product) {
                                 /*
@@ -246,12 +298,13 @@ angular.module('app')
                             })
                             .then(function (resp) {
                                 $scope.requestUberMain.isBusy = false;
-                                $scope.requestUberControllerMain.uberRideStatus = resp.obj;
-                                console.log(JSON.stringify($scope.requestUberControllerMain.uberRideStatus));
+                                /*
+                                 * the uberRide status is continually being checked/polled, no need to call the function here
+                                 * */
                                 /*
                                  * start getting the ride statuses
                                  * */
-                                $scope.requestUberMain.getRideStatus();
+                                $rootScope.main.getRideStatus();
                                 return true;
                             })
                             .catch(function (e) {
@@ -269,44 +322,11 @@ angular.module('app')
                             })
                     },
 
-                    getRideStatus: function () {
-
-                        return Promise.resolve()
-                            .then(function () {
-                                console.log('checking ride status');
-                                return $http.post('/api/getRideStatus', {})
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return resp;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        throw err;
-                                    })
-                            })
-                            .then(function (resp) {
-                                $scope.requestUberMain.isBusy = false;
-                                $scope.requestUberControllerMain.uberRideStatus = resp.obj;
-                                console.log(JSON.stringify($scope.requestUberControllerMain.uberRideStatus));
-                                return true;
-                            })
-                            .catch(function (err) {
-                                $scope.requestUberMain.isBusy = false;
-                                console.log(err);
-                                return true;
-                            })
-                            .then(function () {
-                                return Promise.delay(10000) //delay 10 seconds
-                                    .then(function () {
-                                        return $scope.requestUberMain.getRideStatus();
-                                    });
-
-                            })
-                    },
-
                     getPriceEstimate: function () {
+
+                        /*
+                         * this is normally fetched when the user chooses the start & end location
+                         * */
 
                         if ($scope.requestUberMain.start_latitude && $scope.requestUberMain.start_longitude && $scope.requestUberMain.end_latitude && $scope.requestUberMain.end_longitude) {
 
@@ -346,6 +366,10 @@ angular.module('app')
                     },
 
                     getTimeEstimate: function () {
+
+                        /*
+                         * this is normally fetched when the user chooses the start location
+                         * */
 
                         if ($scope.requestUberMain.start_latitude && $scope.requestUberMain.start_longitude) {
 
@@ -387,37 +411,30 @@ angular.module('app')
                  * autocomplete for the input.geoFields
                  * */
                 angular.element('.start input.geoField').geocomplete({
-                    details: ".start .details",
-                    detailsAttribute: "data-geo"
+                    details: ".start .details"
                 })
                     .bind("geocode:result", function (event, result) {
-                        var lat = result.geometry.location.J;
-                        var lng = result.geometry.location.M;
-                        var formatted_address = result.formatted_address;
+                        var lat = angular.element('.start .details input.lat').val();
+                        var lng = angular.element('.start .details input.lng').val();
+                        var formatted_address = angular.element('.start .details input.formatted_address').val();
 
                         if (lat && lng) {
                             $scope.updateStartLocation(lat, lng, formatted_address);
-                            //update the map and price estimate to current route
                             $scope.drawRoute();
-                            $scope.requestUberMain.getPriceEstimate();
-                            $scope.requestUberMain.getTimeEstimate();
                         }
                     });
+
                 angular.element('.end input.geoField').geocomplete({
-                    details: ".end .details",
-                    detailsAttribute: "data-geo"
+                    details: ".end .details"
                 })
                     .bind("geocode:result", function (event, result) {
-                        var lat = result.geometry.location.J;
-                        var lng = result.geometry.location.M;
-                        var formatted_address = result.formatted_address;
+                        var lat = angular.element('.end .details input.lat').val();
+                        var lng = angular.element('.end .details input.lng').val();
+                        var formatted_address = angular.element('.end .details input.formatted_address').val();
 
                         if (lat && lng) {
                             $scope.updateEndLocation(lat, lng, formatted_address);
-                            //update the map and price estimate to current route
                             $scope.drawRoute();
-                            $scope.requestUberMain.getPriceEstimate();
-                            $scope.requestUberMain.getTimeEstimate();
                         }
                     });
 
@@ -434,7 +451,14 @@ angular.module('app')
                         $scope.requestUberMain.start_longitude = lng;
                         $scope.requestUberMain.start_formatted_address = formatted_address;
 
-                        $rootScope.map.addMarker(lat, lng, formatted_address);
+                        $rootScope.map._addMarker(lat, lng, formatted_address);
+                        $rootScope.map._setCenter(lat, lng);
+
+                        /*
+                         * get the important metadata for uber request decision
+                         * */
+                        $scope.requestUberMain.getPriceEstimate();
+                        $scope.requestUberMain.getTimeEstimate();
                     }
                 };
 
@@ -451,13 +475,21 @@ angular.module('app')
                         $scope.requestUberMain.end_longitude = lng;
                         $scope.requestUberMain.end_formatted_address = formatted_address;
 
-                        $rootScope.map.addMarker(lat, lng, formatted_address);
+                        $rootScope.map._addMarker(lat, lng, formatted_address);
+
+
+                        /*
+                         * get the important metadata for uber request decision
+                         * */
+                        $scope.requestUberMain.getPriceEstimate();
+                        $scope.requestUberMain.getTimeEstimate();
                     }
                 };
 
                 $scope.drawRoute = function () {
                     if ($scope.requestUberMain.start_latitude && $scope.requestUberMain.end_latitude) {
-                        $rootScope.map.drawRoute([$scope.requestUberMain.start_latitude, $scope.requestUberMain.start_longitude], [$scope.requestUberMain.end_latitude, $scope.requestUberMain.end_longitude])
+                        $rootScope.map._setCenter($scope.requestUberMain.start_latitude, $scope.requestUberMain.start_longitude);
+                        $rootScope.map._drawRoute([$scope.requestUberMain.start_latitude, $scope.requestUberMain.start_longitude], [$scope.requestUberMain.end_latitude, $scope.requestUberMain.end_longitude])
                     }
                 };
 
@@ -467,7 +499,7 @@ angular.module('app')
                             if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                 return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
                             } else {
-                                return $rootScope.map.getMyPosition()
+                                return $rootScope.map._getMyPosition($rootScope.map)
                                     .then(function () {
                                         if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                             return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
@@ -498,7 +530,7 @@ angular.module('app')
                             if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                 return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
                             } else {
-                                return $rootScope.map.getMyPosition()
+                                return $rootScope.map._getMyPosition($rootScope.map)
                                     .then(function () {
                                         if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                             return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
@@ -522,6 +554,139 @@ angular.module('app')
                             $rootScope.main.showToast('warning', 'An error occurred while trying to pin point your location');
                         });
                 };
+            }
+        };
+    }])
+    .directive('uberRideStatusDirective', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope, $element, $attr) {
+
+                /*
+                 * check the uberStatus and keep updating the map with the driver position
+                 * */
+                $scope.uberRideStatusMain = {
+                    driver_latitude: null,
+                    driver_longitude: null,
+                    driver_marker: null,
+
+                    updateUberRequestSandbox: function () {
+                        Promise.resolve()
+                            .then(function () {
+                                return Promise.delay(15000);
+                            })
+                            .then(function () {
+                                return $http.post('/api/updateUberRequestSandbox', {
+                                    status: 'accepted'
+                                })
+                                    .then(function (resp) {
+                                        resp = resp.data;
+                                        $rootScope.main.responseStatusHandler(resp);
+                                        return true;
+                                    })
+                                    .catch(function (err) {
+                                        err = err.data;
+                                        $rootScope.main.responseStatusHandler(err);
+                                        return true;
+                                    })
+                            })
+                            .then(function () {
+                                return Promise.delay(60000);
+                            })
+                            .then(function () {
+                                return $http.post('/api/updateUberRequestSandbox', {
+                                    status: 'arriving'
+                                })
+                                    .then(function (resp) {
+                                        resp = resp.data;
+                                        $rootScope.main.responseStatusHandler(resp);
+                                        return true;
+                                    })
+                                    .catch(function (err) {
+                                        err = err.data;
+                                        $rootScope.main.responseStatusHandler(err);
+                                        return true;
+                                    })
+                            })
+                            .then(function () {
+                                return Promise.delay(15000);
+                            })
+                            .then(function () {
+                                return $http.post('/api/updateUberRequestSandbox', {
+                                    status: 'in_progress'
+                                })
+                                    .then(function (resp) {
+                                        resp = resp.data;
+                                        $rootScope.main.responseStatusHandler(resp);
+                                        return true;
+                                    })
+                                    .catch(function (err) {
+                                        err = err.data;
+                                        $rootScope.main.responseStatusHandler(err);
+                                        return true;
+                                    })
+                            })
+                            .then(function () {
+                                return Promise.delay(120000);
+                            })
+                            .then(function () {
+                                return $http.post('/api/updateUberRequestSandbox', {
+                                    status: 'completed'
+                                })
+                                    .then(function (resp) {
+                                        resp = resp.data;
+                                        $rootScope.main.responseStatusHandler(resp);
+                                        return true;
+                                    })
+                                    .catch(function (err) {
+                                        err = err.data;
+                                        $rootScope.main.responseStatusHandler(err);
+                                        return true;
+                                    })
+                            })
+                            .catch(function (e) {
+                                console.log(e);
+                                return true;
+                            })
+                    }
+                };
+
+                /*
+                 * start updating the ride status
+                 * */
+                $scope.uberRideStatusMain.updateUberRequestSandbox();
+
+                $scope.$watch(function () {
+                    return $rootScope.main.uberRideStatus
+                }, function (val) {
+                    if (val.location) {
+                        $scope.uberRideStatusMain.driver_latitude = val.location.latitude;
+                        $scope.uberRideStatusMain.driver_longitude = val.location.longitude;
+
+                        /*
+                         * set user location to same ass driver when in_progress
+                         * */
+                        if (val.status == 'in_progress') {
+                            $rootScope.main.updateUserLocation($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
+                            /*
+                             * set center to driver
+                             * */
+                            $rootScope.map._setCenter($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
+                        }
+
+
+                        /*
+                         * update the cars location
+                         * */
+                        if (!$scope.uberRideStatusMain.driver_marker) {
+                            $scope.uberRideStatusMain.driver_marker = $rootScope.map._addMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
+                        } else {
+                            $rootScope.map._removeMarker($scope.uberRideStatusMain.driver_marker);
+                            $scope.uberRideStatusMain.driver_marker = $rootScope.map._addMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
+                        }
+                    }
+                });
+
             }
         };
     }])
@@ -623,29 +788,26 @@ angular.module('app')
                  * autocomplete for the input.geoFields
                  * */
                 angular.element('.start input.geoField').geocomplete({
-                    details: ".start .details",
-                    detailsAttribute: "data-geo"
+                    details: ".start .details"
                 })
                     .bind("geocode:result", function (event, result) {
-                        var lat = result.geometry.location.J;
-                        var lng = result.geometry.location.M;
-                        var formatted_address = result.formatted_address;
-
-                        console.log(result.geometry.location);
+                        var lat = angular.element('.start .details input.lat').val();
+                        var lng = angular.element('.start .details input.lng').val();
+                        var formatted_address = angular.element('.start .details input.formatted_address').val();
 
                         if (lat && lng) {
                             $scope.updateStartLocation(lat, lng, formatted_address);
                             $scope.drawRoute();
                         }
                     });
+
                 angular.element('.end input.geoField').geocomplete({
-                    details: ".end .details",
-                    detailsAttribute: "data-geo"
+                    details: ".end .details"
                 })
                     .bind("geocode:result", function (event, result) {
-                        var lat = result.geometry.location.J;
-                        var lng = result.geometry.location.M;
-                        var formatted_address = result.formatted_address;
+                        var lat = angular.element('.end .details input.lat').val();
+                        var lng = angular.element('.end .details input.lng').val();
+                        var formatted_address = angular.element('.end .details input.formatted_address').val();
 
                         if (lat && lng) {
                             $scope.updateEndLocation(lat, lng, formatted_address);
@@ -666,7 +828,8 @@ angular.module('app')
                         $scope.priceEstimator.start_longitude = lng;
                         $scope.priceEstimator.start_formatted_address = formatted_address;
 
-                        $rootScope.map.addMarker(lat, lng, formatted_address);
+                        $rootScope.map._addMarker(lat, lng, formatted_address);
+                        $rootScope.map._setCenter(lat, lng);
                     }
                 };
 
@@ -683,13 +846,14 @@ angular.module('app')
                         $scope.priceEstimator.end_longitude = lng;
                         $scope.priceEstimator.end_formatted_address = formatted_address;
 
-                        $rootScope.map.addMarker(lat, lng, formatted_address);
+                        $rootScope.map._addMarker(lat, lng, formatted_address);
                     }
                 };
 
                 $scope.drawRoute = function () {
                     if ($scope.priceEstimator.start_latitude && $scope.priceEstimator.end_latitude) {
-                        $rootScope.map.drawRoute([$scope.priceEstimator.start_latitude, $scope.priceEstimator.start_longitude], [$scope.priceEstimator.end_latitude, $scope.priceEstimator.end_longitude])
+                        $rootScope.map._setCenter($scope.priceEstimator.start_latitude, $scope.priceEstimator.start_longitude);
+                        $rootScope.map._drawRoute([$scope.priceEstimator.start_latitude, $scope.priceEstimator.start_longitude], [$scope.priceEstimator.end_latitude, $scope.priceEstimator.end_longitude])
                     }
                 };
 
@@ -699,7 +863,7 @@ angular.module('app')
                             if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                 return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
                             } else {
-                                return $rootScope.map.getMyPosition()
+                                return $rootScope.map._getMyPosition($rootScope.map)
                                     .then(function () {
                                         if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                             return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
@@ -730,7 +894,7 @@ angular.module('app')
                             if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                 return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
                             } else {
-                                return $rootScope.map.getMyPosition()
+                                return $rootScope.map._getMyPosition($rootScope.map)
                                     .then(function () {
                                         if ($rootScope.main.userLocation.latitude && $rootScope.main.userLocation.longitude) {
                                             return [$rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude]
@@ -757,105 +921,112 @@ angular.module('app')
             }
         };
     }])
-    .directive('mainMapScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('priceEstimatorDirective', ['$rootScope', '$http', function ($rootScope, $http) {
         return {
             restrict: 'AE',
             link: function ($scope) {
 
-                /*
-                 * marker counter to switch btn markers
-                 * */
-                var marker_counter = 0;
-
-                function resizeMap() {
-                    angular.element("body.homepage #map").css({
-                        "height": angular.element(window).height() - angular.element("homepage main-navigation").height(),
-                        "margin": 0,
-                        "padding-left": 0
-                    });
-                }
-
-                resizeMap();
-
-                angular.element(window).resize(function () {
-                    resizeMap();
-                });
-
-                var map = new GMaps({
-                    div: '#map',
-                    lat: -12.043333,
-                    lng: -77.028333
-                });
-
-                $rootScope.map = {
-                    getMyPosition: function () {
-                        /*
-                         * if userLocation is found, the universalController object is updated with the user location
-                         * */
-                        return new Promise(function (resolve, reject) {
-                            GMaps.geolocate({
-                                success: function (position) {
-                                    $rootScope.main.updateUserLocation(position.coords.latitude, position.coords.longitude);
-                                    map.setCenter(position.coords.latitude, position.coords.longitude);
-
-                                    /*
-                                     * set 2 default markers
-                                     * */
-
-                                    map.addMarker({
-                                        lat: position.coords.latitude,
-                                        lng: position.coords.longitude,
-                                        title: ''
-                                    });
-
-                                    map.addMarker({
-                                        lat: position.coords.latitude - 0.004,
-                                        lng: position.coords.longitude + 0.004,
-                                        title: ''
-                                    });
-                                },
-                                error: function (error) {
-                                    alert('Geolocation failed: ' + error.message);
-                                },
-                                not_supported: function () {
-                                    alert("Your browser does not support geolocation");
-                                },
-                                always: function () {
-                                    resolve(true);
-                                }
-                            });
-                        })
-                    },
-
-                    addMarker: function (lat, lng, title) {
-                        map.addMarker({
-                            lat: lat,
-                            lng: lng,
-                            title: title || ''
-                        });
-                    },
-
-                    drawRoute: function (originArr, destArray) {
-                        if (!originArr || !destArray) return;
-                        if (originArr.length < 2 || destArray.length < 2) return;
-                        map.cleanRoute();
-                        map.removeMarkers();
-
-                        $rootScope.map.addMarker(originArr[0], originArr[1]);
-                        $rootScope.map.addMarker(destArray[0], destArray[1]);
-
-                        map.drawRoute({
-                            origin: originArr,
-                            destination: destArray,
-                            travelMode: 'driving',
-                            strokeColor: '#09091A',
-                            strokeOpacity: 0.6,
-                            strokeWeight: 6
-                        });
-                    }
-                };
-
-                $rootScope.map.getMyPosition();
             }
         };
+    }])
+    .controller('mainMapController', ['$rootScope', '$http', '$scope', function ($rootScope, $http, $scope) {
+
+        function resizeMap() {
+            angular.element("body.homepage #map").css({
+                "height": angular.element(window).height() - angular.element("homepage main-navigation").height(),
+                "margin": 0,
+                "padding-left": 0
+            });
+        }
+
+        resizeMap();
+
+        angular.element(window).resize(function () {
+            resizeMap();
+        });
+
+        GMaps.prototype._getMyPosition = function (map) {
+            /*
+             * if userLocation is found, the universalController object is updated with the user location
+             * */
+            return new Promise(function (resolve, reject) {
+                GMaps.geolocate({
+                    success: function (position) {
+                        $rootScope.main.updateUserLocation(position.coords.latitude, position.coords.longitude);
+                        map._setCenter(position.coords.latitude, position.coords.longitude);
+
+                        /*
+                         * set 2 default markers
+                         * */
+
+                        userMarker = map._addMarker({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                            title: ''
+                        });
+                    },
+                    error: function (error) {
+                        alert('Geolocation failed: ' + error.message);
+                    },
+                    not_supported: function () {
+                        alert("Your browser does not support geolocation");
+                    },
+                    always: function () {
+                        resolve(true);
+                    }
+                });
+            })
+        };
+
+        GMaps.prototype._addMarker = function (lat, lng, title) {
+            return this.addMarker({
+                lat: lat,
+                lng: lng,
+                title: title || ''
+            })
+        };
+
+        GMaps.prototype._removeMarker = function (marker) {
+            marker.setMap(null);
+        };
+
+        GMaps.prototype._setCenter = function (lat, lng) {
+            this.setCenter(lat, lng);
+        };
+
+        GMaps.prototype._drawRoute = function (originArr, destArr) {
+            if (!originArr || !destArr) return;
+            if (originArr.length < 2 || destArr.length < 2) return;
+            this.cleanRoute();
+            this.removeMarkers();
+
+            this.addMarker({lat: originArr[0], lng: originArr[1]});
+            this.addMarker({lat: destArr[0], lng: destArr[1]});
+
+            this.drawRoute({
+                origin: originArr,
+                destination: destArr,
+                travelMode: 'driving',
+                strokeColor: '#09091A',
+                strokeOpacity: 0.6,
+                strokeWeight: 6
+            });
+        };
+
+        $rootScope.map = new GMaps({
+            div: '#map',
+            lat: -12.043333,
+            lng: -77.028333
+        });
+
+        var userMarker;
+        $scope.$watch(function () {
+            return $rootScope.main.userLocation.latitude;
+        }, function () {
+            if (userMarker) {
+                userMarker.setPosition(new google.maps.LatLng($rootScope.main.userLocation.latitude, $rootScope.main.userLocation.longitude));
+            }
+        });
+
+        $rootScope.map._getMyPosition($rootScope.map);
     }]);

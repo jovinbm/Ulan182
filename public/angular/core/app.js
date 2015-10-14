@@ -15,8 +15,7 @@ var app = angular.module('app', [
     'ngDialog',
     'LocalStorageModule',
     'angular-loading-bar',
-    'ngAnimate',
-    'uiGmapgoogle-maps'
+    'ngAnimate'
 ]);
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -50,31 +49,59 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         })
         .state('home.welcome', {
             url: "/welcome",
-            templateUrl: "_welcome.html"
+            views: {
+                'controllerCol': {
+                    templateUrl: "_welcome.html"
+                },
+                'map': {
+                    templateUrl: "_main_map.html"
+                }
+            }
         })
         .state('home.requestUber', {
             url: "/requestUber",
-            templateUrl: "_request_uber.html"
+            views: {
+                'controllerCol': {
+                    templateUrl: "_request_uber.html"
+                },
+                'map': {
+                    templateUrl: "_main_map.html"
+                }
+            }
         })
         .state('home.rideStatus', {
             url: "/rideStatus",
-            templateUrl: "_ride_status.html"
+            views: {
+                'controllerCol': {
+                    templateUrl: "_ride_status.html"
+                },
+                'map': {
+                    templateUrl: "_main_map.html"
+                }
+            }
         })
         .state('home.priceEstimator', {
             url: "/estimator",
-            templateUrl: "_price_estimates.html"
+            views: {
+                'controllerCol': {
+                    templateUrl: "_price_estimates.html"
+                },
+                'map': {
+                    templateUrl: "_main_map.html"
+                }
+            }
         })
         .state('home.connectToUber', {
             url: "/connect",
-            templateUrl: "_connect_to_uber.html"
+            views: {
+                'controllerCol': {
+                    templateUrl: "_connect_to_uber.html"
+                },
+                'map': {
+                    templateUrl: "_main_map.html"
+                }
+            }
         });
-});
-
-app.config(function(uiGmapGoogleMapApiProvider) {
-    uiGmapGoogleMapApiProvider.configure({
-        v: '3.20', //defaults to latest 3.X anyhow
-        libraries: 'weather,geometry,visualization'
-    });
 });
 
 app.run(function ($rootScope, $state, $stateParams) {

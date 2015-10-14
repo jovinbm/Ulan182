@@ -12,6 +12,66 @@ angular.module('app')
 
             $rootScope.main = {
 
+                /*
+                 * uberRideStatus will carry the request status of uber after the user
+                 * requests an uber
+                 * */
+                uberRideStatus: null,
+
+                uberRideRequestStatuses: {
+                    processing: "Processing",
+                    no_drivers_available: 'No drivers available',
+                    accepted: 'Accepted',
+                    arriving: 'Arriving',
+                    in_progress: 'In progress',
+                    driver_canceled: 'Driver canceled',
+                    rider_canceled: 'Rider canceled',
+                    completed: 'Completed'
+                },
+
+                getRideStatus: function () {
+
+                    return Promise.resolve()
+                        .then(function () {
+                            console.log('checking ride status');
+                            return $http.post('/api/getRideStatus', {})
+                                .then(function (resp) {
+                                    resp = resp.data;
+                                    $rootScope.main.responseStatusHandler(resp);
+                                    return resp;
+                                })
+                                .catch(function (err) {
+                                    err = err.data;
+                                    $rootScope.main.responseStatusHandler(err);
+                                    throw err;
+                                })
+                        })
+                        .then(function (resp) {
+                            $rootScope.main.uberRideStatus = resp.obj;
+                            /*
+                             * put a rating array for the ng-repeat stars
+                             * */
+                            if (!$rootScope.main.uberRideStatus) return true;
+
+                            if ($rootScope.main.uberRideStatus.driver) {
+                                $rootScope.main.uberRideStatus.driver.ratingArray = new Array(Math.ceil($rootScope.main.uberRideStatus.driver.rating));
+                            }
+                            console.log(JSON.stringify($rootScope.main.uberRideStatus));
+                            return true;
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                            return true;
+                        })
+                        .then(function () {
+                            return Promise.delay(10000) //delay 10 seconds
+                                .then(function () {
+                                    return $rootScope.main.getRideStatus();
+                                });
+
+                        })
+                },
+
                 classes: {
                     body: 'index'
                 },
@@ -294,9 +354,34 @@ angular.module('app')
 
             };
 
+            /*
+             * function checks if the user has requested an uber, if so, it forces the user to remain in the requestUber state
+             * */
+            $scope.checkUberRide = function () {
+                if ($rootScope.main.uberRideStatus) {
+                    $rootScope.main.changeState('home.rideStatus', null, ['home.rideStatus']);
+                }
+            };
+
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.main.getUserData();
-            })
+            });
+
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+                $scope.checkUberRide();
+            });
+
+
+            $scope.$watch(function () {
+                return $rootScope.main.uberRideStatus
+            }, function () {
+                $scope.checkUberRide();
+            });
+
+            /*
+             * begin polling ride statuses
+             * */
+            $rootScope.main.getRideStatus();
 
 
         }

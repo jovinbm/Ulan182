@@ -36,12 +36,18 @@
                                    value="&#xf124;" />
 
                             <div class="details clearfix">
-                                <span class="hidden lat"
-                                      data-geo="lat"></span>
-                                <span class="hidden lng"
-                                      data-geo="lng"></span>
-                                <span class="hidden formatted_address"
-                                      data-geo="formatted_address"></span>
+                                <input name="lat"
+                                       type=hidden
+                                       value=""
+                                       class="lat">
+                                <input name="lng"
+                                       type=hidden
+                                       value=""
+                                       class="lng">
+                                <input name="formatted_address"
+                                       type=hidden
+                                       value=""
+                                       class="formatted_address">
                             </div>
 
                         </div>
@@ -49,7 +55,7 @@
 
                         <div class="end clearfix">
 
-                            <label for="start">Destination</label>
+                            <label for="end">Destination</label>
 
                             <input type="text"
                                    class="geoField"
@@ -63,15 +69,26 @@
                                    value="&#xf124;" />
 
                             <div class="details clearfix">
-                                <span class="hidden lat"
-                                      data-geo="lat"></span>
-                                <span class="hidden lng"
-                                      data-geo="lng"></span>
-                                <span class="hidden formatted_address"
-                                      data-geo="formatted_address"></span>
+                                <input name="lat"
+                                       type=hidden
+                                       value=""
+                                       class="lat">
+                                <input name="lng"
+                                       type=hidden
+                                       value=""
+                                       class="lng">
+                                <input name="formatted_address"
+                                       type=hidden
+                                       value=""
+                                       class="formatted_address">
                             </div>
 
                         </div>
+
+                        <div location-search-box
+                             location-model="testBoxModel"
+                             location-update="testBoxModel.update(lat.lng, formatted_address)"></div>
+
 
                         <p>Type</p>
 
@@ -102,7 +119,7 @@
                                     <tr>
                                         <td class="field">Surge Multiplier</td>
                                         <td class="val">
-                                            X{[{requestUberMain.selectedProductPriceEstimate.surge_multiplier}]}
+                                            x{[{requestUberMain.selectedProductPriceEstimate.surge_multiplier}]}
                                         </td>
                                     </tr>
                                     <tr>

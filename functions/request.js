@@ -97,6 +97,45 @@ module.exports = {
             });
     },
 
+    put: function (options) {
+        /*
+         * options should be of the following format
+         * {
+         * url:'http://service.com/upload',
+         * form: {key:'value'} -> if data is form
+         * json: {key:'value'} -> if data is obj**
+         * }*/
+
+        /*if headers not present in options, request sets headers to application/x-www-form-urlencoded*/
+
+        var module = 'put';
+        receivedLogger(module);
+
+        return Promise.resolve()
+            .then(function () {
+                if (!options.url) {
+                    throw {
+                        msg: 'options.url = ' + options.url,
+                        code: 500
+                    };
+                } else {
+                    return true;
+                }
+            })
+            .then(function () {
+                return request.putAsync(options)
+                    .catch(function (err) {
+                        throw {
+                            err: new Error(errorLogger(module, err)),
+                            code: 500
+                        };
+                    })
+                    .spread(function (response, body) {
+                        return [body, response.statusCode];
+                    });
+            });
+    },
+
     uberGet: function (options, accessToken) {
 
         //the accessToken is for the user, no need to provide server token, as it is used by default
@@ -169,6 +208,40 @@ module.exports = {
             })
             .then(function (params) {
                 return rq.functions().request.post(params);
+            })
+            .then(function (array) {
+                var body = array[0];
+                var statusCode = array[1];
+
+                return [body, statusCode];
+            })
+
+    },
+
+    uberPut: function (options, accessToken) {
+
+        return Promise.resolve()
+            .then(function () {
+                return rq.catchEmptyArgs([options.params, options.url, accessToken]);
+            })
+            .then(function () {
+
+                var baseURL = 'https://sandbox-api.uber.com/';
+
+                var url = baseURL + 'v1' + '/' + options.url + '?';
+
+                return {
+                    url: url,
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: options.params
+                };
+            })
+            .then(function (params) {
+                return rq.functions().request.put(params);
             })
             .then(function (array) {
                 var body = array[0];
