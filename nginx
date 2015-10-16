@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name www.pluschat.com pluschat.com;
+    server_name www.pluschat.net pluschat.net;
     location / {
         proxy_pass http://localhost:7000;
     }
