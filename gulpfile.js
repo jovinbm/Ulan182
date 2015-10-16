@@ -102,6 +102,7 @@ gulp.task('concatenateUberCoreDev', function () {
         'bower_components/angular-toastr/dist/angular-toastr.tpls.js',
         'bower_components/ngDialog/js/ngDialog.js',
         'bower_components/ng-table/dist/ng-table.js',
+        'bower_components/restangular/dist/restangular.js',
         'bower_components/angular-local-storage/dist/angular-local-storage.js',
         'bower_components/angular-loading-bar/src/loading-bar.js',
         'bower_components/matchheight/jquery.matchHeight.js',
