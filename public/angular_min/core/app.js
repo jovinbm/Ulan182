@@ -135,7 +135,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("/api/getUserData", {})
+                            return $http.post("http://www.pluschat.net/api/getUserData", {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);
@@ -261,7 +261,7 @@ angular.module('app')
 
                         return Promise.resolve()
                             .then(function () {
-                                return $http.post('/api/getUberAuthorizationUrl', {})
+                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
                                     .then(function (resp) {
                                         resp = resp.data;
                                         $rootScope.main.responseStatusHandler(resp);
@@ -318,7 +318,7 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('/api/createAccount', details)
+                    return $http.post('http://www.pluschat.net/api/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -344,7 +344,7 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('api/logoutClient', {}).then(function (resp) {
+                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
                                 $rootScope.main.responseStatusHandler(resp);
@@ -394,7 +394,7 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/localUserLogin', loginData);
+                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
@@ -408,17 +408,6 @@ angular.module('app')
                             return true;
                         });
                 }
-            }
-        };
-    }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
             }
         };
     }]);
@@ -483,7 +472,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getProducts', {
+                    return $http.post('http://www.pluschat.net/api/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -575,7 +564,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getPriceEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -663,7 +652,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getTimeEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -772,7 +761,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('/api/getRideStatus', {})
+                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -1413,7 +1402,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('/api/requestUber', {
+                                    return $http.post('http://www.pluschat.net/api/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,
@@ -1700,7 +1689,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'accepted'
                                 })
                                     .then(function (resp) {
@@ -1718,7 +1707,7 @@ angular.module('app')
                                 return Promise.delay(30000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'arriving'
                                 })
                                     .then(function (resp) {
@@ -1736,7 +1725,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'in_progress'
                                 })
                                     .then(function (resp) {
@@ -1754,7 +1743,7 @@ angular.module('app')
                                 return Promise.delay(45000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'completed'
                                 })
                                     .then(function (resp) {
@@ -1862,6 +1851,17 @@ angular.module('app')
                     checkStatus();
                 }, 3000);
 
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);

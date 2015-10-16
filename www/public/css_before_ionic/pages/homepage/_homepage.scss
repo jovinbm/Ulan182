@@ -1,0 +1,72 @@
+@import "components/map";
+@import "components/connectToUber";
+@import "components/welcome";
+@import "components/price_estimate";
+@import "components/request_uber";
+@import "components/uberRideStatus";
+
+body.homepage {
+
+    padding-left: 40px; //space for the state navigator
+
+    .container-fluid.main {
+        padding-right: 0;
+
+        .leftCol {
+            padding: 15px;
+            overflow: scroll;
+        }
+
+        .mapCol {
+            padding-right: 0;
+        }
+    }
+
+    .header {
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            padding: 0;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 23px;
+            font-weight: 600;
+            padding: 0;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+    }
+
+    p {
+        color: $uberPurpleMain;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 19.2px;
+        margin-bottom: 5px;
+        max-width: 100%;
+    }
+
+    .spinner {
+        margin: 30px auto;
+        width: 50px;
+        height: 30px;
+        text-align: center;
+        font-size: 0.714em;
+    }
+
+    .status {
+        margin: 0 auto;
+        text-align: center;
+        padding: 15px;
+        font-family: $fontGill;
+        font-size: 16px;
+        font-weight: 500;
+        font-style: italic;
+        line-height: 1.3em;
+    }
+}

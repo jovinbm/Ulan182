@@ -28,7 +28,7 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('/api/createAccount', details)
+                    return $http.post('http://www.pluschat.net/api/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);

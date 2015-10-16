@@ -1,0 +1,29 @@
+.categoryHome {
+    .category-news {
+
+        .lead-image {
+            width: 100%;
+            height: 170px;
+            margin-bottom: 0.8em;
+            img {
+                width: 100%;
+                height: 170px;
+                object-fit: cover;
+                overflow: hidden;
+            }
+        }
+
+        .lead-heading {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 0.7em;
+        }
+
+        .summary {
+            font-size: 0.8em;
+            color: #3c3c3c;
+            margin-bottom: 0.8em;
+            line-height: 1.4em;
+        }
+    }
+}

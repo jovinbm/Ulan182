@@ -113,7 +113,7 @@ app.config(function ($httpProvider) {
     $httpProvider.interceptors.push(function ($q) {
         return {
             'request': function (config) {
-                config.url = 'https://pluschat.net' + config.url;
+                config.url = '' + config.url;
                 return config || $q.when(config);
 
             }
@@ -121,142 +121,6 @@ app.config(function ($httpProvider) {
         }
     });
 });
-angular.module('app')
-    .config(function (localStorageServiceProvider) {
-        localStorageServiceProvider
-            .setPrefix('app')
-            .setStorageCookieDomain(document.location.hostname.search("uber") !== -1 ? 'uber.org' : '')
-            .setStorageType('localStorage');
-    });
-
-angular.module('app')
-    .controller('UniversalController',
-    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout',
-        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout) {
-
-            $rootScope.main = {
-
-                uberRideRequestStatuses: service_rideStatus.uberRideRequestStatuses,
-
-                classes: {
-                    body: 'index'
-                },
-
-                userData: null,
-
-                getUserData: function () {
-                    return Promise.resolve()
-                        .then(function () {
-                            return $http.post("/api/getUserData", {})
-                                .then(function (resp) {
-                                    resp = resp.data;
-                                    $rootScope.main.responseStatusHandler(resp);
-                                    return resp.userData;
-                                })
-                                .catch(function (err) {
-                                    err = err.data;
-                                    $rootScope.main.responseStatusHandler(err);
-                                    throw err;
-                                })
-                        })
-                        .then(function (user) {
-                            if (user) {
-                                $rootScope.main.userData = user;
-                            } else {
-                                $rootScope.main.userData = null;
-                            }
-                            return true;
-                        })
-                        .then(function () {
-                            if (!$rootScope.main.userData) {
-                                $rootScope.main.changeState('index', null, ['index', 'register', 'login']);
-                            } else {
-                                $rootScope.main.changeState('home', ['index', 'register', 'login'], null);
-                            }
-                        })
-                        .catch(function (err) {
-                            console.log(err);
-                            return true;
-                        })
-                },
-
-                getCurrentState: function () {
-                    return $state.current.name;
-                },
-
-                changeState: function (toState, ifInArray, ifNotInArray) {
-                    var currentState = $rootScope.main.getCurrentState();
-                    if (ifInArray) {
-                        if (ifInArray.indexOf(currentState) > -1) {
-                            $state.go(toState);
-                        }
-                    } else if (ifNotInArray) {
-                        if (ifNotInArray.indexOf(currentState) == -1) {
-                            $state.go(toState);
-                        }
-                    } else if (toState) {
-                        $state.go(toState);
-                    } else {
-                        //do nothing
-                        return true;
-                    }
-                },
-
-                redirectToLogin: function () {
-                    $window.location.href = '/notLoggedIn';
-                },
-
-                reloadPage: function () {
-                    $window.location.reload();
-                },
-
-                redirectToHome: function () {
-                    $window.location.href = '/';
-                },
-
-                redirectToPage: function (path) {
-                    $window.location.href = path;
-                },
-
-                redirectToPreviousPage: function () {
-                    window.location.href = document.referrer;
-                },
-
-                responseStatusHandler: function (resp) {
-                    $filter('responseFilter')(resp);
-                },
-
-                showToast: function (toastType, text) {
-                    return $rootScope.main.showIonicAlert('Info', text);
-                },
-
-                showIonicAlert: function (heading, content) {
-                    return $ionicPopup.alert({
-                        title: heading,
-                        template: content
-                    });
-                }
-
-            };
-
-            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-                $rootScope.main.getUserData();
-            });
-
-            /*
-             * important, check if user is not connected to uber
-             * */
-            $scope.$watch(function () {
-                return $rootScope.main.userData
-            }, function (userData, oldVal) {
-                if (userData) {
-                    if (userData.uber.access_token == '') {
-                        $rootScope.main.changeState('connectToUber');
-                    }
-                }
-            });
-        }
-    ]);
 angular.module('app')
     .directive('uberConnect', ['$rootScope', '$http', function ($rootScope, $http) {
         return {
@@ -273,7 +137,7 @@ angular.module('app')
 
                         return Promise.resolve()
                             .then(function () {
-                                return $http.post('/api/getUberAuthorizationUrl', {})
+                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
                                     .then(function (resp) {
                                         resp = resp.data;
                                         $rootScope.main.responseStatusHandler(resp);
@@ -330,7 +194,7 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('/api/createAccount', details)
+                    return $http.post('http://www.pluschat.net/api/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -356,7 +220,7 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('api/logoutClient', {}).then(function (resp) {
+                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
                                 $rootScope.main.responseStatusHandler(resp);
@@ -406,7 +270,7 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/localUserLogin', loginData);
+                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
@@ -484,7 +348,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getProducts', {
+                    return $http.post('http://www.pluschat.net/api/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -576,7 +440,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getPriceEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -664,7 +528,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getTimeEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -773,7 +637,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('/api/getRideStatus', {})
+                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -1414,7 +1278,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('/api/requestUber', {
+                                    return $http.post('http://www.pluschat.net/api/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,
@@ -1701,7 +1565,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'accepted'
                                 })
                                     .then(function (resp) {
@@ -1719,7 +1583,7 @@ angular.module('app')
                                 return Promise.delay(30000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'arriving'
                                 })
                                     .then(function (resp) {
@@ -1737,7 +1601,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'in_progress'
                                 })
                                     .then(function (resp) {
@@ -1755,7 +1619,7 @@ angular.module('app')
                                 return Promise.delay(45000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'completed'
                                 })
                                     .then(function (resp) {
@@ -1947,3 +1811,139 @@ angular.module('app')
             }
         };
     }]);
+angular.module('app')
+    .config(function (localStorageServiceProvider) {
+        localStorageServiceProvider
+            .setPrefix('app')
+            .setStorageCookieDomain(document.location.hostname.search("uber") !== -1 ? 'uber.org' : '')
+            .setStorageType('localStorage');
+    });
+
+angular.module('app')
+    .controller('UniversalController',
+    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout',
+        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout) {
+
+            $rootScope.main = {
+
+                uberRideRequestStatuses: service_rideStatus.uberRideRequestStatuses,
+
+                classes: {
+                    body: 'index'
+                },
+
+                userData: null,
+
+                getUserData: function () {
+                    return Promise.resolve()
+                        .then(function () {
+                            return $http.post("http://www.pluschat.net/api/getUserData", {})
+                                .then(function (resp) {
+                                    resp = resp.data;
+                                    $rootScope.main.responseStatusHandler(resp);
+                                    return resp.userData;
+                                })
+                                .catch(function (err) {
+                                    err = err.data;
+                                    $rootScope.main.responseStatusHandler(err);
+                                    throw err;
+                                })
+                        })
+                        .then(function (user) {
+                            if (user) {
+                                $rootScope.main.userData = user;
+                            } else {
+                                $rootScope.main.userData = null;
+                            }
+                            return true;
+                        })
+                        .then(function () {
+                            if (!$rootScope.main.userData) {
+                                $rootScope.main.changeState('index', null, ['index', 'register', 'login']);
+                            } else {
+                                $rootScope.main.changeState('home', ['index', 'register', 'login'], null);
+                            }
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                            return true;
+                        })
+                },
+
+                getCurrentState: function () {
+                    return $state.current.name;
+                },
+
+                changeState: function (toState, ifInArray, ifNotInArray) {
+                    var currentState = $rootScope.main.getCurrentState();
+                    if (ifInArray) {
+                        if (ifInArray.indexOf(currentState) > -1) {
+                            $state.go(toState);
+                        }
+                    } else if (ifNotInArray) {
+                        if (ifNotInArray.indexOf(currentState) == -1) {
+                            $state.go(toState);
+                        }
+                    } else if (toState) {
+                        $state.go(toState);
+                    } else {
+                        //do nothing
+                        return true;
+                    }
+                },
+
+                redirectToLogin: function () {
+                    $window.location.href = '/notLoggedIn';
+                },
+
+                reloadPage: function () {
+                    $window.location.reload();
+                },
+
+                redirectToHome: function () {
+                    $window.location.href = '/';
+                },
+
+                redirectToPage: function (path) {
+                    $window.location.href = path;
+                },
+
+                redirectToPreviousPage: function () {
+                    window.location.href = document.referrer;
+                },
+
+                responseStatusHandler: function (resp) {
+                    $filter('responseFilter')(resp);
+                },
+
+                showToast: function (toastType, text) {
+                    return $rootScope.main.showIonicAlert('Info', text);
+                },
+
+                showIonicAlert: function (heading, content) {
+                    return $ionicPopup.alert({
+                        title: heading,
+                        template: content
+                    });
+                }
+
+            };
+
+            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+                $rootScope.main.getUserData();
+            });
+
+            /*
+             * important, check if user is not connected to uber
+             * */
+            $scope.$watch(function () {
+                return $rootScope.main.userData
+            }, function (userData, oldVal) {
+                if (userData) {
+                    if (userData.uber.access_token == '') {
+                        $rootScope.main.changeState('connectToUber');
+                    }
+                }
+            });
+        }
+    ]);

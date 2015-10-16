@@ -59,7 +59,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getProducts', {
+                    return $http.post('http://www.pluschat.net/api/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -151,7 +151,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getPriceEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -239,7 +239,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getTimeEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -348,7 +348,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('/api/getRideStatus', {})
+                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
