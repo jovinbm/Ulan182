@@ -53,6 +53,18 @@ gulp.task('minifyUberAppJS', function () {
         .pipe(gulp.dest('public/angular_min/core'));
 });
 
+gulp.task('minifyIonAppJS', function () {
+    return gulp.src(['public/angular/core/app.js', 'public/ionic_config/ionicConfig.js', 'public/angular/core/**/*.js'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('ion.js'))
+        .pipe(gulp.dest('public/angular_min/core'))
+        .pipe(rename('ion.min.js'))
+        .pipe(ngAnnotate())
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('public/angular_min/core'));
+});
+
 gulp.task('concatenateUberCoreDev', function () {
     return gulp.src([
         'bower_components/jquery/dist/jquery.js',
@@ -119,16 +131,17 @@ gulp.task('concatenateUberCoreDev', function () {
 });
 
 gulp.task('compile_handlebars', function () {
+    var helpers = require('./rq.js').app().locals;
     var templateData = {},
         options = {
             ignorePartials: false,
-            helpers: require('./rq.js').app().locals,
+            helpers: helpers,
             batch: [
                 'views/'
             ]
         };
 
-    return gulp.src('views/all/index.hbs')
+    return gulp.src('views/all/index_ionic.hbs')
         .pipe(handlebars(templateData, options))
         .pipe(rename('index.html'))
         .pipe(gulp.dest('www'));
@@ -170,7 +183,8 @@ gulp.task('watch', function () {
     gulp.watch('bower_components/bootstrap-sass/**/*.scss', ['minifyAllScss']);
     gulp.watch('public/css/**/*.scss', ['minifyAllScss']);
     gulp.watch('public/imgs/**/*', ['minifyAllImages']);
-    gulp.watch('public/angular/core/**/*.js', ['minifyUberAppJS']);
+    gulp.watch('public/angular/core/**/*.js', ['minifyUberAppJS', 'minifyIonAppJS']);
+    gulp.watch('public/ionic_config/**/*.js', ['minifyIonAppJS']);
 });
 
 // Default Task
@@ -180,5 +194,6 @@ gulp.task('default', [
     'minifyAllImages',
     'concatenateUberCoreDev',
     'minifyUberAppJS',
+    'minifyIonAppJS',
     'watch'
 ]);
