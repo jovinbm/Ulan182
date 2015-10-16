@@ -65,33 +65,6 @@ module.exports = function (app) {
         }
     };
 
-    app.locals.getImageUrlFromKey = function (key) {
-        //the key must have no initial slash
-        var domain = 'http://www.pluschat.net/';
-        return domain + key;
-    };
-
-    app.locals.getResizedImageUrlFromKey = function (key, height) {
-        //the key must have no initial slash
-        var domain = 'http://www.pluschat.net/';
-        var keyWithoutExt = key.substr(0, key.lastIndexOf('.'));
-        var ext = key.substr(key.lastIndexOf('.') + 1);
-
-        switch (height) {
-            case 80:
-                return domain + keyWithoutExt + '80' + '.' + ext;
-                break;
-            case 200:
-                return domain + keyWithoutExt + '200' + '.' + ext;
-                break;
-            case 400:
-                return domain + keyWithoutExt + '400' + '.' + ext;
-                break;
-            default:
-                return domain + key;
-        }
-    };
-
     app.locals.getResizedProfilePictureKey = function (key, height) {
         //the key must have no initial slash
         var domain = 'http://www.pluschat.net/';

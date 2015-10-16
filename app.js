@@ -65,29 +65,22 @@ var endPoints = rq.endPoints();
 endPoints.static(app, rq);  //static endpoints here, before parsing cookies
 
 app.use(cors());
-app.use(compression());
-app.use(logger('dev'));
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(methodOverride());
-app.use(bodyParser.json());
-app.use(session({
-    name: 'uber.id',
-    secret: 'hjkjfisudh2340',
-    cookie: {
-        path: '/',
-        httpOnly: true,
-        secure: false,
-        maxAge: 3600 * 24 * 14 * 1000  //14 days
-    },
-    saveUninitialized: true,
-    resave: false,
-    store: new MongoStore({mongooseConnection: mongoose.connection})
-}));
+
+/*
+ * authentications
+ * */
+app.set('tokenSecret', process.env.uberTokenSeed);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(rq.functions().middleware.authenticateToken);
+/*
+ * end authenticate
+ * */
 
-//configure passport
-require('./passport/passport.js')(app, passport, LocalStrategy);
+app.use(compression());
+app.use(logger('dev'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 server.listen(port, function () {
     basic.eventLogger("Server listening at port " + port);
@@ -105,6 +98,8 @@ module.exports = {
     }
 };
 
+//configure passport
+require('./passport/passport.js')(app, passport, LocalStrategy);
 endPoints.core(app, rq);
 endPoints.uber(app, rq);
 endPoints.notFound(app, rq);

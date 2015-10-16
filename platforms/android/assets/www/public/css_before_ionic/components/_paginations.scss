@@ -1,0 +1,7 @@
+.pagination {
+    /* push down after to allow recommended popup to show up
+    on mobile*/
+    @media (max-width: $screen-xs-max) {
+        margin-bottom: 100px;
+    }
+}

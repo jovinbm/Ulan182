@@ -1,0 +1,189 @@
+//bower
+@import "../../../../bower_components/font-awesome/css/font-awesome.min.css";
+@import "../../../../bower_components/object-fit/dist/polyfill.object-fit.css";
+//end bower
+@import "../../core_importer";
+@import "../../components/body";
+@import "../../components/advertisements";
+@import "../../components/container";
+@import "../../components/news_components/topic";
+@import "../../components/navigation/top_nav_desktop";
+@import "../../components/navigation/top_nav_mobile";
+@import "../../components/navigation/mobileSlidingNav";
+@import "../../components/navigation/mainFooter";
+@import "../../components/angular";
+@import "../../components/classes";
+@import "../../components/img";
+@import "../../components/headings";
+@import "../../components/links";
+@import "../../components/paginations";
+//
+@import "components/more_news";
+@import "components/top_stories";
+@import "components/trending";
+
+body.user_public_profile {
+
+    .profile {
+
+        margin-bottom: 25px;
+
+        .col1 {
+            float: left;
+            width: 120px;
+
+            .profile-picture {
+                width: 50%;
+                padding-top: 20px;
+                padding-bottom: 20px;
+                float: left;
+
+                div.image {
+                    margin: 0 auto;
+                    width: 100px;
+                    height: 100px;
+
+                    img {
+                        border: 1px solid $crimson-main;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
+
+        .col2 {
+
+            .details {
+                padding-top: 20px; //to align with the profile picture
+
+                a:after {
+                    content: "";
+                }
+
+                .name {
+                    display: block;
+                    font-size: 30px;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                }
+
+                .fa {
+                    color: $cgrey;
+                    font-size: 0.7em;
+                }
+
+                .fa.right {
+                    margin-right: 15px;
+                }
+
+                .fa.left {
+                    margin-left: 14px;
+                }
+
+                .jobTitle {
+                    display: inline-block;
+                    margin: 1em 0 1em 0;
+                    padding: 1em 3em;
+                    //border: 3px solid $crimson-red;
+                    border: 3px solid $lightGrey;
+                }
+            }
+        }
+
+    }
+
+    .main-column {
+
+        .postsByHeading {
+            display: inline-block;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            padding-top: 0;
+            padding-bottom: 0.5em;
+            padding-left: 0;
+            margin-bottom: 0.8em;
+            font-weight: 500;
+            letter-spacing: 2px;
+            font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+            color: black;
+            border-bottom: 3px solid $cyellow;
+
+            @media (max-width: $screen-xs-max) {
+                font-size: 12px;
+            }
+        }
+
+        .lead-image {
+            width: 100%;
+            height: 170px;
+            margin-bottom: 0.8em;
+            img {
+                width: 100%;
+                height: 170px;
+                object-fit: cover;
+                overflow: hidden;
+            }
+        }
+
+        .category-name {
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .lead-heading {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 0.7em;
+        }
+
+        .summary {
+            font-size: 0.8em;
+            color: #3c3c3c;
+            margin-bottom: 0.8em;
+            line-height: 1.4em;
+        }
+
+        .date {
+            font-size: 0.8em;
+            margin-bottom: 1em;
+
+            @media (max-width: $screen-xs-max) {
+                font-size: 10px;
+                letter-spacing: 0;
+            }
+        }
+
+        .pagination {
+            margin: 30px auto;
+        }
+    }
+
+    .sidebar {
+        .section {
+            margin-bottom: 1.5em;
+        }
+
+        .topic {
+            text-transform: uppercase;
+            font-size: 0.9em;
+            padding: 0.8em;
+            padding-top: 0;
+            padding-left: 0;
+            margin-bottom: 1em;
+            font-weight: 500;
+            letter-spacing: 2px;
+            font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+            color: black;
+            border-bottom: 3px solid $cyellow;
+
+            @media (max-width: $screen-xs-max) {
+                font-size: 12px;
+                letter-spacing: 0;
+            }
+        }
+    }
+}

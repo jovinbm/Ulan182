@@ -14,7 +14,6 @@ var app = angular.module('app', [
     'ui.router',
     'ngDialog',
     'LocalStorageModule',
-    'angular-loading-bar',
     'ionic'
 ]);
 
@@ -99,13 +98,30 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         });
 });
 
+/*
+ * update tokens
+ * */
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push(['$q', '$location', '$localstorage', function ($q, $location, $localstorage) {
+        return {
+            'request': function (config) {
+                config.headers = config.headers || {};
+                if ($localstorage.get('token')) {
+                    config.headers.Authorization = 'Bearer ' + $localstorage.get('token');
+                }
+                return config;
+            }
+
+            , response: function (response) {
+                return response || $q.when(response);
+            }
+        };
+    }]);
+});
+
 app.run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
 });
 
 trackDigests(app);
-
-/*
- * jquery functions
- * */

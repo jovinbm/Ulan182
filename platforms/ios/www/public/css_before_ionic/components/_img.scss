@@ -1,0 +1,11 @@
+.image, .lead-image, .lead-image-big {
+    opacity: 0.9;
+    -webkit-transition: opacity 300ms ease-out;
+    -moz-transition: opacity 300ms ease-out;
+    -o-transition: opacity 300ms ease-out;
+    transition: opacity 300ms ease-out;
+}
+
+.image:hover, .lead-image:hover, .lead-image-big:hover {
+    opacity: 1;
+}

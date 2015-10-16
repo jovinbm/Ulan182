@@ -1,5 +1,5 @@
 angular.module('app')
-    .directive('logoutScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('logoutScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -7,9 +7,13 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
+                            return $http.post('/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
+                                /*
+                                 * delete token
+                                 * */
+                                $localstorage.set('token', '');
                                 $rootScope.main.responseStatusHandler(resp);
                                 $rootScope.main.userData = null;
                                 return true;

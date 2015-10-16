@@ -24,7 +24,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("http://www.pluschat.net/api/getUserData", {})
+                            return $http.post("/api/getUserData", {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);
@@ -116,9 +116,10 @@ angular.module('app')
 
             };
 
-            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.main.getUserData();
             });
+
 
             /*
              * important, check if user is not connected to uber

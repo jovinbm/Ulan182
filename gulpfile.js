@@ -62,36 +62,6 @@ gulp.task('concatenateUberCoreDev', function () {
     return gulp.src([
         'bower_components/jquery/dist/jquery.js',
         'bower_components/jquery-ui/jquery-ui.js',
-        'bower_components/angular/angular.js',
-        'bower_components/angular-sanitize/angular-sanitize.js',
-        'bower_components/angular-animate/angular-animate.js',
-        'bower_components/angular-ui-router/release/angular-ui-router.js',
-        'bower_components/underscore/underscore.js',
-        'bower_components/underscore.string/dist/underscore.string.js',
-        'bower_components/bootstrap/dist/js/bootstrap.min.js',
-        'bower_components/respond/dest/respond.min.js',
-        'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-        'bower_components/angular-toastr/dist/angular-toastr.tpls.js',
-        'bower_components/ngDialog/js/ngDialog.js',
-        'bower_components/ng-table/dist/ng-table.js',
-        'bower_components/angular-local-storage/dist/angular-local-storage.js',
-        'bower_components/angular-loading-bar/src/loading-bar.js',
-        'bower_components/matchheight/jquery.matchHeight.js',
-        'bower_components/aaCustom-js-files/geocomplete/jquery.geocomplete.js',
-        'public/jsmin/vendor/gmaps.js',
-        'public/jsmin/vendor/bluebird.min.js'
-
-    ])
-        .pipe(sourcemaps.init())
-        .pipe(concat('jsfiles.min.js'))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('public/uberjs'));
-});
-
-gulp.task('concatenateUberCoreDev', function () {
-    return gulp.src([
-        'bower_components/jquery/dist/jquery.js',
-        'bower_components/jquery-ui/jquery-ui.js',
         'www/lib/ionic/js/ionic.js',
         'www/lib/ionic/js/angular/angular.js',
         'www/lib/ionic/js/angular/angular-animate.js',
@@ -99,6 +69,7 @@ gulp.task('concatenateUberCoreDev', function () {
         'www/lib/ionic/js/angular/angular-sanitize.js',
         'www/lib/ionic/js/angular-ui/angular-ui-router.js',
         'www/lib/ionic/js/ionic-angular.js',
+        'bower_components/angular-jwt/dist/angular-jwt.js',
         'bower_components/underscore/underscore.js',
         'bower_components/underscore.string/dist/underscore.string.js',
         'bower_components/bootstrap/dist/js/bootstrap.min.js',
@@ -176,7 +147,7 @@ gulp.task('watch', function () {
     gulp.watch('bower_components/bootstrap-sass/**/*.scss', ['minifyAllScss']);
     gulp.watch('public/css/**/*.scss', ['minifyAllScss']);
     gulp.watch('public/imgs/**/*', ['minifyAllImages']);
-    gulp.watch('public/angular/core/**/*.js', ['minifyUberAppJS', 'minifyIonAppJS', 'copy']);
+    gulp.watch('public/angular/core/**/*.js', ['minifyUberAppJS', 'copy']);
 });
 
 // Default Task
@@ -186,6 +157,5 @@ gulp.task('default', [
     'minifyAllImages',
     'concatenateUberCoreDev',
     'minifyUberAppJS',
-    'copy',
     'watch'
 ]);

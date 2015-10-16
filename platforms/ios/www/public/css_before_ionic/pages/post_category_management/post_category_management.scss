@@ -1,0 +1,70 @@
+//bower
+@import "../../../../bower_components/font-awesome/css/font-awesome.min.css";
+@import "../../../../bower_components/object-fit/dist/polyfill.object-fit.css";
+@import "../../../../bower_components/angular-toastr/dist/angular-toastr.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog-theme-default.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog-custom-width.css";
+@import "../../../../bower_components/ng-table/dist/ng-table.min.css";
+@import "../../../../bower_components/angular-ui-select/dist/select.min.css";
+//end bower
+@import "../../core_importer";
+@import "../../components/body";
+@import "../../components/container";
+@import "../../components/news_components/topic";
+@import "../../components/navigation/top_nav_desktop";
+@import "../../components/navigation/top_nav_mobile";
+@import "../../components/navigation/mobileSlidingNav";
+@import "../../components/navigation/mainFooter";
+@import "../../components/dialogs/executing dialog";
+@import "../../components/angular";
+@import "../../components/classes";
+@import "../../components/cards";
+@import "../../components/btn";
+@import "../../components/forms";
+@import "../../components/headings";
+@import "../../components/links";
+@import "../../components/paginations";
+@import "../../components/spinner-loading";
+
+body.post_category_management {
+
+    .pageHolder {
+        padding-top: 15px;
+        padding-bottom: 30px;
+        font-size: 12px;
+    }
+
+    .topic {
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 2px;
+        font-size: 1.7em;
+        font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+        color: $cgrey !important;
+        margin-bottom: 0.9em;
+    }
+
+    .card {
+        margin-bottom: 2.4em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.4em;
+        margin-bottom: 0.6em;
+    }
+
+    .input-group {
+        margin-bottom: 0.9em;
+    }
+
+    .status {
+        font-size: 0.6em;
+    }
+
+    .ng-table-pagination {
+        //counter the display og the pagination
+        float: left;
+        clear: both;
+    }
+}

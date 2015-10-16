@@ -18,6 +18,7 @@ var errorLogger = function (module, text, err) {
 var TwitterStrategy = require('passport-twitter').Strategy;
 var bcrypt = require('bcrypt');
 var cuid = require('cuid');
+var jwt = require('jsonwebtoken');
 
 module.exports = function (app, passport, LocalStrategy) {
 
@@ -95,23 +96,50 @@ module.exports = function (app, passport, LocalStrategy) {
             })
             .spread(function (err, user, info) {
                 return new Promise(function (resolve, reject) {
-                    req.logIn(user, function (err) {
-                        if (err) {
-                            reject({
-                                code: 500,
-                                err: err
-                            });
-                        } else {
-                            resolve(true);
-                        }
-                    });
+                    //req.logIn(user, function (err) {
+                    //    if (err) {
+                    //        reject({
+                    //            code: 500,
+                    //            err: err
+                    //        });
+                    //    } else {
+                    //        resolve(user);
+                    //    }
+                    //});
+                    resolve(user);
                 });
             })
-            .then(function () {
+            .then(function (user) {
+                /*
+                 * update the user's token
+                 * */
+                var token = jwt.sign(user.uniqueCuid, process.env.uberTokenSeed, {
+                    expiresIn: 3600 * 24 * 14 // expires in 14 days
+                });
+
+                var query = new rq.Query();
+                query.findQuery = {uniqueCuid: user.uniqueCuid};
+                query.updateQuery = {
+                    $set: {
+                        token: token
+                    }
+                };
+                return rq.crud_db().update(rq.User(), query)
+                    .then(function () {
+                        return [user, token];
+                    })
+            })
+            .then(function (arr) {
+                var user = arr[0];
+                var token = arr[1];
                 rq.consoleLogger(successLogger(module));
+                /*
+                 * also supply the user with the token
+                 * */
                 return res.status(200).send({
                     code: 200,
                     msg: "You have successfully logged in",
+                    token: token,
                     redirect: true,
                     redirectState: 'home'
                 });
@@ -145,24 +173,26 @@ module.exports = function (app, passport, LocalStrategy) {
 
         return Promise.resolve()
             .then(function () {
-                return new Promise(function (resolve, reject) {
-                    req.logout();
-                    req.session.destroy(function (err) {
-                        if (err) {
-                            reject({
-                                code: 500,
-                                err: new Error(errorLogger(module, err))
-                            });
-                        } else {
-                            resolve(true);
-                        }
+                var query = new rq.Query();
+                /*
+                 * remove the token
+                 * */
+                query.findQuery = {uniqueCuid: req.user.uniqueCuid};
+                query.updateQuery = {
+                    $set: {
+                        token: ''
+                    }
+                };
+                return rq.crud_db().update(rq.User(), query)
+                    .then(function () {
+                        return true;
                     });
-                });
             })
-            .then(function (e) {
+            .then(function () {
                 rq.consoleLogger(successLogger(module));
                 return res.status(200).send({
                     code: 200,
+                    token: '',
                     redirect: true,
                     redirectState: 'index'
                 });
@@ -183,6 +213,7 @@ module.exports = function (app, passport, LocalStrategy) {
         var username = req.body.username;
         var password = req.body.password1;
         var uniqueCuid = cuid();
+        var token = '';
 
 
         return Promise.resolve()
@@ -232,6 +263,15 @@ module.exports = function (app, passport, LocalStrategy) {
                     });
             })
             .then(function (hashedPassword) {
+
+                /*
+                 * fill in the token
+                 * */
+
+                token = jwt.sign(uniqueCuid, process.env.uberTokenSeed, {
+                    expiresIn: 3600 * 24 * 14 // expires in 14 days
+                });
+
                 return new rq.User()({
                     email: email,
                     firstName: firstName,
@@ -240,6 +280,7 @@ module.exports = function (app, passport, LocalStrategy) {
                     password: hashedPassword,
                     uniqueCuid: uniqueCuid,
                     hashedUniqueCuid: cuid(),
+                    token: token,
                     isApproved: isApproved,
                     social: {
                         facebook: {},
@@ -252,16 +293,18 @@ module.exports = function (app, passport, LocalStrategy) {
                 //log this user into session
 
                 return new Promise(function (resolve, reject) {
-                    req.login(theUser, function (err) {
-                        if (err) {
-                            reject({
-                                err: new Error(errorLogger(module, err)),
-                                code: 500
-                            });
-                        } else {
-                            resolve(theUser);
-                        }
-                    });
+                    //req.login(theUser, function (err) {
+                    //    if (err) {
+                    //        reject({
+                    //            err: new Error(errorLogger(module, err)),
+                    //            code: 500
+                    //        });
+                    //    } else {
+                    //        resolve(theUser);
+                    //    }
+                    //});
+
+                    resolve(theUser);
                 });
             })
             .then(function (theUser) {
@@ -272,30 +315,31 @@ module.exports = function (app, passport, LocalStrategy) {
 
                 res.status(200).send({
                     code: 200,
+                    token: token,
                     redirect: true,
                     redirectState: 'home'
                 });
             })
-            .catch(function (err) {
-                return new Promise(function (resolve, reject) {
-                    if (req.isAuthenticated()) {
-                        req.logout();
-                        req.session.destroy(function (err) {
-                            if (err) {
-                                reject({
-                                    err: new Error(errorLogger(module, err)),
-                                    code: 500
-                                });
-                            } else {
-                                //continue passing the error
-                                reject(err);
-                            }
-                        });
-                    } else {
-                        reject(err);
-                    }
-                });
-            })
+            //.catch(function (err) {
+            //    return new Promise(function (resolve, reject) {
+            //        if (req.isAuthenticated()) {
+            //            req.logout();
+            //            req.session.destroy(function (err) {
+            //                if (err) {
+            //                    reject({
+            //                        err: new Error(errorLogger(module, err)),
+            //                        code: 500
+            //                    });
+            //                } else {
+            //                    //continue passing the error
+            //                    reject(err);
+            //                }
+            //            });
+            //        } else {
+            //            reject(err);
+            //        }
+            //    });
+            //})
             .catch(function (err) {
                 //catches 600s
                 if (err.code == 600 || err.code == 401 || err.code == 400) {
@@ -459,13 +503,13 @@ module.exports = function (app, passport, LocalStrategy) {
                 if (process.env.NODE_ENV == 'production') {
                     url = 'https://login.uber.com/oauth/v2/authorize?' +
                         'response_type=code' +
-                        '&redirect_uri=' + encodeURIComponent('https://www.pluschat.net/api/uberauth/callback') +
+                        '&redirect_uri=' + encodeURIComponent('https://www.pluschat.net/api/uberauth/callback?ubtoken=' + req.token) +
                         '&scope=request history profile' +
                         '&client_id=' + rq.uber.defaults.client_id;
                 } else {
                     url = 'https://login.uber.com/oauth/v2/authorize?' +
                         'response_type=code' +
-                        '&redirect_uri=' + encodeURIComponent('http://localhost:7000/api/uberauth/callback') +
+                        '&redirect_uri=' + encodeURIComponent('http://localhost:7000/api/uberauth/callback?ubtoken=' + req.token) +
                         '&scope=request history profile' +
                         '&client_id=' + rq.uber.defaults.client_id;
                 }
@@ -492,7 +536,6 @@ module.exports = function (app, passport, LocalStrategy) {
             .spread(function (access_token, refresh_token) {
 
                 var theUser = rq.getTheUser(req);
-                console.log(theUser);
 
                 return Promise.resolve()
                     .then(function () {

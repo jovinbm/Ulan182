@@ -1,0 +1,51 @@
+.form-error-notice {
+    color: rgb(169, 68, 66);
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+    font-size: 0.7em;
+}
+
+.form-help-notice {
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+    font-size: 0.7em;
+}
+
+.required-star {
+    display: inline;
+    color: rgb(169, 68, 66);
+}
+
+div.form1 {
+    width: 100%;
+    margin-bottom: 15px;
+
+    input {
+        float: left;
+        width: 90%;
+        padding: 7px;
+        //margin: 15px 0 15px 0;
+        border: none;
+        color: white;
+        background-color: $uberPurpleMain;
+        height: 40px;
+        font-size: 15px;
+    }
+
+    .search-button {
+        cursor: pointer;
+        position: relative;
+        width: 10%;
+        padding: 8px;
+        //margin: 15px 0 15px 0;
+        border: none;
+        color: white;
+        background-color: $uberPurpleMain;
+        height: 30px;
+    }
+
+    input[type="submit"] {
+        font-family: FontAwesome;
+        font-size: 15px;
+    }
+}

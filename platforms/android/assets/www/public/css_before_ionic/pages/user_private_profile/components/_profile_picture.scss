@@ -1,0 +1,46 @@
+.user-private-profile {
+
+    #profile-picture-section {
+
+        .profile-pictures {
+            float: left;
+            width: 48%;
+
+            .profile200 {
+                @include center-horizontal();
+                margin: 2em auto;
+                width: 200px;
+                height: 200px;
+
+                img {
+                    @include center-horizontal();
+                    border: 1px solid $crimson-main;
+                    width: 200px;
+                    height: 200px;
+                    object-fit: cover;
+                    overflow: hidden;
+                }
+            }
+        }
+
+        .upload {
+            float: right;
+            width: 48%;
+
+            .profile-picture-uploader {
+
+                .selected-file {
+                    margin-top: 0.9em;
+                    margin-bottom: 0.9em;
+                    font-size: 0.7em;
+                }
+
+                .info {
+                    font-size: .9em;
+                    margin-top: 0;
+                    margin-bottom: 1em;
+                }
+            }
+        }
+    }
+}

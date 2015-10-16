@@ -76,18 +76,23 @@ module.exports = {
             })
             .catch(function (e) {
                 if (e.code === 401) {
-                    if (e.logout) {
-                        req.logout();
-                        req.session.destroy(function () {
-                            rq.routes().account().render_not_logged_in(req, res);
-                        });
-                    } else {
-                        rq.routes().error().render_friendly_html(req, res, {
-                            msg: e.msg || "We were unable to authenticate your request. Please make sure you are signed in.",
-                            errorCode: 401,
-                            partial: isPartial
-                        });
-                    }
+                    return rq.routes().error().render_friendly_html(req, res, {
+                        msg: e.msg || "We were unable to authenticate your request. Please make sure you are signed in.",
+                        errorCode: 401,
+                        partial: isPartial
+                    });
+                    //if (e.logout) {
+                    //    req.logout();
+                    //    req.session.destroy(function () {
+                    //        rq.routes().account().render_not_logged_in(req, res);
+                    //    });
+                    //} else {
+                    //    rq.routes().error().render_friendly_html(req, res, {
+                    //        msg: e.msg || "We were unable to authenticate your request. Please make sure you are signed in.",
+                    //        errorCode: 401,
+                    //        partial: isPartial
+                    //    });
+                    //}
                 } else {
                     throw e;
                 }
@@ -184,17 +189,25 @@ module.exports = {
             .catch(function (e) {
                 if (e.code === 401) {
                     if (e.logout) {
-                        req.logout();
-                        req.session.destroy(function () {
-                            res.status(401).send({
-                                code: 401,
-                                banner: true,
-                                bannerClass: 'alert alert-dismissible alert-warning',
-                                dialog: true,
-                                id: 'sign-in',
-                                msg: e.msg || 'Please sign in to continue.'
-                            });
+                        return res.status(401).send({
+                            code: 401,
+                            banner: true,
+                            bannerClass: 'alert alert-dismissible alert-warning',
+                            dialog: true,
+                            id: 'sign-in',
+                            msg: e.msg || 'Please sign in to continue.'
                         });
+                        //req.logout();
+                        //req.session.destroy(function () {
+                        //    res.status(401).send({
+                        //        code: 401,
+                        //        banner: true,
+                        //        bannerClass: 'alert alert-dismissible alert-warning',
+                        //        dialog: true,
+                        //        id: 'sign-in',
+                        //        msg: e.msg || 'Please sign in to continue.'
+                        //    });
+                        //});
                     } else {
                         res.status(401).send({
                             code: 401,
@@ -342,17 +355,25 @@ module.exports = {
                         msg: 'We encountered a problem while trying to make that request. Please check and try again'
                     });
                 } else if (statusCode.code === 401) {
-                    req.logout();
-                    req.session.destroy(function () {
-                        res.status(401).send({
-                            code: 401,
-                            banner: true,
-                            bannerClass: 'alert alert-dismissible alert-warning',
-                            dialog: true,
-                            id: 'sign-in',
-                            msg: 'Please sign in to continue.'
-                        });
+                    return res.status(401).send({
+                        code: 401,
+                        banner: true,
+                        bannerClass: 'alert alert-dismissible alert-warning',
+                        dialog: true,
+                        id: 'sign-in',
+                        msg: 'Please sign in to continue.'
                     });
+                    //req.logout();
+                    //req.session.destroy(function () {
+                    //    res.status(401).send({
+                    //        code: 401,
+                    //        banner: true,
+                    //        bannerClass: 'alert alert-dismissible alert-warning',
+                    //        dialog: true,
+                    //        id: 'sign-in',
+                    //        msg: 'Please sign in to continue.'
+                    //    });
+                    //});
                 } else if (statusCode.code === 403) {
                     res.status(403).send({
                         code: 403,

@@ -1,6 +1,12 @@
 {
   "name": "uber_ionic",
   "app_id": "",
+  "proxies": [
+      {
+        "path": "/api",
+        "proxyUrl": "http://localhost:7000/api"
+      }
+  ],
   "gulpStartupTasks": [
     "sass",
     "watch"

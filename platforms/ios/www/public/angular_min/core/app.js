@@ -135,7 +135,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("/api/getUserData", {})
+                            return $http.post("http://www.pluschat.net/api/getUserData", {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);
@@ -190,6 +190,26 @@ angular.module('app')
                     }
                 },
 
+                redirectToLogin: function () {
+                    $window.location.href = '/notLoggedIn';
+                },
+
+                reloadPage: function () {
+                    $window.location.reload();
+                },
+
+                redirectToHome: function () {
+                    $window.location.href = '/';
+                },
+
+                redirectToPage: function (path) {
+                    $window.location.href = path;
+                },
+
+                redirectToPreviousPage: function () {
+                    window.location.href = document.referrer;
+                },
+
                 responseStatusHandler: function (resp) {
                     $filter('responseFilter')(resp);
                 },
@@ -223,18 +243,6 @@ angular.module('app')
                     }
                 }
             });
-
-            /*
-             * update my position
-             * */
-            $timeout(function () {
-                $rootScope.map._updateMyPosition($rootScope.map)
-                    .then(function () {
-                        $rootScope.map._setCenter($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-                        $rootScope.map._addUserMarker($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-                    });
-            }, 3000);
-
         }
     ]);
 angular.module('app')
@@ -253,7 +261,7 @@ angular.module('app')
 
                         return Promise.resolve()
                             .then(function () {
-                                return $http.post('/api/getUberAuthorizationUrl', {})
+                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
                                     .then(function (resp) {
                                         resp = resp.data;
                                         $rootScope.main.responseStatusHandler(resp);
@@ -310,7 +318,7 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('/api/createAccount', details)
+                    return $http.post('http://www.pluschat.net/api/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -336,7 +344,7 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('api/logoutClient', {}).then(function (resp) {
+                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
                                 $rootScope.main.responseStatusHandler(resp);
@@ -386,7 +394,7 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/localUserLogin', loginData);
+                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
@@ -464,7 +472,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getProducts', {
+                    return $http.post('http://www.pluschat.net/api/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -556,7 +564,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getPriceEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -644,7 +652,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('/api/getTimeEstimate', {
+                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -753,7 +761,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('/api/getRideStatus', {})
+                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -860,214 +868,229 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .controller('mapController', ['$rootScope', '$scope', '$http', '$interval', function ($rootScope, $scope, $http, $interval) {
+    .controller('mapController', ['$rootScope', '$scope', '$http', '$interval', '$timeout',
+        function ($rootScope, $scope, $http, $interval, $timeout) {
 
-        function resizeMap() {
-            angular.element("#map").css({
-                "height": angular.element(window).height(),
-                "margin": 0,
-                "padding-left": 0
-            });
-        }
-
-        resizeMap();
-
-        angular.element(window).resize(function () {
-            resizeMap();
-        });
-
-
-        GMaps.prototype._getMyPosition = function (map) {
-            if (map._myLocation.lat && map._myLocation.lng) {
-                return {
-                    lat: map._myLocation.lat,
-                    lng: map._myLocation.lng
-                }
-            } else {
-                return Promise.resolve()
-                    .then(function () {
-                        return new Promise(function (resolve, reject) {
-                            GMaps.geolocate({
-                                success: function (position) {
-                                    map._myLocation.lat = position.coords.latitude;
-                                    map._myLocation.lng = position.coords.longitude;
-                                    resolve({
-                                        lat: map._myLocation.lat,
-                                        lng: map._myLocation.lng
-                                    });
-                                },
-                                error: function (error) {
-                                    $rootScope.main.showToast('warning', 'Geolocation failed');
-                                    console.log(error);
-                                    resolve(null)
-                                },
-                                not_supported: function () {
-                                    $rootScope.main.showToast('warning', 'Your browser does not support geolocation');
-                                    resolve(null)
-                                }
-                            });
-                        })
-                    })
+            function resizeMap() {
+                angular.element("#map").css({
+                    "height": angular.element(window).height(),
+                    "margin": 0,
+                    "padding-left": 0
+                });
             }
-        };
+
+            angular.element(window).resize(function () {
+                resizeMap();
+            });
+
+            resizeMap();
 
 
-        GMaps.prototype._updateMyPosition = function (map) {
-            /*
-             * if userLocation is found, the universalController object is updated with the user location
-             * */
-            return new Promise(function (resolve, reject) {
-                GMaps.geolocate({
-                    success: function (position) {
-                        map._myLocation.lat = position.coords.latitude;
-                        map._myLocation.lng = position.coords.longitude;
-                        resolve(true);
-                    },
-                    error: function (error) {
-                        console.log(error);
-                        $rootScope.main.showToast('warning', 'We could not update your location...');
-                        resolve(true);
+            GMaps.prototype._getMyPosition = function (map) {
+                if (map._myLocation.lat && map._myLocation.lng) {
+                    return {
+                        lat: map._myLocation.lat,
+                        lng: map._myLocation.lng
+                    }
+                } else {
+                    return Promise.resolve()
+                        .then(function () {
+                            return new Promise(function (resolve, reject) {
+                                GMaps.geolocate({
+                                    success: function (position) {
+                                        map._myLocation.lat = position.coords.latitude;
+                                        map._myLocation.lng = position.coords.longitude;
+                                        resolve({
+                                            lat: map._myLocation.lat,
+                                            lng: map._myLocation.lng
+                                        });
+                                    },
+                                    error: function (error) {
+                                        $rootScope.main.showToast('warning', 'Geolocation failed');
+                                        console.log(error);
+                                        resolve(null)
+                                    },
+                                    not_supported: function () {
+                                        $rootScope.main.showToast('warning', 'Your browser does not support geolocation');
+                                        resolve(null)
+                                    }
+                                });
+                            })
+                        })
+                }
+            };
+
+
+            GMaps.prototype._updateMyPosition = function (map) {
+                /*
+                 * if userLocation is found, the universalController object is updated with the user location
+                 * */
+                return new Promise(function (resolve, reject) {
+                    GMaps.geolocate({
+                        success: function (position) {
+                            map._myLocation.lat = position.coords.latitude;
+                            map._myLocation.lng = position.coords.longitude;
+                            resolve(true);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            $rootScope.main.showToast('warning', 'We could not update your location...');
+                            resolve(true);
+                        }
+                    });
+                })
+            };
+
+            GMaps.prototype._myLocation = {
+                lat: null,
+                lng: null
+            };
+
+            GMaps.prototype._addMarker = function (lat, lng, title) {
+                return this.addMarker({
+                    lat: lat,
+                    lng: lng,
+                    title: title || ''
+                });
+            };
+
+            GMaps.prototype._addInfoWindowMarker = function (lat, lng, title) {
+                return this.addMarker({
+                    lat: lat,
+                    lng: lng,
+                    infoWindow: {
+                        content: '<p>' + title + '</p>'
                     }
                 });
-            })
-        };
+            };
 
-        GMaps.prototype._myLocation = {
-            lat: null,
-            lng: null
-        };
+            GMaps.prototype._userMarker = null;
+            GMaps.prototype._userInfoWindowMarker = null;
 
-        GMaps.prototype._addMarker = function (lat, lng, title) {
-            return this.addMarker({
-                lat: lat,
-                lng: lng,
-                title: title || ''
-            });
-        };
+            GMaps.prototype._addUserMarker = function () {
+                this._userMarker = this.addMarker({
+                    lat: $rootScope.map._myLocation.lat,
+                    lng: $rootScope.map._myLocation.lat,
+                    title: ''
+                });
 
-        GMaps.prototype._addInfoWindowMarker = function (lat, lng, title) {
-            return this.addMarker({
-                lat: lat,
-                lng: lng,
-                infoWindow: {
-                    content: '<p>' + title + '</p>'
+                return this._userMarker
+            };
+
+            GMaps.prototype._addUserInfoWindowMarker = function (title) {
+                this._userInfoWindowMarker = this.addMarker({
+                    lat: $rootScope.map._myLocation.lat,
+                    lng: $rootScope.map._myLocation.lat,
+                    infoWindow: {
+                        content: '<p>' + title + '</p>'
+                    }
+                });
+
+                return this._userInfoWindowMarker
+            };
+
+            GMaps.prototype._moveMarker = function (marker, lat, lng) {
+                marker.setPosition(new google.maps.LatLng(lat, lng));
+            };
+
+            GMaps.prototype._updateUserMarker = function () {
+                if (!this._userMarker) {
+                    this._addUserMarker()
+                } else {
+                    this._moveMarker(this._userMarker, this._myLocation.lat, this._myLocation.lng);
                 }
-            });
-        };
+            };
 
-        GMaps.prototype._userMarker = null;
-        GMaps.prototype._userInfoWindowMarker = null;
-
-        GMaps.prototype._addUserMarker = function () {
-            this._userMarker = this.addMarker({
-                lat: $rootScope.map._myLocation.lat,
-                lng: $rootScope.map._myLocation.lat,
-                title: ''
-            });
-
-            return this._userMarker
-        };
-
-        GMaps.prototype._addUserInfoWindowMarker = function (title) {
-            this._userInfoWindowMarker = this.addMarker({
-                lat: $rootScope.map._myLocation.lat,
-                lng: $rootScope.map._myLocation.lat,
-                infoWindow: {
-                    content: '<p>' + title + '</p>'
+            GMaps.prototype._updateUserInfoWindowMarker = function (title) {
+                if (!this._userInfoWindowMarker) {
+                    this._addUserInfoWindowMarker(title)
+                } else {
+                    this._moveMarker(this._userInfoWindowMarker, this._myLocation.lat, this._myLocation.lng);
                 }
+            };
+
+            GMaps.prototype._removeMarker = function (marker) {
+                marker.setMap(null);
+            };
+
+            GMaps.prototype._removeAllPresentMarkers = function () {
+                this.removeMarkers();
+            };
+
+            GMaps.prototype._setCenter = function (lat, lng) {
+                this.setCenter(lat, lng);
+            };
+
+            GMaps.prototype._setCenterToMe = function () {
+                if (this._myLocation.lat && this._myLocation.lng) {
+                    this.setCenter(this._myLocation.lat, this._myLocation.lng);
+                }
+            };
+
+            GMaps.prototype._drawRoute = function (originArr, destArr) {
+                if (!originArr || !destArr) return;
+                if (originArr.length < 2 || destArr.length < 2) return;
+                this.cleanRoute();
+                this.removeMarkers();
+
+                this.addMarker({lat: originArr[0], lng: originArr[1]});
+                this.addMarker({lat: destArr[0], lng: destArr[1]});
+
+                this.drawRoute({
+                    origin: originArr,
+                    destination: destArr,
+                    travelMode: 'driving',
+                    strokeColor: '#09091A',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 6
+                });
+            };
+
+            $rootScope.map = new GMaps({
+                div: '#map',
+                lat: -12.043333,
+                lng: -77.028333
             });
 
-            return this._userInfoWindowMarker
-        };
+            /*
+             * prepare functions that will update stuff, wait for 3 secs
+             * */
+            $timeout(function () {
 
-        GMaps.prototype._moveMarker = function (marker, lat, lng) {
-            marker.setPosition(new google.maps.LatLng(lat, lng));
-        };
+                resizeMap();
 
-        GMaps.prototype._updateUserMarker = function () {
-            if (!this._userMarker) {
-                this._addUserMarker()
-            } else {
-                this._moveMarker(this._userMarker, this._myLocation.lat, this._myLocation.lng);
-            }
-        };
+                $rootScope.map._updateMyPosition($rootScope.map)
+                    .then(function () {
+                        $rootScope.map._setCenter($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                        $rootScope.map._addUserMarker($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                    });
 
-        GMaps.prototype._updateUserInfoWindowMarker = function (title) {
-            if (!this._userInfoWindowMarker) {
-                this._addUserInfoWindowMarker(title)
-            } else {
-                this._moveMarker(this._userInfoWindowMarker, this._myLocation.lat, this._myLocation.lng);
-            }
-        };
+                $scope.$watch(function () {
+                    return $rootScope.map._myLocation.lat;
+                }, function () {
+                    if ($rootScope.map._userMarker) {
+                        $rootScope.map._moveMarker($rootScope.map._userMarker, $rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                    }
+                });
 
-        GMaps.prototype._removeMarker = function (marker) {
-            marker.setMap(null);
-        };
+                $interval(function () {
+                    if ($rootScope.map._updateMyPosition) {
+                        $rootScope.map._updateMyPosition($rootScope.map);
+                    }
+                }, 10000); //update every 10 secs
 
-        GMaps.prototype._removeAllPresentMarkers = function () {
-            this.removeMarkers();
-        };
 
-        GMaps.prototype._setCenter = function (lat, lng) {
-            this.setCenter(lat, lng);
-        };
+                /*
+                 * refresh on resize and state change
+                 * */
+                //resize event
+                $(window).resize(function () {
+                    $rootScope.map.refresh();
+                });
 
-        GMaps.prototype._setCenterToMe = function () {
-            if (this._myLocation.lat && this._myLocation.lng) {
-                this.setCenter(this._myLocation.lat, this._myLocation.lng);
-            }
-        };
+            }, 3000);
 
-        GMaps.prototype._drawRoute = function (originArr, destArr) {
-            if (!originArr || !destArr) return;
-            if (originArr.length < 2 || destArr.length < 2) return;
-            this.cleanRoute();
-            this.removeMarkers();
-
-            this.addMarker({lat: originArr[0], lng: originArr[1]});
-            this.addMarker({lat: destArr[0], lng: destArr[1]});
-
-            this.drawRoute({
-                origin: originArr,
-                destination: destArr,
-                travelMode: 'driving',
-                strokeColor: '#09091A',
-                strokeOpacity: 0.6,
-                strokeWeight: 6
-            });
-        };
-
-        $rootScope.map = new GMaps({
-            div: '#map',
-            lat: -12.043333,
-            lng: -77.028333
-        });
-
-        $rootScope.map._updateMyPosition($rootScope.map);
-
-        $scope.$watch(function () {
-            return $rootScope.map._myLocation.lat;
-        }, function () {
-            if ($rootScope.map._userMarker) {
-                $rootScope.map._moveMarker($rootScope.map._userMarker, $rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-            }
-        });
-
-        $interval(function () {
-            if ($rootScope.map._updateMyPosition) {
-                $rootScope.map._updateMyPosition($rootScope.map);
-            }
-        }, 10000); //update every 10 secs
-
-        /*
-         * refresh on resize and state change
-         * */
-        //resize event
-        $(window).resize(function () {
-            $rootScope.map.refresh();
-        });
-
-    }]);
+        }]);
 angular.module('app')
     .controller('priceEstimateController', ['$rootScope', '$scope', '$http', '$ionicPopover', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicPopover, $ionicSlideBoxDelegate) {
 
@@ -1379,7 +1402,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('/api/requestUber', {
+                                    return $http.post('http://www.pluschat.net/api/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,
@@ -1666,7 +1689,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'accepted'
                                 })
                                     .then(function (resp) {
@@ -1684,7 +1707,7 @@ angular.module('app')
                                 return Promise.delay(30000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'arriving'
                                 })
                                     .then(function (resp) {
@@ -1702,7 +1725,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'in_progress'
                                 })
                                     .then(function (resp) {
@@ -1720,7 +1743,7 @@ angular.module('app')
                                 return Promise.delay(45000);
                             })
                             .then(function () {
-                                return $http.post('/api/updateUberRequestSandbox', {
+                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
                                     status: 'completed'
                                 })
                                     .then(function (resp) {

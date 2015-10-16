@@ -1,0 +1,24 @@
+body.requestUber {
+
+    .list.slide_navigator {
+        margin: 0;
+    }
+
+    .form {
+        padding: 15px;
+    }
+
+    .list.radio {
+        padding: 15px;
+    }
+
+    .results {
+        position: absolute;
+        padding: 15px;
+        bottom: 50px;
+        width: 100%;
+        max-height: 515px;
+        overflow: scroll;
+    }
+
+}

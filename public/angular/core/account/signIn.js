@@ -2,7 +2,7 @@ angular.module('app')
     .controller('signInController', ['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('signInScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('signInScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -27,10 +27,14 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
+                            return $http.post('/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token before redirecting
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })

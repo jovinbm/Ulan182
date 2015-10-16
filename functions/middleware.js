@@ -29,6 +29,102 @@ function getFullQueryWithQMark(req) {
 
 module.exports = {
 
+    authenticateToken: function (req, res, next) {
+        var module = 'authenticateToken';
+        receivedLogger(module);
+
+        var jwt = require('jsonwebtoken');
+
+        var bearerToken;
+        var bearerHeader = req.headers["authorization"];
+
+        if (typeof bearerHeader !== 'undefined') {
+            var bearer = bearerHeader.split(" ");
+            bearerToken = bearer[1];
+            req.token = bearerToken;
+        } else {
+            req.token = null;
+        }
+
+        /*
+         * check the header
+         * */
+        if (req.query.ubtoken) {
+            req.token = (req.query.ubtoken);
+        }
+
+        return Promise.resolve()
+            .then(function () {
+                if (req.token) {
+
+                    return new Promise(function (resolve, reject) {
+                        // verifies secret and checks exp
+                        jwt.verify(req.token, process.env.uberTokenSeed, function (err, decoded) {
+
+                            if (err) {
+                                rq.showErrorStack(err);
+                                req.isAuthenticated = function () {
+                                    return false;
+                                };
+                                req.user = null;
+                                resolve(true);
+
+                            } else {
+
+                                Promise.resolve()
+                                    .then(function () {
+                                        var query = new rq.Query();
+                                        query.findQuery = {token: req.token};
+                                        query.lean = true;
+                                        return rq.crud_db().find(rq.User(), query, true);
+                                    })
+                                    .then(function (user) {
+                                        if (user) {
+                                            req.isAuthenticated = function () {
+                                                return true;
+                                            };
+                                            req.user = user;
+                                            resolve(true);
+                                        } else {
+                                            req.isAuthenticated = function () {
+                                                return false;
+                                            };
+                                            req.user = null;
+                                            resolve(true);
+                                        }
+                                    })
+                                    .catch(function (e) {
+                                        rq.showErrorStack(e);
+                                        req.isAuthenticated = function () {
+                                            return false;
+                                        };
+                                        req.user = null;
+                                        resolve(true);
+                                    })
+
+                            }
+                        });
+                    })
+
+                } else {
+
+                    req.isAuthenticated = function () {
+                        return false;
+                    };
+                    req.user = null;
+                }
+
+
+            })
+            .catch(function (e) {
+                rq.showErrorStack(e);
+                return true;
+            })
+            .then(function () {
+                next();
+            })
+    },
+
     addUserLocationData: function (req, res, next) {
         var module = "addUserLocationData";
         receivedLogger(module);

@@ -1,0 +1,115 @@
+//bower
+@import "../../../../bower_components/font-awesome/css/font-awesome.min.css";
+@import "../../../../bower_components/object-fit/dist/polyfill.object-fit.css";
+@import "../../../../bower_components/angular-toastr/dist/angular-toastr.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog-theme-default.min.css";
+@import "../../../../bower_components/ngDialog/css/ngDialog-custom-width.css";
+//end bower
+@import "../../core_importer";
+@import "../../components/body";
+@import "../../components/container";
+@import "../../components/news_components/topic";
+@import "../../components/navigation/top_nav_desktop";
+@import "../../components/navigation/top_nav_mobile";
+@import "../../components/navigation/mobileSlidingNav";
+@import "../../components/navigation/mainFooter";
+@import "../../components/dialogs/executing dialog";
+@import "../../components/angular";
+@import "../../components/classes";
+@import "../../components/btn";
+@import "../../components/forms";
+@import "../../components/headings";
+@import "../../components/links";
+@import "../../components/spinner-loading";
+
+body.account-crud {
+
+    .pageHolder {
+        padding-top: 20px;
+    }
+
+    font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
+
+    .container {
+        position: relative;
+    }
+
+    .big-logo {
+        width: 100%;
+        height: 200px;
+
+        .logo-image {
+            width: 200px;
+            height: 200px;
+            margin: 3.5em auto;
+            background-image: url(/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg);
+            background-repeat: no-repeat;
+            background-position: center center;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        @media (max-width: $screen-xs-max) {
+            height: 100px;
+
+            .logo-image {
+                width: 100px;
+                height: 100px;
+                margin: 15px auto;
+                background-image: url(/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg);
+                background-repeat: no-repeat;
+                background-position: center center;
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+            }
+        }
+    }
+
+    .topic {
+        margin: auto;
+        text-align: center;
+
+        @media (max-width: $screen-xs-max) {
+            font-size: 16px;
+        }
+    }
+
+    .benefit {
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.3em;
+            margin-bottom: 1.3em;
+        }
+    }
+
+    p {
+        line-height: 1.3em;
+        margin-bottom: 0.8em;
+    }
+
+    .form-error-notice {
+        color: $cyellow;
+    }
+
+    .login {
+        max-width: 430px;
+        margin: 1.9em auto;
+
+        @media (max-width: $screen-xs-max) {
+            margin-top: 0;
+        }
+    }
+
+    .input-group-addon {
+        padding: 6px 15px;
+    }
+}
