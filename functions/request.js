@@ -16,7 +16,7 @@ var errorLogger = function (module, text, err) {
 };
 
 var request = Promise.promisifyAll(require("request"));
-var quesryString = require('queryString');
+var quesryString = require('querystring');
 
 module.exports = {
 
