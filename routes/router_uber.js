@@ -51,6 +51,7 @@ function checkRideActivity(status, request_id) {
         })
 }
 
+
 module.exports = {
 
     updateUberRequestSandbox: function (req, res) {
@@ -362,6 +363,7 @@ module.exports = {
 
                 var query = new rq.Query();
                 query.findQuery = {
+                    userUniqueCuid: theUser.uniqueCuid,
                     active: true
                 };
 

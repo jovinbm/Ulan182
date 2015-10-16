@@ -1,4 +1,5 @@
 module.exports = function (app, rq) {
+    var Promise = require('bluebird');
     var routes = rq.routes();
     var functions = rq.functions();
     var showErrorStack = functions.error.showErrorStack;
@@ -36,11 +37,25 @@ module.exports = function (app, rq) {
         }
     }
 
+    //function errorHandler(err, req, res, next) {
+    //    routes.error().render_friendly_html(req, res, {
+    //        msg: 'An error occurred while processing your request. Please try again.',
+    //        errorCode: 500
+    //    });
+    //}
+
     function errorHandler(err, req, res, next) {
-        routes.error().render_friendly_html(req, res, {
-            msg: 'An error occurred while processing your request. Please try again.',
-            errorCode: 500
-        });
+        return Promise.resolve()
+            .then(function () {
+                throw {
+                    code: 404,
+                    err: err,
+                    msg: 'We could not find the resource you were looking for'
+                };
+            })
+            .catch(function (e) {
+                return rq.catchXhrErrors(req, res, e);
+            });
     }
 
     app.use(logErrors);

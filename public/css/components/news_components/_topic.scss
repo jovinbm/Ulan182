@@ -1,6 +1,6 @@
 .topic {
     display: inline-block;
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 500;
     padding: 0.8em;
     padding-top: 0;
@@ -10,10 +10,6 @@
     letter-spacing: 2px;
     font-family: 'Gill Sans MT', 'Gill Sans', arial, helvetica, sans-serif;
     border-bottom: 3px solid $cyellow;
-
-    @media (max-width: $screen-xs-max) {
-        font-size: 14px;
-    }
 
     &:hover {
         border-bottom: 3px solid $crimson-main;

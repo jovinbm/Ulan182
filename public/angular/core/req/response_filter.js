@@ -1,13 +1,6 @@
 angular.module('app')
-    .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', 'ngDialog', function ($q, $log, $window, $rootScope, ngDialog) {
+    .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {
-            function makeBanner(show, bannerClass, msg) {
-                return {
-                    show: show ? true : false,
-                    bannerClass: bannerClass,
-                    msg: msg
-                };
-            }
 
             if (resp !== null && typeof resp === 'object') {
                 if (resp.redirect) {
@@ -18,42 +11,53 @@ angular.module('app')
                     if (resp.redirectState) {
                         $rootScope.main.changeState(resp.redirectState)
                     }
+
+                    return;
                 }
                 if (resp.reload) {
                     $rootScope.main.reloadPage();
+                    return;
                 }
                 if (resp.notify) {
                     if (resp.type && resp.msg) {
-                        $rootScope.main.showToast(resp.type, resp.msg);
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.dialog) {
                     if (resp.id) {
                         switch (resp.id) {
                             case "not-authorized":
-                                not_authorized_dialog();
+                                $rootScope.main.showIonicAlert('Info', 'You are not authorized to be/access this page or resource.');
                                 break;
                             case "sign-in":
-                                sign_in_dialog(resp.msg);
+                                $rootScope.main.showIonicAlert('Info', 'Please sign in to continue.')
+                                    .then(function () {
+                                        $rootScope.main.changeState('login')
+                                    });
                                 break;
                             default:
                             //do nothing
                         }
+                        return;
                     }
                 }
                 if (resp.banner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('universalBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.signInBanner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('signInBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.registrationBanner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('registrationBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.reason) {
@@ -61,43 +65,6 @@ angular.module('app')
                 }
             } else {
                 //do nothing
-            }
-
-            return true;
-
-            function not_authorized_dialog() {
-                ngDialog.open({
-                    template: '/dialog/not-authorized.html',
-                    className: 'ngdialog-theme-default',
-                    overlay: true,
-                    showClose: false,
-                    closeByEscape: true,
-                    closeByDocument: true,
-                    cache: false,
-                    trapFocus: true,
-                    preserveFocus: true
-                });
-            }
-
-            function sign_in_dialog(message) {
-                ngDialog.openConfirm({
-                    data: {
-                        message: message
-                    },
-                    template: '/dialog/sign-in.html',
-                    className: 'ngdialog-theme-default',
-                    overlay: true,
-                    showClose: false,
-                    closeByEscape: false,
-                    closeByDocument: false,
-                    cache: true,
-                    trapFocus: true,
-                    preserveFocus: true
-                }).then(function () {
-                    $rootScope.main.redirectToPage('/notLoggedIn');
-                }, function () {
-                    $rootScope.main.redirectToPage('/about');
-                });
             }
         };
     }]);

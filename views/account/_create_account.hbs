@@ -2,66 +2,41 @@
         type="text/ng-template"
         id="_create_account.html">
 
-    <div class="container"
-         ng-controller="createAccountController">
+    <ion-header-bar align-title="left"
+                    class="bar-stable">
 
-        <div class="big-logo">
-            <div class="logo-image"></div>
+        <h1 class="title">UberLAN</h1>
+
+        <div class="buttons">
+            <a class="button"
+               ui-sref="index">Home</a>
         </div>
 
-        <hr>
+    </ion-header-bar>
 
+    <ion-content
+            padding="true"
+            has-bouncing="true">
 
-        <div registration-banner-scope>
-            <div ng-class="registrationBanner.bannerClass"
-                 ng-if="registrationBanner.show">
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert">×
-                </button>
-                <strong ng-bind="registrationBanner.msg"></strong>
-            </div>
-        </div>
+        <div ng-controller="createAccountController">
 
-
-        <div class="row">
-
-            <div class="benefits col-md-6 visible-lg visible-md">
-
-                <div class="benefit">
-                    <h2>Free account</h2>
-
-                    <p>Plan your trips anytime anywhere, a month before, a year before, all on you.</p>
-                </div>
-
-                <div class="benefit">
-                    <h2>Save money</h2>
-
-                    <p>With Uber LAN, you get to save money by avoiding price surges, planning and sharing trips with
-                       friends and much more</p>
-                </div>
-
-                <div class="benefit">
-                    <h2>Get lowest Uber Prices for long trips</h2>
-
-                    <p>Uber LAN automatically finds ways to get you to your destination at the lowest price possible</p>
-                </div>
+            <div class="row">
+                <img class="logo-image"
+                     src="/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg" />
             </div>
 
-            <div class="signup col-md-6 col-xs-12">
-
+            <div>
 
                 <div create-account-scope>
 
+                    <form name="registrationForm"
+                          id="registrationForm">
 
-                    <fieldset ng-disabled="createMain.isBusy">
+                        <div class="list">
 
-                        <form name="registrationForm"
-                              id="registrationForm">
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Email</span>
 
-                            <!--Email field-->
-                            <div class="form-group">
-                                <label for="email">Email</label>
                                 <input type="email"
                                        class="form-control input-md"
                                        id="email"
@@ -69,8 +44,8 @@
                                        ng-model="registrationDetails.email"
                                        ng-pattern="/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i"
                                        required
-                                       ng-disabled="$root.universalDisable"
                                        name="email">
+
                                 <span class="form-error-notice"
                                       ng-show="registrationForm.email.$error.required"
                                       ng-if='registrationForm.message.$dirty'>
@@ -81,12 +56,12 @@
                                       ng-if='registrationForm.email.$dirty'>
                                     <small>This is not a valid email</small>
                                 </span>
-                            </div>
+
+                            </label>
 
 
-                            <!--FirstName field-->
-                            <div class="form-group">
-                                <label for="firstName">First name</label>
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">First name</span>
                                 <input type="text"
                                        class="form-control input-md"
                                        id="firstName"
@@ -95,8 +70,8 @@
                                        ng-minlength="2"
                                        ng-maxlength="30"
                                        required
-                                       ng-disabled="$root.universalDisable"
                                        name="firstName">
+
                                 <span class="form-error-notice"
                                       ng-show="registrationForm.firstName.$error.required"
                                       ng-if='registrationForm.firstname.$dirty'>
@@ -112,11 +87,11 @@
                                       ng-if='registrationForm.firstname.$dirty'>
                                     <small>Maximum length required is 30:</small>
                                 </span>
-                            </div>
+                            </label>
 
-                            <!--LastName field-->
-                            <div class="form-group">
-                                <label for="LastName">Last name</label>
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Last name</span>
+
                                 <input type="text"
                                        class="form-control input-md"
                                        id="LastName"
@@ -125,8 +100,8 @@
                                        ng-minlength="2"
                                        ng-maxlength="30"
                                        required
-                                       ng-disabled="$root.universalDisable"
                                        name="lastName">
+
                                 <span class="form-error-notice"
                                       ng-show="registrationForm.lastName.$error.required"
                                       ng-if='registrationForm.lastName.$dirty'>
@@ -142,11 +117,12 @@
                                       ng-if='registrationForm.lastName.$dirty'>
                                     <small>Maximum length required is 30:</small>
                                 </span>
-                            </div>
 
-                            <!--Username field-->
-                            <div class="form-group">
-                                <label for="username">Public username</label>
+                            </label>
+
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Username</span>
+
                                 <input type="text"
                                        class="form-control input-md"
                                        id="username"
@@ -178,11 +154,12 @@
                                       ng-if='registrationForm.username.$dirty'>
                                     <small>Only letters, numbers and underscores are allowed:</small>
                                 </span>
-                            </div>
 
-                            <!--password field-->
-                            <div class="form-group">
-                                <label for="clientUpdatePassword1">New Password</label>
+                            </label>
+
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Password</span>
+
                                 <input type="password"
                                        name="password1"
                                        class="form-control input-md"
@@ -219,11 +196,12 @@
                                       ng-if="registrationForm.password1.$dirty && registrationForm.password2.$dirty">
                                     <small>Passwords do not match:</small>
                                 </span>
-                            </div>
 
-                            <!--confirm password-->
-                            <div class="form-group">
-                                <label for="clientUpdatePassword2">Confirm Password</label>
+                            </label>
+
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Confirm password</span>
+
                                 <input type="password"
                                        name="password2"
                                        class="form-control input-md"
@@ -260,40 +238,53 @@
                                       ng-if="registrationForm.password1.$dirty && registrationForm.password2.$dirty">
                                     <small>Passwords do not match:</small>
                                 </span>
-                            </div>
 
-                            <p class="tos">Signing up signifies that you have read and agree to the <a
-                                    title="Terms of service">Terms of Service</a> and <a
-                                    target="_self"
-                                    title="Privacy Policy">Privacy Policy</a>.</p>
+                            </label>
 
-                            <div class="form-group">
-                                <button class="btn btn-default btn-md btn-block"
-                                        ng-disabled="registrationForm.$invalid || $root.universalDisable"
-                                        ng-click="createAccount()">CREATE MY ACCOUNT
-                                </button>
-                            </div>
+                            <button class="button button-block button-stable"
+                                    ng-disabled="registrationForm.$invalid"
+                                    ng-click="createAccount()">Submit
+                            </button>
 
-                        </form>
+                            <p class="center-element">Do you have an account?</p>
 
-                    </fieldset>
-                </div>
+                            <button class="button button-block button-stable"
+                                    ng-click="$state.go('login')">
+                                Sign In
+                            </button>
 
-                <div class="row text-center">
-                    <div class="padding-top-20 padding-bottom-15">
-                        Have an account?
-                    </div>
 
-                    <a ui-sref="login"
-                       target="_self"
-                       title="Login"
-                       class="btn-custom-1-lg center-element">Sign in</a>
+                        </div>
+
+                    </form>
 
                 </div>
+
             </div>
 
         </div>
 
-    </div>
+    </ion-content>
+
+    <ion-footer-bar align-title="left"
+                    class="bar-stable">
+
+        <div class="tabs"
+             ng-if="!$root.main.userData">
+            <a class="tab-item"
+               ui-sref="index">
+                Home
+            </a>
+            <a class="tab-item"
+               ui-sref="login">
+                Sign In
+            </a>
+            <a class="tab-item"
+               ui-sref="register">
+                Register
+            </a>
+        </div>
+
+    </ion-footer-bar>
 
 </script>

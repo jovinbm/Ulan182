@@ -521,7 +521,7 @@ module.exports = function (app, passport, LocalStrategy) {
             })
             .then(function () {
                 rq.consoleLogger(successLogger(module));
-                return res.status(200).redirect('/index.app#/home');
+                return res.status(200).redirect('/');
             })
             .catch(function (e) {
                 rq.catchXhrErrors(req, res, e);

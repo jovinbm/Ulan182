@@ -2,11 +2,51 @@
         type="text/ng-template"
         id="_index.html">
 
-    <div class="container"
-         ng-controller="indexController">
+    <ion-header-bar align-title="left"
+                    class="bar-stable">
 
-        <h1>Hello there, Welcome to UBER LAN!</h1>
+        <h1 class="title">UberLAN</h1>
 
-    </div>
+        <div class="buttons">
+            <a class="button"
+               ui-sref="index">Home</a>
+        </div>
+
+    </ion-header-bar>
+
+
+    <ion-content
+            padding="true"
+            has-bouncing="true">
+
+        <div ng-controller="indexController">
+
+            <p>Hello there!</p>
+
+        </div>
+
+    </ion-content>
+
+    <ion-footer-bar align-title="left"
+                    class="bar-stable">
+
+        <div class="tabs"
+             ng-if="!$root.main.userData">
+            <a class="tab-item"
+               ui-sref="index">
+                Home
+            </a>
+            <a class="tab-item"
+               ui-sref="login">
+                Sign In
+            </a>
+            <a class="tab-item"
+               ui-sref="register">
+                Register
+            </a>
+        </div>
+
+    </ion-footer-bar>
+
 
 </script>

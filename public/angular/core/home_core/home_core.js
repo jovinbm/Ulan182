@@ -2,38 +2,8 @@ angular.module('app')
     .controller('homeCoreController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
         $rootScope.main.classes.body = 'homepage';
 
-        /*
-         * match the colum heights
-         * */
-
-        $("body .leftCol").matchHeight({
-            byRow: true,
-            property: 'height',
-            target: $("body .mapCol")
-        });
-
-        $scope.$watch(function () {
-            return $rootScope.main.userData
-        }, function (userData, oldVal) {
-            if (userData) {
-                if (userData.uber.access_token == '') {
-                    $rootScope.main.changeState('home.connectToUber');
-                }
-            }
-        });
-
-        /*
-         * update my position
-         * */
-
-        //$rootScope.map._updateMyPosition($rootScope.map)
-        //    .then(function () {
-        //        $rootScope.map._setCenter($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-        //        $rootScope.map._addUserMarker($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-        //    });
-
     }])
-    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', function ($interval, $rootScope, $http, $timeout) {
         /*
          * polls the available products etc
          * */
@@ -73,6 +43,8 @@ angular.module('app')
             /*
              * either returns products or []
              * */
+
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             return Promise.resolve()
                 .then(function () {
@@ -164,6 +136,8 @@ angular.module('app')
              * either returns array or []
              * */
 
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
+
             return Promise.resolve()
                 .then(function () {
 
@@ -249,6 +223,8 @@ angular.module('app')
             /*
              * either returns array or []
              * */
+
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             return Promise.resolve()
                 .then(function () {
@@ -363,7 +339,7 @@ angular.module('app')
 
         function getUberRideStatus() {
 
-            console.log('getting the ride status');
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             /*
              * either returns array or null**
@@ -433,13 +409,13 @@ angular.module('app')
          * */
         function checkUberRide() {
             if (rideStatus) {
-                $rootScope.main.changeState('home.rideStatus', null, ['home.rideStatus']);
+                $rootScope.main.changeState('rideStatus', null, ['rideStatus']);
             }
         }
 
-        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+        $rootScope.$on('$stateChangeSuccess', function () {
             if (rideStatus) {
-                $rootScope.main.changeState('home.rideStatus', null, ['home.rideStatus']);
+                $rootScope.main.changeState('rideStatus', null, ['rideStatus']);
             }
         });
 

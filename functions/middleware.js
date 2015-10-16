@@ -182,7 +182,8 @@ module.exports = {
                 }
             })
             .catch(function (e) {
-                rq.catchNonXhrErrors(req, res, e);
+                //rq.catchNonXhrErrors(req, res, e);
+                rq.catchXhrErrors(req, res, e);
             });
     },
 

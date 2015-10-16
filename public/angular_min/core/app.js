@@ -15,7 +15,7 @@ var app = angular.module('app', [
     'ngDialog',
     'LocalStorageModule',
     'angular-loading-bar',
-    'ngAnimate'
+    'ionic'
 ]);
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -27,78 +27,73 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
     $interpolateProvider.endSymbol('}]}');
 
     // For any unmatched url, redirect to /index
-    $urlRouterProvider.when('/home', '/home/welcome');
     $urlRouterProvider.otherwise("/index");
 
     $stateProvider
         .state('index', {
             url: "/index",
-            templateUrl: "_index.html"
+            views: {
+                'main': {
+                    templateUrl: "_index.html"
+                }
+            }
         })
         .state('register', {
             url: "/register",
-            templateUrl: "_create_account.html"
+            views: {
+                'main': {
+                    templateUrl: "_create_account.html"
+                }
+            }
         })
         .state('login', {
             url: "/login",
-            templateUrl: "_sign_in.html"
+            views: {
+                'main': {
+                    templateUrl: "_sign_in.html"
+                }
+            }
         })
         .state('home', {
             url: "/home",
-            templateUrl: "_homepage.html"
-        })
-        .state('home.welcome', {
-            url: "/welcome",
             views: {
-                'controllerCol': {
+                'main': {
                     templateUrl: "_welcome.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         })
-        .state('home.requestUber', {
-            url: "/requestUber",
-            views: {
-                'controllerCol': {
-                    templateUrl: "_request_uber.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
-                }
-            }
-        })
-        .state('home.rideStatus', {
-            url: "/rideStatus",
-            views: {
-                'controllerCol': {
-                    templateUrl: "_ride_status.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
-                }
-            }
-        })
-        .state('home.priceEstimator', {
+        .state('priceEstimator', {
             url: "/estimator",
             views: {
-                'controllerCol': {
+                'main': {
+                    controller: 'priceEstimateController',
                     templateUrl: "_price_estimates.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         })
-        .state('home.connectToUber', {
+        .state('requestUber', {
+            url: "/requestUber",
+            views: {
+                'main': {
+                    controller: "requestUberController",
+                    templateUrl: "_request_uber.html"
+                }
+            }
+        })
+        .state('rideStatus', {
+            url: "/rideStatus",
+            views: {
+                'main': {
+                    controller: 'uberRideStatusController',
+                    templateUrl: "_ride_status.html"
+                }
+            }
+        })
+        .state('connectToUber', {
             url: "/connect",
             views: {
-                'controllerCol': {
+                'main': {
                     templateUrl: "_connect_to_uber.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         });
@@ -124,8 +119,8 @@ angular.module('app')
 
 angular.module('app')
     .controller('UniversalController',
-    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus',
-        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus) {
+    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout',
+        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout) {
 
             $rootScope.main = {
 
@@ -195,209 +190,18 @@ angular.module('app')
                     }
                 },
 
-                startIntervalTimer: function (intervalInMilliseconds, fn) {
-                    return $interval(function () {
-                        if ($scope.blood_1 > 0 && $scope.blood_2 > 0) {
-                            $scope.blood_1 = $scope.blood_1 - 3;
-                            $scope.blood_2 = $scope.blood_2 - 4;
-                        } else {
-                            $scope.stopFight();
-                        }
-                    }, 100);
-                },
-
-                checkLocalStorageSupport: function () {
-                    if (localStorageService.isSupported) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                },
-
-                checkCookieIsEnabled: function () {
-                    if (localStorageService.cookie.isSupported) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                },
-
-                saveToLocalStorage: function (key, val) {
-                    var object = {
-                        value: val,
-                        timestamp: new Date().getTime()
-                    };
-                    return localStorageService.set(key, object); //returns a boolean
-                },
-
-                getFromLocalStorage: function (key, maxAgeSeconds) {
-                    if (!maxAgeSeconds) {
-                        maxAgeSeconds = 86400; //default to one day
-                    }
-                    if ($rootScope.main.checkIfExistsOnLocalStorage(key)) {
-                        var object = localStorageService.get(key);
-                        var dateString = object.timestamp;
-                        var now = new Date().getTime().toString();
-                        if (now - dateString > (maxAgeSeconds * 1000)) {
-                            $rootScope.main.removeFromLocalStorage([key]); //remove expired item from local storage
-                            return false;
-                        } else {
-                            return object.value;
-                        }
-                    } else {
-                        return false;
-                    }
-                },
-
-                saveKeyToCookie: function (key, val, maxAgeInDays) {
-                    if (!maxAgeInDays) {
-                        maxAgeInDays = 2; //defaults to 2 day(s)
-                    }
-                    var object = {
-                        value: val,
-                        timestamp: new Date().getTime()
-                    };
-                    object = JSON.stringify(object);
-                    return localStorageService.cookie.set(key, object, maxAgeInDays); //returns a boolean
-                },
-
-                getKeyFromCookie: function (key, maxAgeSeconds) {
-                    if (!maxAgeSeconds) {
-                        maxAgeSeconds = 86400; //default to one day
-                    }
-                    var object = localStorageService.cookie.get(key);
-                    if (object) {
-                        var dateString = object.timestamp;
-                        var now = new Date().getTime().toString();
-                        if ((now - dateString) > (maxAgeSeconds * 1000)) {
-                            $rootScope.main.removeKeyFromCookie(key); //remove expired item from local storage
-                            return false;
-                        } else {
-                            return object.value;
-                        }
-                    } else {
-                        return false;
-                    }
-                },
-
-                checkIfExistsOnLocalStorage: function (key) {
-                    var keys = localStorageService.keys();
-                    var len = keys.length;
-                    var exists = false;
-                    for (var i = 0; i < len; i++) {
-                        if (keys[i] == key) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    return exists;
-                },
-
-                removeFromLocalStorage: function (keyArray, all) {  //if all is true, it clears all keys
-                    if (all) {
-                        return localStorageService.clearAll();
-                    } else {
-                        keyArray.forEach(function (key) {
-                            localStorageService.remove(key);
-                        });
-                    }
-
-                    return true;
-                },
-
-                removeKeyFromCookie: function (key) {  //if all is true, it clears all keys
-                    return localStorageService.cookie.remove(key);
-                },
-
-                goToTop: function () {
-                    $location.hash('navigation');
-                    $anchorScroll();
-                },
-
-                back: function () {
-                    $rootScope.back();
-                },
-
                 responseStatusHandler: function (resp) {
                     $filter('responseFilter')(resp);
                 },
 
                 showToast: function (toastType, text) {
-                    switch (toastType) {
-                        case "success":
-                            toastr.clear();
-                            toastr.success(text);
-                            break;
-                        case "warning":
-                            toastr.clear();
-                            toastr.warning(text, 'Warning', {
-                                closeButton: true,
-                                tapToDismiss: true
-                            });
-                            break;
-                        case "error":
-                            toastr.clear();
-                            toastr.error(text, 'Error', {
-                                closeButton: true,
-                                tapToDismiss: true,
-                                timeOut: false
-                            });
-                            break;
-                        default:
-                            //clears current list of toasts
-                            toastr.clear();
-                    }
+                    return $rootScope.main.showIonicAlert('Info', text);
                 },
 
-                clearToasts: function () {
-                    toastr.clear();
-                },
-
-                redirectToIndex: function () {
-                    $window.location.href = '/index.app';
-                },
-
-                redirectToLogin: function () {
-                    $window.location.href = '/notLoggedIn';
-                },
-
-                reloadPage: function () {
-                    $window.location.reload();
-                },
-
-                redirectToHome: function () {
-                    $window.location.href = '/';
-                },
-
-                redirectToPage: function (pathWithFirstSlash) {
-                    $window.location.href = pathWithFirstSlash;
-                },
-
-                redirectToPreviousPage: function () {
-                    window.location.href = document.referrer;
-                },
-
-                showExecuting: function (message) {
-                    var msg;
-                    if (!message || typeof message !== 'string' || message.length === 0) {
-                        msg = 'Performing action...';
-                    } else {
-                        msg = message + '...';
-                    }
-
-                    return ngDialog.open({
-                        data: {
-                            message: msg
-                        },
-                        templateUrl: '_executing_dialog',
-                        className: 'ngdialog-theme-default',
-                        overlay: true,
-                        showClose: false,
-                        closeByEscape: false,
-                        closeByDocument: false,
-                        cache: true,
-                        trapFocus: false,
-                        preserveFocus: true
+                showIonicAlert: function (heading, content) {
+                    return $ionicPopup.alert({
+                        title: heading,
+                        template: content
                     });
                 }
 
@@ -405,6 +209,19 @@ angular.module('app')
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.main.getUserData();
+            });
+
+            /*
+             * important, check if user is not connected to uber
+             * */
+            $scope.$watch(function () {
+                return $rootScope.main.userData
+            }, function (userData, oldVal) {
+                if (userData) {
+                    if (userData.uber.access_token == '') {
+                        $rootScope.main.changeState('connectToUber');
+                    }
+                }
             });
         }
     ]);
@@ -575,115 +392,11 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .directive('signInBannerScope', ['$rootScope', function ($rootScope) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-                $scope.signInBanner = {
-                    show: false,
-                    bannerClass: "",
-                    msg: ""
-                };
-
-                $rootScope.$on('signInBanner', function (event, banner) {
-                    $scope.signInBanner = banner;
-                });
-
-                $rootScope.$on('clearBanners', function () {
-                    $scope.signInBanner = {
-                        show: false,
-                        bannerClass: "",
-                        msg: ""
-                    };
-                });
-            }
-        };
-    }])
-    .directive('registrationBannerScope', ['$rootScope', function ($rootScope) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-                $scope.registrationBanner = {
-                    show: false,
-                    bannerClass: "",
-                    msg: ""
-                };
-
-                $rootScope.$on('registrationBanner', function (event, banner) {
-                    $scope.registrationBanner = banner;
-                });
-
-                $rootScope.$on('clearBanners', function () {
-                    $scope.registrationBanner = {
-                        show: false,
-                        bannerClass: "",
-                        msg: ""
-                    };
-                });
-            }
-        };
-    }]);
-angular.module('app')
-    .directive('universalBannerScope', ['$rootScope', 'globals', function ($rootScope) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-                $scope.universalBanner = {
-                    show: false,
-                    bannerClass: "",
-                    msg: ""
-                };
-
-                $rootScope.$on('universalBanner', function (event, banner) {
-                    $scope.universalBanner = banner;
-                });
-
-                $rootScope.$on('clearBanners', function () {
-                    $scope.universalBanner = {
-                        show: false,
-                        bannerClass: "",
-                        msg: ""
-                    };
-                });
-            }
-        };
-    }]);
-angular.module('app')
     .controller('homeCoreController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
         $rootScope.main.classes.body = 'homepage';
 
-        /*
-         * match the colum heights
-         * */
-
-        $("body .leftCol").matchHeight({
-            byRow: true,
-            property: 'height',
-            target: $("body .mapCol")
-        });
-
-        $scope.$watch(function () {
-            return $rootScope.main.userData
-        }, function (userData, oldVal) {
-            if (userData) {
-                if (userData.uber.access_token == '') {
-                    $rootScope.main.changeState('home.connectToUber');
-                }
-            }
-        });
-
-        /*
-         * update my position
-         * */
-
-        //$rootScope.map._updateMyPosition($rootScope.map)
-        //    .then(function () {
-        //        $rootScope.map._setCenter($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-        //        $rootScope.map._addUserMarker($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-        //    });
-
     }])
-    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', function ($interval, $rootScope, $http, $timeout) {
         /*
          * polls the available products etc
          * */
@@ -723,6 +436,8 @@ angular.module('app')
             /*
              * either returns products or []
              * */
+
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             return Promise.resolve()
                 .then(function () {
@@ -814,6 +529,8 @@ angular.module('app')
              * either returns array or []
              * */
 
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
+
             return Promise.resolve()
                 .then(function () {
 
@@ -899,6 +616,8 @@ angular.module('app')
             /*
              * either returns array or []
              * */
+
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             return Promise.resolve()
                 .then(function () {
@@ -1013,7 +732,7 @@ angular.module('app')
 
         function getUberRideStatus() {
 
-            console.log('getting the ride status');
+            if (!$rootScope.main || !$rootScope.main.userData) return [];
 
             /*
              * either returns array or null**
@@ -1083,13 +802,13 @@ angular.module('app')
          * */
         function checkUberRide() {
             if (rideStatus) {
-                $rootScope.main.changeState('home.rideStatus', null, ['home.rideStatus']);
+                $rootScope.main.changeState('rideStatus', null, ['rideStatus']);
             }
         }
 
-        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+        $rootScope.$on('$stateChangeSuccess', function () {
             if (rideStatus) {
-                $rootScope.main.changeState('home.rideStatus', null, ['home.rideStatus']);
+                $rootScope.main.changeState('rideStatus', null, ['rideStatus']);
             }
         });
 
@@ -1107,10 +826,6 @@ angular.module('app')
     .directive('locationSearchBox', ['$rootScope', '$http', function ($rootScope, $http) {
         return {
             restrict: 'AE',
-            //scope: {
-            //    update: '&locationUpdate' //location-update in html
-            //},
-            templateUrl: '_location_search_box.html',
             link: function ($scope, $element, $attr) {
 
                 $scope.lat = angular.element($element.find('.details input.lat')).val();
@@ -1131,222 +846,263 @@ angular.module('app')
                     });
             }
         };
-    }])
-angular.module('app')
-    .controller('mainMapController', ['$rootScope', '$http', '$scope', '$interval', function ($rootScope, $http, $scope, $interval) {
-
-        function resizeMap() {
-            angular.element("body.homepage #map").css({
-                "height": angular.element(window).height() - angular.element("homepage main-navigation").height(),
-                "margin": 0,
-                "padding-left": 0
-            });
-        }
-
-        resizeMap();
-
-        angular.element(window).resize(function () {
-            resizeMap();
-        });
-
-        GMaps.prototype._getMyPosition = function (map) {
-            if (map._myLocation.lat && map._myLocation.lng) {
-                return {
-                    lat: map._myLocation.lat,
-                    lng: map._myLocation.lng
-                }
-            } else {
-                return Promise.resolve()
-                    .then(function () {
-                        return new Promise(function (resolve, reject) {
-                            GMaps.geolocate({
-                                success: function (position) {
-                                    map._myLocation.lat = position.coords.latitude;
-                                    map._myLocation.lng = position.coords.longitude;
-                                    resolve({
-                                        lat: map._myLocation.lat,
-                                        lng: map._myLocation.lng
-                                    });
-                                },
-                                error: function (error) {
-                                    $rootScope.main.showToast('warning', 'Geolocation failed');
-                                    console.log(error);
-                                    resolve(null)
-                                },
-                                not_supported: function () {
-                                    $rootScope.main.showToast('warning', 'Your browser does not support geolocation');
-                                    resolve(null)
-                                }
-                            });
-                        })
-                    })
-            }
-        };
-
-
-        GMaps.prototype._updateMyPosition = function (map) {
-            /*
-             * if userLocation is found, the universalController object is updated with the user location
-             * */
-            return new Promise(function (resolve, reject) {
-                GMaps.geolocate({
-                    success: function (position) {
-                        map._myLocation.lat = position.coords.latitude;
-                        map._myLocation.lng = position.coords.longitude;
-                        resolve(true);
-                    },
-                    error: function (error) {
-                        console.log(error);
-                        $rootScope.main.showToast('warning', 'We could not update your location...');
-                        reject(error);
-                    }
-                });
-            })
-        };
-
-        GMaps.prototype._addMarker = function (lat, lng, title) {
-            return this.addMarker({
-                lat: lat,
-                lng: lng,
-                title: title || ''
-            });
-        };
-
-        GMaps.prototype._addInfoWindowMarker = function (lat, lng, title) {
-            return this.addMarker({
-                lat: lat,
-                lng: lng,
-                infoWindow: {
-                    content: '<p>' + title + '</p>'
-                }
-            });
-        };
-
-        GMaps.prototype._userMarker = null;
-        GMaps.prototype._userInfoWindowMarker = null;
-
-        GMaps.prototype._addUserMarker = function () {
-            this._userMarker = this.addMarker({
-                lat: $rootScope.map._myLocation.lat,
-                lng: $rootScope.map._myLocation.lat,
-                title: ''
-            });
-
-            return this._userMarker
-        };
-
-        GMaps.prototype._addUserInfoWindowMarker = function (title) {
-            this._userInfoWindowMarker = this.addMarker({
-                lat: $rootScope.map._myLocation.lat,
-                lng: $rootScope.map._myLocation.lat,
-                infoWindow: {
-                    content: '<p>' + title + '</p>'
-                }
-            });
-
-            return this._userInfoWindowMarker
-        };
-
-        GMaps.prototype._moveMarker = function (marker, lat, lng) {
-            marker.setPosition(new google.maps.LatLng(lat, lng));
-        };
-
-        GMaps.prototype._updateUserMarker = function () {
-            if (!this._userMarker) {
-                this._addUserMarker()
-            } else {
-                this._moveMarker(this._userMarker, this._myLocation.lat, this._myLocation.lng);
-            }
-        };
-
-        GMaps.prototype._updateUserInfoWindowMarker = function (title) {
-            if (!this._userInfoWindowMarker) {
-                this._addUserInfoWindowMarker(title)
-            } else {
-                this._moveMarker(this._userInfoWindowMarker, this._myLocation.lat, this._myLocation.lng);
-            }
-        };
-
-        GMaps.prototype._removeMarker = function (marker) {
-            marker.setMap(null);
-        };
-
-        GMaps.prototype._removeAllPresentMarkers = function () {
-            this.removeMarkers();
-        };
-
-        GMaps.prototype._setCenter = function (lat, lng) {
-            this.setCenter(lat, lng);
-        };
-
-        GMaps.prototype._setCenterToMe = function () {
-            if (this._myLocation.lat && this._myLocation.lng) {
-                this.setCenter(this._myLocation.lat, this._myLocation.lng);
-            }
-        };
-
-        GMaps.prototype._drawRoute = function (originArr, destArr) {
-            if (!originArr || !destArr) return;
-            if (originArr.length < 2 || destArr.length < 2) return;
-            this.cleanRoute();
-            this.removeMarkers();
-
-            this.addMarker({lat: originArr[0], lng: originArr[1]});
-            this.addMarker({lat: destArr[0], lng: destArr[1]});
-
-            this.drawRoute({
-                origin: originArr,
-                destination: destArr,
-                travelMode: 'driving',
-                strokeColor: '#09091A',
-                strokeOpacity: 0.6,
-                strokeWeight: 6
-            });
-        };
-
-        $rootScope.map = new GMaps({
-            div: '#map',
-            lat: -12.043333,
-            lng: -77.028333
-        });
-
-        $scope.$watch(function () {
-            return $rootScope.map._myLocation.lat;
-        }, function () {
-            if ($rootScope.map._userMarker) {
-                console.log('updating user marker');
-                $rootScope.map._moveMarker($rootScope.map._userMarker, $rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
-            }
-        });
-
-        $rootScope.map._myLocation = {
-            lat: null,
-            lng: null
-        };
-        $rootScope.map._updateMyPosition($rootScope.map);
-
-        $interval(function () {
-            if ($rootScope.map._updateMyPosition) {
-                console.log('updating my location');
-                $rootScope.map._updateMyPosition($rootScope.map)
-            }
-        }, 10000); //update every 10 secs
     }]);
 angular.module('app')
-    .controller('priceEstimatorController', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
+    .controller('mapController', ['$rootScope', '$scope', '$http', '$interval', '$timeout',
+        function ($rootScope, $scope, $http, $interval, $timeout) {
+
+            function resizeMap() {
+                angular.element("#map").css({
+                    "height": angular.element(window).height(),
+                    "margin": 0,
+                    "padding-left": 0
+                });
+            }
+
+            angular.element(window).resize(function () {
+                resizeMap();
+            });
+
+            resizeMap();
+
+
+            GMaps.prototype._getMyPosition = function (map) {
+                if (map._myLocation.lat && map._myLocation.lng) {
+                    return {
+                        lat: map._myLocation.lat,
+                        lng: map._myLocation.lng
+                    }
+                } else {
+                    return Promise.resolve()
+                        .then(function () {
+                            return new Promise(function (resolve, reject) {
+                                GMaps.geolocate({
+                                    success: function (position) {
+                                        map._myLocation.lat = position.coords.latitude;
+                                        map._myLocation.lng = position.coords.longitude;
+                                        resolve({
+                                            lat: map._myLocation.lat,
+                                            lng: map._myLocation.lng
+                                        });
+                                    },
+                                    error: function (error) {
+                                        $rootScope.main.showToast('warning', 'Geolocation failed');
+                                        console.log(error);
+                                        resolve(null)
+                                    },
+                                    not_supported: function () {
+                                        $rootScope.main.showToast('warning', 'Your browser does not support geolocation');
+                                        resolve(null)
+                                    }
+                                });
+                            })
+                        })
+                }
+            };
+
+
+            GMaps.prototype._updateMyPosition = function (map) {
+                /*
+                 * if userLocation is found, the universalController object is updated with the user location
+                 * */
+                return new Promise(function (resolve, reject) {
+                    GMaps.geolocate({
+                        success: function (position) {
+                            map._myLocation.lat = position.coords.latitude;
+                            map._myLocation.lng = position.coords.longitude;
+                            resolve(true);
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            $rootScope.main.showToast('warning', 'We could not update your location...');
+                            resolve(true);
+                        }
+                    });
+                })
+            };
+
+            GMaps.prototype._myLocation = {
+                lat: null,
+                lng: null
+            };
+
+            GMaps.prototype._addMarker = function (lat, lng, title) {
+                return this.addMarker({
+                    lat: lat,
+                    lng: lng,
+                    title: title || ''
+                });
+            };
+
+            GMaps.prototype._addInfoWindowMarker = function (lat, lng, title) {
+                return this.addMarker({
+                    lat: lat,
+                    lng: lng,
+                    infoWindow: {
+                        content: '<p>' + title + '</p>'
+                    }
+                });
+            };
+
+            GMaps.prototype._userMarker = null;
+            GMaps.prototype._userInfoWindowMarker = null;
+
+            GMaps.prototype._addUserMarker = function () {
+                this._userMarker = this.addMarker({
+                    lat: $rootScope.map._myLocation.lat,
+                    lng: $rootScope.map._myLocation.lat,
+                    title: ''
+                });
+
+                return this._userMarker
+            };
+
+            GMaps.prototype._addUserInfoWindowMarker = function (title) {
+                this._userInfoWindowMarker = this.addMarker({
+                    lat: $rootScope.map._myLocation.lat,
+                    lng: $rootScope.map._myLocation.lat,
+                    infoWindow: {
+                        content: '<p>' + title + '</p>'
+                    }
+                });
+
+                return this._userInfoWindowMarker
+            };
+
+            GMaps.prototype._moveMarker = function (marker, lat, lng) {
+                marker.setPosition(new google.maps.LatLng(lat, lng));
+            };
+
+            GMaps.prototype._updateUserMarker = function () {
+                if (!this._userMarker) {
+                    this._addUserMarker()
+                } else {
+                    this._moveMarker(this._userMarker, this._myLocation.lat, this._myLocation.lng);
+                }
+            };
+
+            GMaps.prototype._updateUserInfoWindowMarker = function (title) {
+                if (!this._userInfoWindowMarker) {
+                    this._addUserInfoWindowMarker(title)
+                } else {
+                    this._moveMarker(this._userInfoWindowMarker, this._myLocation.lat, this._myLocation.lng);
+                }
+            };
+
+            GMaps.prototype._removeMarker = function (marker) {
+                marker.setMap(null);
+            };
+
+            GMaps.prototype._removeAllPresentMarkers = function () {
+                this.removeMarkers();
+            };
+
+            GMaps.prototype._setCenter = function (lat, lng) {
+                this.setCenter(lat, lng);
+            };
+
+            GMaps.prototype._setCenterToMe = function () {
+                if (this._myLocation.lat && this._myLocation.lng) {
+                    this.setCenter(this._myLocation.lat, this._myLocation.lng);
+                }
+            };
+
+            GMaps.prototype._drawRoute = function (originArr, destArr) {
+                if (!originArr || !destArr) return;
+                if (originArr.length < 2 || destArr.length < 2) return;
+                this.cleanRoute();
+                this.removeMarkers();
+
+                this.addMarker({lat: originArr[0], lng: originArr[1]});
+                this.addMarker({lat: destArr[0], lng: destArr[1]});
+
+                this.drawRoute({
+                    origin: originArr,
+                    destination: destArr,
+                    travelMode: 'driving',
+                    strokeColor: '#09091A',
+                    strokeOpacity: 0.6,
+                    strokeWeight: 6
+                });
+            };
+
+            $rootScope.map = new GMaps({
+                div: '#map',
+                lat: -12.043333,
+                lng: -77.028333
+            });
+
+            /*
+             * prepare functions that will update stuff, wait for 3 secs
+             * */
+            $timeout(function () {
+
+                resizeMap();
+
+                $rootScope.map._updateMyPosition($rootScope.map)
+                    .then(function () {
+                        $rootScope.map._setCenter($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                        $rootScope.map._addUserMarker($rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                    });
+
+                $scope.$watch(function () {
+                    return $rootScope.map._myLocation.lat;
+                }, function () {
+                    if ($rootScope.map._userMarker) {
+                        $rootScope.map._moveMarker($rootScope.map._userMarker, $rootScope.map._myLocation.lat, $rootScope.map._myLocation.lng);
+                    }
+                });
+
+                $interval(function () {
+                    if ($rootScope.map._updateMyPosition) {
+                        $rootScope.map._updateMyPosition($rootScope.map);
+                    }
+                }, 10000); //update every 10 secs
+
 
                 /*
-                 * priceEstimateArray contains the data obtained from price estimates
-                 * including the types of cars available
-                 * distance etc,
-                 *
-                 * updated when start/end location is chosen
+                 * refresh on resize and state change
                  * */
-                $scope.priceEstimateArray = [];
-            }
+                //resize event
+                $(window).resize(function () {
+                    $rootScope.map.refresh();
+                });
+
+            }, 3000);
+
+        }]);
+angular.module('app')
+    .controller('priceEstimateController', ['$rootScope', '$scope', '$http', '$ionicPopover', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicPopover, $ionicSlideBoxDelegate) {
+
+        $rootScope.main.classes.body = 'priceEstimate';
+
+        /*
+         * prepare the results popover
+         * */
+        $scope.priceEstimatorCtrlMain = {
+            /*
+             * priceEstimateArray contains the data obtained from price estimates
+             * including the types of cars available
+             * distance etc,
+             *
+             * updated when start/end location is chosen
+             * */
+            priceEstimateArray: [],
+            showEstimates: false
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
         };
     }])
     .directive('priceEstimator', ['$rootScope', '$http', 'service_uberPrices', function ($rootScope, $http, service_uberPrices) {
@@ -1380,8 +1136,13 @@ angular.module('app')
                                     return service_uberPrices.getPriceEstimates($scope.priceEstimator.start_latitude, $scope.priceEstimator.start_longitude, $scope.priceEstimator.end_latitude, $scope.priceEstimator.end_longitude)
                                 })
                                 .then(function (arr) {
-                                    $scope.priceEstimateArray = arr;
+                                    $scope.priceEstimatorCtrlMain.priceEstimateArray = arr;
                                     $scope.priceEstimator.isBusy = false;
+                                    /*
+                                     * show the estimates
+                                     * */
+                                    $scope.priceEstimatorCtrlMain.showEstimates = true;
+                                    $scope.goToSlide(0);
                                     return true;
                                 })
                                 .catch(function (err) {
@@ -1410,11 +1171,6 @@ angular.module('app')
                         $rootScope.map._addMarker(lat, lng, formatted_address);
                         $rootScope.map._setCenter(lat, lng);
                         $scope.drawRoute();
-
-                        /*
-                         * get the new price estimates
-                         * */
-                        $scope.priceEstimator.getPriceEstimates();
                     }
                 };
 
@@ -1433,11 +1189,6 @@ angular.module('app')
 
                         $rootScope.map._addMarker(lat, lng, formatted_address);
                         $scope.drawRoute();
-
-                        /*
-                         * get the new price estimates
-                         * */
-                        $scope.priceEstimator.getPriceEstimates();
                     }
                 };
 
@@ -1513,7 +1264,9 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .controller('requestUberController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
+    .controller('requestUberController', ['$rootScope', '$scope', '$http','$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+
+        $rootScope.main.classes.body = 'requestUber';
 
         $scope.requestUberControllerMain = {
 
@@ -1532,7 +1285,23 @@ angular.module('app')
             /*
              * all uber products available in area, update when start location is selected
              * */
-            products: []
+            products: [],
+
+            showStatus: false
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
         };
 
     }])
@@ -1844,7 +1613,34 @@ angular.module('app')
             };
         }]);
 angular.module('app')
-    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', function ($rootScope, $http, service_rideStatus, $interval) {
+    .controller('uberRideStatusController', ['$rootScope', '$scope', '$http', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+
+        $rootScope.main.classes.body = 'rideStatus';
+
+        $scope.uberRideStatusControllerMain = {
+
+            /*
+             * show status by default
+             * */
+            showStatus: true
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
+        };
+
+    }])
+    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', '$timeout', function ($rootScope, $http, service_rideStatus, $interval, $timeout) {
         return {
             restrict: 'AE',
             link: function ($scope, $element, $attr) {
@@ -1953,18 +1749,20 @@ angular.module('app')
                 /*
                  * watch for the start and end, update on map
                  * */
-                $scope.$watch(function () {
-                    return $scope.uberRideStatusMain.start_lat;
-                }, function (val) {
-                    if (val) {
-                        $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
-                        $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
-                        /*
-                         * set center to me
-                         * */
-                        $rootScope.map._setCenterToMe();
-                    }
-                });
+                $timeout(function () {
+                    $scope.$watch(function () {
+                        return $scope.uberRideStatusMain.start_lat;
+                    }, function (val) {
+                        if (val) {
+                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
+                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
+                            /*
+                             * set center to me
+                             * */
+                            $rootScope.map._setCenterToMe();
+                        }
+                    });
+                }, 3000);
 
                 function checkStatus() {
                     /*
@@ -2019,15 +1817,19 @@ angular.module('app')
                          * if there is nothing after, then trip is finished
                          * */
                         $scope.uberRideStatusMain.rideStatus = null;
-                        $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+                        if ($rootScope.main && $rootScope.main.userData) {
+                            $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+                        }
                         $rootScope.map._setCenterToMe();
                     }
                 }
 
-                $interval(function () {
+                $timeout(function () {
+                    $interval(function () {
+                        checkStatus();
+                    }, 5000); //update every 5 secs
                     checkStatus();
-                }, 5000); //update every 5 secs
-                checkStatus();
+                }, 3000);
 
             }
         };
@@ -2044,15 +1846,8 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', 'ngDialog', function ($q, $log, $window, $rootScope, ngDialog) {
+    .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {
-            function makeBanner(show, bannerClass, msg) {
-                return {
-                    show: show ? true : false,
-                    bannerClass: bannerClass,
-                    msg: msg
-                };
-            }
 
             if (resp !== null && typeof resp === 'object') {
                 if (resp.redirect) {
@@ -2063,42 +1858,53 @@ angular.module('app')
                     if (resp.redirectState) {
                         $rootScope.main.changeState(resp.redirectState)
                     }
+
+                    return;
                 }
                 if (resp.reload) {
                     $rootScope.main.reloadPage();
+                    return;
                 }
                 if (resp.notify) {
                     if (resp.type && resp.msg) {
-                        $rootScope.main.showToast(resp.type, resp.msg);
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.dialog) {
                     if (resp.id) {
                         switch (resp.id) {
                             case "not-authorized":
-                                not_authorized_dialog();
+                                $rootScope.main.showIonicAlert('Info', 'You are not authorized to be/access this page or resource.');
                                 break;
                             case "sign-in":
-                                sign_in_dialog(resp.msg);
+                                $rootScope.main.showIonicAlert('Info', 'Please sign in to continue.')
+                                    .then(function () {
+                                        $rootScope.main.changeState('login')
+                                    });
                                 break;
                             default:
                             //do nothing
                         }
+                        return;
                     }
                 }
                 if (resp.banner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('universalBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.signInBanner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('signInBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.registrationBanner) {
                     if (resp.bannerClass && resp.msg) {
-                        $rootScope.$broadcast('registrationBanner', makeBanner(true, resp.bannerClass, resp.msg));
+                        $rootScope.main.showIonicAlert('Info', resp.msg);
+                        return;
                     }
                 }
                 if (resp.reason) {
@@ -2106,43 +1912,6 @@ angular.module('app')
                 }
             } else {
                 //do nothing
-            }
-
-            return true;
-
-            function not_authorized_dialog() {
-                ngDialog.open({
-                    template: '/dialog/not-authorized.html',
-                    className: 'ngdialog-theme-default',
-                    overlay: true,
-                    showClose: false,
-                    closeByEscape: true,
-                    closeByDocument: true,
-                    cache: false,
-                    trapFocus: true,
-                    preserveFocus: true
-                });
-            }
-
-            function sign_in_dialog(message) {
-                ngDialog.openConfirm({
-                    data: {
-                        message: message
-                    },
-                    template: '/dialog/sign-in.html',
-                    className: 'ngdialog-theme-default',
-                    overlay: true,
-                    showClose: false,
-                    closeByEscape: false,
-                    closeByDocument: false,
-                    cache: true,
-                    trapFocus: true,
-                    preserveFocus: true
-                }).then(function () {
-                    $rootScope.main.redirectToPage('/notLoggedIn');
-                }, function () {
-                    $rootScope.main.redirectToPage('/about');
-                });
             }
         };
     }]);

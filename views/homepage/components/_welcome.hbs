@@ -2,37 +2,70 @@
         type="text/ng-template"
         id="_welcome.html">
 
-    <div class="overView ng-cloak"
-         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+    <ion-header-bar align-title="left"
+                    class="bar-stable">
 
-        <div class="header">
-            <h1>Welcome {[{$root.main.userData.firstName}]}</h1>
+        <h1 class="title">UberLAN - Welcome</h1>
 
-            <p>Choose a service below</p>
+        <div class="buttons">
+            <button class="button">Settings</button>
         </div>
 
+    </ion-header-bar>
 
-        <ul class="services">
+    <ion-content
+            has-bouncing="true">
 
-            <li class="service">
-                <a ui-sref="home.priceEstimator">
-                    Get Price Estimates
-                </a>
-            </li>
+        <div class="list ng-cloak"
+             ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
 
-            <li class="service">
-                <a ui-sref="home.requestUber">
-                    Request an Uber
-                </a>
-            </li>
+            <a class="item item-icon-left"
+               ui-sref="requestUber">
+                <i class="icon ion-ios-navigate"></i>
+                Request Uber
+            </a>
 
-            <li class="service">
-                <a>
-                    Plan Trip
-                </a>
-            </li>
-        </ul>
+            <a class="item item-icon-left"
+               ui-sref="priceEstimator">
+                <i class="icon ion-cash"></i>
+                Check prices
+            </a>
 
-    </div>
+            <a class="item item-icon-left">
+                <i class="icon ion-ios-time"></i>
+                Plan trip
+            </a>
+
+            <a class="item item-icon-left"
+               ui-sref="rideStatus">
+                <i class="icon ion-person-stalker"></i>
+                Your uber rides
+                <span class="badge badge-assertive">0</span>
+            </a>
+
+        </div>
+
+    </ion-content>
+
+
+    <ion-footer-bar align-title="left"
+                    class="bar-stable">
+
+        <div class="tabs">
+            <a class="tab-item"
+               ui-sref="requestUber">
+                Request Uber
+            </a>
+            <a class="tab-item"
+               ui-sref="priceEstimator">
+                Check Price
+            </a>
+            <a class="tab-item">
+                Settings
+            </a>
+        </div>
+
+    </ion-footer-bar>
+
 
 </script>

@@ -2,93 +2,170 @@
         type="text/ng-template"
         id="_ride_status.html">
 
-    <div class="rideStatus ng-cloak"
-         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+    <div uber-ride-status-directive>
+        <ion-header-bar align-title="left"
+                        class="bar-stable">
 
-        <div class="header">
-            <h1>Ride status</h1>
+            <h1 class="title">UberLAN - Ride Status</h1>
 
-            <p>View your recent ride stats</p>
-        </div>
-
-        <hr>
-
-        <div class="ride_details"
-             ng-show="uberRideStatusMain.rideStatus"
-             uber-ride-status-directive>
-
-            <div class="status clearfix">
-                {[{$root.main.uberRideRequestStatuses[uberRideStatusMain.rideStatus.status]}]}
+            <div class="buttons">
+                <a class="button"
+                   ui-sref="home">Home</a>
             </div>
 
-            <table>
-                <tbody>
-                <tr>
-                    <td class="field">ETA</td>
-                    <td class="val">{[{uberRideStatusMain.rideStatus.eta}]} min(s)</td>
-                </tr>
-                <tr>
-                    <td class="field">Surge Multiplier</td>
-                    <td class="val">x{[{uberRideStatusMain.rideStatus.surge_multiplier}]}</td>
-                </tr>
-                </tbody>
-            </table>
+        </ion-header-bar>
 
-            <div class="driver_profile clearfix"
-                 ng-if="uberRideStatusMain.rideStatus.driver">
+        <ion-content
+                has-bouncing="true">
 
-                <h1 class="heading">Driver profile</h1>
+            <div>
 
-                <img ng-src="{[{uberRideStatusMain.rideStatus.driver.picture_url}]}">
+                <ion-slide-box show-pager="false"
+                               auto-play="false">
 
-                <div class="driver_info">
-                    <ul>
-                        <li>
-                            <p>{[{uberRideStatusMain.rideStatus.driver.name}]}</p>
-                        </li>
-                        <li>
-                            <i class="fa fa-star"
-                               ng-repeat="i in uberRideStatusMain.rideStatus.driver.ratingArray track by $index"></i>
-                        </li>
-                        <li>
+                    <ion-slide>
+
+                        <div class="list slide_navigator">
+
+                            <a class="item item-icon-right"
+                               ng-click="goToSlide(1)">
+                                History
+                                <i class="icon ion-chevron-right"></i>
+                            </a>
+
+                        </div>
+
+                        <div ng-controller="mapController"
+                             id="map">
+                        </div>
+
+                    </ion-slide>
+
+                    <ion-slide>
+
+                        <div class="list slide_navigator">
+
+                            <a class="item item-icon-left"
+                               ng-click="goToSlide(0)">
+                                <i class="icon ion-chevron-left"></i>
+                                Back
+                            </a>
+
+                        </div>
+
+                        <!--put history here-->
+
+
+                    </ion-slide>
+
+                </ion-slide-box>
+
+            </div>
+
+        </ion-content>
+
+        <div class="status"
+             ng-show="uberRideStatusControllerMain.showStatus">
+
+            <div class="list slide_navigator">
+
+                <a class="item item-icon-right"
+                   ng-click="uberRideStatusControllerMain.showStatus = false">
+                    <i class="icon ion-chevron-down"></i>
+                </a>
+
+            </div>
+
+            <ion-list>
+
+                <ion-item>
+
+                    <div class="list"
+                         ng-show="uberRideStatusMain.rideStatus">
+
+                        <div class="item item-divider">
+                            {[{$root.main.uberRideRequestStatuses[uberRideStatusMain.rideStatus.status]}]}
+                        </div>
+
+                        <div class="item item-icon-left">
+                            <i class="icon ion-arrow-graph-up-right"></i>
+                            Surge
+                            <span class="badge badge-assertive">
+                                x{[{uberRideStatusMain.rideStatus.surge_multiplier}]}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="list card"
+                         ng-if="uberRideStatusMain.rideStatus.driver">
+
+                        <div class="item item-avatar">
+                            <img ng-src="{[{uberRideStatusMain.rideStatus.driver.picture_url}]}">
+
+                            <h2>{[{uberRideStatusMain.rideStatus.driver.name}]}</h2>
+
                             <p>{[{uberRideStatusMain.rideStatus.driver.phone_number}]}</p>
-                        </li>
-                    </ul>
-                </div>
+                        </div>
 
-            </div>
+                    </div>
 
-            <div class="vehicle_profile clearfix"
-                 ng-if="uberRideStatusMain.rideStatus.vehicle">
+                    <div class="list card"
+                         ng-if="uberRideStatusMain.rideStatus.vehicle">
 
-                <h1 class="heading">Vehicle</h1>
+                        <div class="item item-avatar">
+                            <img ng-src="{[{uberRideStatusMain.rideStatus.vehicle.picture_url}]}">
 
-                <img ng-src="{[{uberRideStatusMain.rideStatus.vehicle.picture_url}]}">
+                            <h2>Make: {[{uberRideStatusMain.rideStatus.vehicle.make}]}</h2>
 
-                <div class="vehicle_info">
-                    <ul>
-                        <li>
-                            <p>Make: {[{uberRideStatusMain.rideStatus.vehicle.make}]}</p>
-                        </li>
-                        <li>
-                            <p>Model: {[{uberRideStatusMain.rideStatus.vehicle.model}]}</p>
-                        </li>
-                        <li>
-                            <p>License plate: {[{uberRideStatusMain.rideStatus.vehicle.license_plate}]}</p>
-                        </li>
-                    </ul>
-                </div>
+                            <p>Plate: {[{uberRideStatusMain.rideStatus.vehicle.license_plate}]}</p>
+                        </div>
 
-            </div>
+                    </div>
+
+                    <div class="list card"
+                         ng-if="!uberRideStatusMain.rideStatus">
+
+                        <div class="item item-avatar">
+                            <img src="/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg">
+
+                            <p>Your active requests will appear here as soon as they are processed.</p>
+                        </div>
+
+                    </div>
+
+                </ion-item>
+
+            </ion-list>
 
         </div>
 
-        <div class="alert alert-info"
-             role="alert"
-             ng-if="!uberRideStatusMain.rideStatus">
-            Your active requests will appear here as soon as they are processed.
-        </div>
 
+        <ion-footer-bar align-title="left"
+                        class="bar-stable">
+
+            <div class="tabs">
+                <a class="tab-item"
+                   ui-sref="requestUber">
+                    Request Uber
+                </a>
+                <a class="tab-item"
+                   ui-sref="priceEstimator">
+                    Check Price
+                </a>
+                <a class="tab-item"
+                   ng-if="!uberRideStatusControllerMain.showStatus"
+                   ng-click="uberRideStatusControllerMain.showStatus = true">
+                    Show status
+                </a>
+                <a class="tab-item"
+                   ng-if="uberRideStatusControllerMain.showStatus"
+                   ng-click="uberRideStatusControllerMain.showStatus = false">
+                    Hide Status
+                </a>
+            </div>
+
+        </ion-footer-bar>
     </div>
 
 </script>

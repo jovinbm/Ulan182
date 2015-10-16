@@ -2,127 +2,297 @@
         type="text/ng-template"
         id="_request_uber.html">
 
-    <div class="requestUber ng-cloak"
-         ng-controller="requestUberController"
-         ng-if="$root.main.userData && $root.main.userData.uber.access_token != ''">
+    <ion-header-bar align-title="left"
+                    class="bar-stable">
 
-        <div class="header">
-            <h1>Request Uber</h1>
+        <h1 class="title">UberLAN - Request an Uber</h1>
 
-            <p>Let's get you a ride</p>
+        <div class="buttons">
+            <a class="button"
+               ui-sref="home">Home</a>
         </div>
 
-        <hr>
+    </ion-header-bar>
+
+    <ion-content
+            has-bouncing="true">
 
         <div request-uber-directive>
-            <div class="form1">
 
-                <fieldset ng-disabled="requestUberMain.isBusy">
-                    <form>
+            <ion-slide-box show-pager="false"
+                           auto-play="false">
 
-                        <div class="start clearfix">
+                <ion-slide>
 
-                            <label for="start">Pickup location</label>
+                    <div class="list slide_navigator">
 
-                            <div location-search-box
-                                 location-update="updateStartLocation(lat, lng, formatted_address)"></div>
+                        <a class="item item-icon-right"
+                           ng-click="goToSlide(1)">
+                            Set/Edit pickup location
+                            <i class="icon ion-chevron-right"></i>
+                        </a>
 
-                        </div>
-
-
-                        <div class="end clearfix">
-
-                            <label for="end">Destination</label>
-
-                            <div location-search-box
-                                 location-update="updateEndLocation(lat, lng, formatted_address)"></div>
-
-                        </div>
-
-
-                        <p>Type</p>
-
-                        <ul class="products">
-                            <li ng-repeat="product in requestUberControllerMain.products"
-                                ng-click="requestUberMain.changeProductId(product.product_id, product.display_name)"
-                                ng-class="{'selected': requestUberMain.product_id == product.product_id}">
-                                <a>
-                                    {[{product.display_name}]}
-                                </a>
-                            </li>
-                        </ul>
-
-                        <div class="selectedProductCard">
-
-                            <div class="card"
-                                 ng-show="requestUberMain.selectedProductPriceEstimate.estimate">
-
-                                <div class="localized_display_name clearfix">
-                                    {[{requestUberMain.selectedProductPriceEstimate.localized_display_name}]}
-                                    <span class="price pull-right">
-                                        {[{requestUberMain.selectedProductPriceEstimate.estimate}]}
-                                    </span>
-                                </div>
-
-                                <table>
-                                    <tbody>
-                                    <tr>
-                                        <td class="field">Surge Multiplier</td>
-                                        <td class="val">
-                                            x{[{requestUberMain.selectedProductPriceEstimate.surge_multiplier}]}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="field">Distance</td>
-                                        <td class="val">{[{requestUberMain.selectedProductPriceEstimate.distance}]}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="field">Duration</td>
-                                        <td class="val">{[{requestUberMain.selectedProductPriceEstimate.duration}]}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="field">Capacity</td>
-                                        <td class="val">{[{requestUberMain.selectedProduct.capacity}]}</td>
-                                    </tr>
-                                    <tr ng-show="requestUberMain.selectedProduct.estimate">
-                                        <td class="field">ETA Pickup</td>
-                                        <td class="val">{[{requestUberMain.selectedProduct.estimate}]} mins</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-                        </div>
-
-
-                        <button type="submit"
-                                class="btnUber center-element"
-                                ng-click="requestUberMain.requestUber()">REQUEST
-                        </button>
-
-                    </form>
-                </fieldset>
-
-                <div ng-if="requestUberMain.isBusy">
-
-                    <div class="spinner">
-                        <div class="rect1"></div>
-                        <div class="rect2"></div>
-                        <div class="rect3"></div>
-                        <div class="rect4"></div>
-                        <div class="rect5"></div>
                     </div>
 
-                    <div class="status">
-                        <p ng-bind="requestUberMain.status"></p>
+                    <div ng-controller="mapController"
+                         id="map">
+                    </div>
+
+                </ion-slide>
+
+                <ion-slide>
+
+                    <div class="list slide_navigator">
+
+                        <a class="item item-icon-left"
+                           ng-click="goToSlide(0)">
+                            <i class="icon ion-chevron-left"></i>
+                            Back
+                        </a>
+
+                    </div>
+
+                    <div class="list form">
+                        <div location-search-box
+                             location-update="updateStartLocation(lat, lng, formatted_address)">
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Pickup Location</span>
+
+                                <input type="text"
+                                       class="geoField"
+                                       name="loc"
+                                       id="loc"
+                                       value=""
+                                       required="required">
+
+                                <div class="details">
+                                    <input name="lat"
+                                           type=hidden
+                                           value=""
+                                           class="lat">
+                                    <input name="lng"
+                                           type=hidden
+                                           value=""
+                                           class="lng">
+                                    <input name="formatted_address"
+                                           type=hidden
+                                           value=""
+                                           class="formatted_address">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div location-search-box
+                             location-update="updateEndLocation(lat, lng, formatted_address)">
+                            <label class="item item-input item-stacked-label">
+                                <span class="input-label">Last Name</span>
+
+                                <input type="text"
+                                       class="geoField"
+                                       name="loc"
+                                       id="loc"
+                                       value=""
+                                       required="required">
+
+                                <div class="details">
+                                    <input name="lat"
+                                           type=hidden
+                                           value=""
+                                           class="lat">
+                                    <input name="lng"
+                                           type=hidden
+                                           value=""
+                                           class="lng">
+                                    <input name="formatted_address"
+                                           type=hidden
+                                           value=""
+                                           class="formatted_address">
+                                </div>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="list radio"
+                         ng-show="requestUberControllerMain.products.length > 0">
+
+                        <div class="item item-divider">
+                            Select one
+                        </div>
+
+                        <div ng-repeat="product in requestUberControllerMain.products"
+                             ng-click="requestUberMain.changeProductId(product.product_id, product.display_name)">
+                            <label class="item item-radio">
+                                <input type="radio"
+                                       name="product_type">
+
+                                <div class="item-content">
+                                    {[{product.display_name}]}
+                                </div>
+                                <i class="radio-icon ion-checkmark"></i>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="selectedProductCard"
+                         ng-show="requestUberMain.selectedProductPriceEstimate.estimate">
+
+                        <ion-list>
+
+                            <ion-item>
+
+                                <div class="list">
+
+                                    <div class="item item-divider">
+                                        {[{requestUberMain.selectedProductPriceEstimate.localized_display_name}]}
+                                    </div>
+
+                                    <div class="item item-icon-left">
+                                        <i class="icon ion-person-stalker"></i>
+                                        Capacity
+                                        <span class="item-note">
+                                            {[{requestUberMain.selectedProduct.capacity}]}
+                                        </span>
+                                    </div>
+
+                                    <div class="item item-icon-left">
+                                        <i class="icon ion-arrow-graph-up-right"></i>
+                                        Surge
+                                        <span class="badge badge-assertive">
+                                            x{[{requestUberMain.selectedProductPriceEstimate.surge_multiplier}]}
+                                        </span>
+                                    </div>
+
+                                    <div class="item item-icon-left">
+                                        <i class="icon ion-cash"></i>
+                                        Cost
+                                        <span class="badge badge-stable">
+                                            {[{requestUberMain.selectedProductPriceEstimate.estimate}]}
+                                        </span>
+                                    </div>
+
+                                    <div class="item item-icon-left">
+                                        <i class="icon ion-model-s"></i>
+                                        Distance
+                                        <span class="item-note">
+                                            {[{requestUberMain.selectedProductPriceEstimate.distance}]}
+                                        </span>
+                                    </div>
+
+                                    <div class="item item-icon-left">
+                                        <i class="icon ion-ios-clock"></i>
+                                        ETA
+                                        <span class="item-note">
+                                            {[{requestUberMain.selectedProduct.estimate}]}
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                            </ion-item>
+
+                        </ion-list>
+
+                    </div>
+
+                    <button class="button button-block button-stable"
+                            ng-click="requestUberMain.requestUber()">
+                        Request
+                    </button>
+
+
+                </ion-slide>
+
+            </ion-slide-box>
+
+        </div>
+
+    </ion-content>
+
+
+    <div class="results"
+         ng-show="requestUberControllerMain.showStatus">
+
+        <div class="list slide_navigator">
+
+            <a class="item item-icon-right"
+               ng-click="requestUberControllerMain.showStatus = false">
+                <i class="icon ion-chevron-down"></i>
+            </a>
+
+        </div>
+
+        <ion-list>
+
+            <ion-item ng-repeat="obj in requestUberControllerMain.priceEstimateArray">
+
+                <div class="list">
+
+                    <div class="item item-divider">
+                        {[{obj.localized_display_name}]}
+                    </div>
+
+                    <div class="item item-icon-left">
+                        <i class="icon ion-arrow-graph-up-right"></i>
+                        Surge
+                        <span class="badge badge-assertive">x{[{obj.surge_multiplier}]}</span>
+                    </div>
+
+                    <div class="item item-icon-left">
+                        <i class="icon ion-cash"></i>
+                        Cost
+                        <span class="badge badge-stable">{[{obj.estimate}]}</span>
+                    </div>
+
+                    <div class="item item-icon-left">
+                        <i class="icon ion-model-s"></i>
+                        Distance
+                        <span class="item-note">
+                            {[{obj.distance}]}
+                        </span>
+                    </div>
+
+                    <div class="item item-icon-left">
+                        <i class="icon ion-ios-clock"></i>
+                        ETA
+                        <span class="item-note">
+                            {[{Math.ceil(obj.duration/60)}]}
+                        </span>
                     </div>
 
                 </div>
 
-            </div>
+            </ion-item>
+
+        </ion-list>
+    </div>
+
+
+    <ion-footer-bar align-title="left"
+                    class="bar-stable">
+
+        <div class="tabs">
+            <a class="tab-item"
+               ui-sref="requestUber">
+                Request Uber
+            </a>
+            <a class="tab-item"
+               ui-sref="priceEstimator">
+                Check Price
+            </a>
+            <a class="tab-item"
+               ng-if="!requestUberControllerMain.showStatus"
+               ng-click="requestUberControllerMain.showStatus = true">
+                Show status
+            </a>
+            <a class="tab-item"
+               ng-if="requestUberControllerMain.showStatus"
+               ng-click="requestUberControllerMain.showStatus = false">
+                Hide Status
+            </a>
         </div>
 
-    </div>
+    </ion-footer-bar>
 
 </script>

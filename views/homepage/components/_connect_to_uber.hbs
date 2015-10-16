@@ -2,28 +2,41 @@
         type="text/ng-template"
         id="_connect_to_uber.html">
 
-    <div class="connectToUber ng-cloak"
-         uber-connect>
+    <ion-header-bar align-title="left"
+                    class="bar-stable">
 
-        <button type="button"
-                ng-disabled="uberConnect.isBusy"
-                class="btnUber center-element"
-                ng-click="uberConnect.getUberAuthorizationUrl()">CONNECT TO UBER
-        </button>
+        <h1 class="title">UberLAN - Connect</h1>
 
-        <div class="spinner"
-             ng-if="uberConnect.isBusy">
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
+    </ion-header-bar>
+
+    <ion-content
+            padding="true"
+            has-bouncing="true">
+
+        <div class="connectToUber ng-cloak"
+             uber-connect>
+
+            <button type="button"
+                    ng-disabled="uberConnect.isBusy"
+                    class="btnUber center-element"
+                    ng-click="uberConnect.getUberAuthorizationUrl()">CONNECT TO UBER
+            </button>
+
+            <div class="spinner"
+                 ng-if="uberConnect.isBusy">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+
+            <div class="status">
+                <p ng-bind="uberConnect.status"></p>
+            </div>
+
         </div>
 
-        <div class="status">
-            <p ng-bind="uberConnect.status"></p>
-        </div>
-
-    </div>
+    </ion-content>
 
 </script>

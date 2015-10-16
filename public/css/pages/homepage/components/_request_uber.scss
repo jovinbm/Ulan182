@@ -1,90 +1,24 @@
-.homepage {
+body.requestUber {
 
-    .requestUber {
-
-        .start {
-            margin-bottom: 30px;
-        }
-
-        .end {
-            margin-bottom: 30px;
-        }
-
-        ul.products {
-            @include no-list-style();
-
-            padding: 0;
-            margin-top: 15px;
-            margin-bottom: 15px;
-
-            li {
-                width: 100%;
-                background-color: rgb(245, 245, 245);
-                margin-top: 15px;
-                margin-bottom: 15px;
-
-                a {
-                    display: block;
-                    padding-left: 15px;
-                    font-size: 15px;
-                    color: $uberPurpleMain;
-                    padding-top: 10px;
-                    padding-bottom: 10px;
-
-                    @include fadeBackground();
-
-                    &:hover {
-                        text-decoration: none;
-                        color: white;
-                        background-color: $uberBluer;
-                    }
-                }
-
-                &.selected {
-                    text-decoration: none;
-                    color: white;
-                    background-color: $uberBluer;
-                }
-            }
-        }
-
-        .selectedProductCard {
-
-            .localized_display_name {
-                height: 40px;
-                background-color: $uberPurpleMain;
-                color: white;
-                margin: 0;
-                margin-bottom: 15px;
-                padding: 10px;
-                font-size: 20px;
-            }
-
-            table {
-                min-width: 100%;
-            }
-
-            td {
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-
-            .field {
-                width: 70%;
-                font-size: 18px;
-                font-weight: 600;
-                padding: 0;
-                color: $uberPurpleMain;
-            }
-
-            .val {
-                text-align: right;
-                width: 30%;
-                font-size: 16px;
-                font-weight: 400;
-                line-height: 1.6em;
-                color: $uberBluer;
-            }
-        }
+    .list.slide_navigator {
+        margin: 0;
     }
+
+    .form {
+        padding: 15px;
+    }
+
+    .list.radio {
+        padding: 15px;
+    }
+
+    .results {
+        position: absolute;
+        padding: 15px;
+        bottom: 50px;
+        width: 100%;
+        max-height: 515px;
+        overflow: scroll;
+    }
+
 }

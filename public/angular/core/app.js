@@ -15,7 +15,7 @@ var app = angular.module('app', [
     'ngDialog',
     'LocalStorageModule',
     'angular-loading-bar',
-    'ngAnimate'
+    'ionic'
 ]);
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -27,78 +27,73 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
     $interpolateProvider.endSymbol('}]}');
 
     // For any unmatched url, redirect to /index
-    $urlRouterProvider.when('/home', '/home/welcome');
     $urlRouterProvider.otherwise("/index");
 
     $stateProvider
         .state('index', {
             url: "/index",
-            templateUrl: "_index.html"
+            views: {
+                'main': {
+                    templateUrl: "_index.html"
+                }
+            }
         })
         .state('register', {
             url: "/register",
-            templateUrl: "_create_account.html"
+            views: {
+                'main': {
+                    templateUrl: "_create_account.html"
+                }
+            }
         })
         .state('login', {
             url: "/login",
-            templateUrl: "_sign_in.html"
+            views: {
+                'main': {
+                    templateUrl: "_sign_in.html"
+                }
+            }
         })
         .state('home', {
             url: "/home",
-            templateUrl: "_homepage.html"
-        })
-        .state('home.welcome', {
-            url: "/welcome",
             views: {
-                'controllerCol': {
+                'main': {
                     templateUrl: "_welcome.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         })
-        .state('home.requestUber', {
-            url: "/requestUber",
-            views: {
-                'controllerCol': {
-                    templateUrl: "_request_uber.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
-                }
-            }
-        })
-        .state('home.rideStatus', {
-            url: "/rideStatus",
-            views: {
-                'controllerCol': {
-                    templateUrl: "_ride_status.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
-                }
-            }
-        })
-        .state('home.priceEstimator', {
+        .state('priceEstimator', {
             url: "/estimator",
             views: {
-                'controllerCol': {
+                'main': {
+                    controller: 'priceEstimateController',
                     templateUrl: "_price_estimates.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         })
-        .state('home.connectToUber', {
+        .state('requestUber', {
+            url: "/requestUber",
+            views: {
+                'main': {
+                    controller: "requestUberController",
+                    templateUrl: "_request_uber.html"
+                }
+            }
+        })
+        .state('rideStatus', {
+            url: "/rideStatus",
+            views: {
+                'main': {
+                    controller: 'uberRideStatusController',
+                    templateUrl: "_ride_status.html"
+                }
+            }
+        })
+        .state('connectToUber', {
             url: "/connect",
             views: {
-                'controllerCol': {
+                'main': {
                     templateUrl: "_connect_to_uber.html"
-                },
-                'map': {
-                    templateUrl: "_main_map.html"
                 }
             }
         });

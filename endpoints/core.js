@@ -5,19 +5,7 @@ module.exports = function (app, rq) {
     var functions = rq.functions();
     var middleware = functions.middleware;
 
-    app.get('/', function (req, res) {
-        return Promise.resolve()
-            .then(function () {
-                throw {
-                    code: 301,
-                    redirectPath: '/index.app'
-                };
-            })
-            .catch(function (e) {
-                rq.catchNonXhrErrors(req, res, e);
-            });
-    });
-    app.get('/index.app', middleware.addLastPage, routes.indexHtml().render_index_Html);
+    app.get('/', middleware.addLastPage, routes.indexHtml().render_index_Html);
 
     app.get('/pr/profile/:username', middleware.useHttps, middleware.addLastPage, middleware.ensureAuthenticated, middleware.addUserData, routes.user_profile().render_user_private_profile_Html);
     app.get('/profile/:username', middleware.useHttp, middleware.addLastPage, routes.user_profile().render_user_public_profile_Html);

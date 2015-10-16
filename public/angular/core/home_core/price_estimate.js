@@ -1,18 +1,35 @@
 angular.module('app')
-    .controller('priceEstimatorController', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
+    .controller('priceEstimateController', ['$rootScope', '$scope', '$http', '$ionicPopover', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicPopover, $ionicSlideBoxDelegate) {
 
-                /*
-                 * priceEstimateArray contains the data obtained from price estimates
-                 * including the types of cars available
-                 * distance etc,
-                 *
-                 * updated when start/end location is chosen
-                 * */
-                $scope.priceEstimateArray = [];
-            }
+        $rootScope.main.classes.body = 'priceEstimate';
+
+        /*
+         * prepare the results popover
+         * */
+        $scope.priceEstimatorCtrlMain = {
+            /*
+             * priceEstimateArray contains the data obtained from price estimates
+             * including the types of cars available
+             * distance etc,
+             *
+             * updated when start/end location is chosen
+             * */
+            priceEstimateArray: [],
+            showEstimates: false
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
         };
     }])
     .directive('priceEstimator', ['$rootScope', '$http', 'service_uberPrices', function ($rootScope, $http, service_uberPrices) {
@@ -46,8 +63,13 @@ angular.module('app')
                                     return service_uberPrices.getPriceEstimates($scope.priceEstimator.start_latitude, $scope.priceEstimator.start_longitude, $scope.priceEstimator.end_latitude, $scope.priceEstimator.end_longitude)
                                 })
                                 .then(function (arr) {
-                                    $scope.priceEstimateArray = arr;
+                                    $scope.priceEstimatorCtrlMain.priceEstimateArray = arr;
                                     $scope.priceEstimator.isBusy = false;
+                                    /*
+                                     * show the estimates
+                                     * */
+                                    $scope.priceEstimatorCtrlMain.showEstimates = true;
+                                    $scope.goToSlide(0);
                                     return true;
                                 })
                                 .catch(function (err) {
@@ -76,11 +98,6 @@ angular.module('app')
                         $rootScope.map._addMarker(lat, lng, formatted_address);
                         $rootScope.map._setCenter(lat, lng);
                         $scope.drawRoute();
-
-                        /*
-                         * get the new price estimates
-                         * */
-                        $scope.priceEstimator.getPriceEstimates();
                     }
                 };
 
@@ -99,11 +116,6 @@ angular.module('app')
 
                         $rootScope.map._addMarker(lat, lng, formatted_address);
                         $scope.drawRoute();
-
-                        /*
-                         * get the new price estimates
-                         * */
-                        $scope.priceEstimator.getPriceEstimates();
                     }
                 };
 

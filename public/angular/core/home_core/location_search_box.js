@@ -2,10 +2,6 @@ angular.module('app')
     .directive('locationSearchBox', ['$rootScope', '$http', function ($rootScope, $http) {
         return {
             restrict: 'AE',
-            //scope: {
-            //    update: '&locationUpdate' //location-update in html
-            //},
-            templateUrl: '_location_search_box.html',
             link: function ($scope, $element, $attr) {
 
                 $scope.lat = angular.element($element.find('.details input.lat')).val();
@@ -26,4 +22,4 @@ angular.module('app')
                     });
             }
         };
-    }])
+    }]);

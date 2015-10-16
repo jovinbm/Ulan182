@@ -1,5 +1,32 @@
 angular.module('app')
-    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', function ($rootScope, $http, service_rideStatus, $interval) {
+    .controller('uberRideStatusController', ['$rootScope', '$scope', '$http', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+
+        $rootScope.main.classes.body = 'rideStatus';
+
+        $scope.uberRideStatusControllerMain = {
+
+            /*
+             * show status by default
+             * */
+            showStatus: true
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
+        };
+
+    }])
+    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', '$timeout', function ($rootScope, $http, service_rideStatus, $interval, $timeout) {
         return {
             restrict: 'AE',
             link: function ($scope, $element, $attr) {
@@ -108,18 +135,20 @@ angular.module('app')
                 /*
                  * watch for the start and end, update on map
                  * */
-                $scope.$watch(function () {
-                    return $scope.uberRideStatusMain.start_lat;
-                }, function (val) {
-                    if (val) {
-                        $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
-                        $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
-                        /*
-                         * set center to me
-                         * */
-                        $rootScope.map._setCenterToMe();
-                    }
-                });
+                $timeout(function () {
+                    $scope.$watch(function () {
+                        return $scope.uberRideStatusMain.start_lat;
+                    }, function (val) {
+                        if (val) {
+                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
+                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
+                            /*
+                             * set center to me
+                             * */
+                            $rootScope.map._setCenterToMe();
+                        }
+                    });
+                }, 3000);
 
                 function checkStatus() {
                     /*
@@ -174,15 +203,19 @@ angular.module('app')
                          * if there is nothing after, then trip is finished
                          * */
                         $scope.uberRideStatusMain.rideStatus = null;
-                        $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+                        if ($rootScope.main && $rootScope.main.userData) {
+                            $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+                        }
                         $rootScope.map._setCenterToMe();
                     }
                 }
 
-                $interval(function () {
+                $timeout(function () {
+                    $interval(function () {
+                        checkStatus();
+                    }, 5000); //update every 5 secs
                     checkStatus();
-                }, 5000); //update every 5 secs
-                checkStatus();
+                }, 3000);
 
             }
         };

@@ -1,5 +1,7 @@
 angular.module('app')
-    .controller('requestUberController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
+    .controller('requestUberController', ['$rootScope', '$scope', '$http','$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+
+        $rootScope.main.classes.body = 'requestUber';
 
         $scope.requestUberControllerMain = {
 
@@ -18,7 +20,23 @@ angular.module('app')
             /*
              * all uber products available in area, update when start location is selected
              * */
-            products: []
+            products: [],
+
+            showStatus: false
+        };
+
+        /*
+         * managing the slides
+         * */
+
+        $scope.goToSlide = function (index) {
+            $ionicSlideBoxDelegate.slide(parseInt(index));
+        };
+        $scope.nextSlide = function (index) {
+            $ionicSlideBoxDelegate.next();
+        };
+        $scope.previousSlide = function (index) {
+            $ionicSlideBoxDelegate.previous();
         };
 
     }])
