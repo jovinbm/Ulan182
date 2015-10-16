@@ -1,7 +1,0 @@
-User-Agent: *
-Disallow:
-Disallow: /topic/
-Disallow: /manage/
-Disallow: /pr/
-
-Sitemap: http://www.africanexponent.com/sitemap.xml

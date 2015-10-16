@@ -473,7 +473,7 @@ module.exports = {
                 .then(function () {
                     throw {
                         code: 301,
-                        redirectPath: 'http://www.africanexponent.com' + req.originalUrl
+                        redirectPath: 'http://www.pluschat.net' + req.originalUrl
                     };
                 })
                 .catch(function (e) {
@@ -496,7 +496,7 @@ module.exports = {
                 .then(function () {
                     throw {
                         code: 301,
-                        redirectPath: 'https://www.africanexponent.com' + req.originalUrl
+                        redirectPath: 'https://www.pluschat.net' + req.originalUrl
                     };
                 })
                 .catch(function (e) {

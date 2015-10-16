@@ -67,13 +67,13 @@ module.exports = function (app) {
 
     app.locals.getImageUrlFromKey = function (key) {
         //the key must have no initial slash
-        var domain = 'https://assets.africanexponent.com/';
+        var domain = 'http://www.pluschat.net/';
         return domain + key;
     };
 
     app.locals.getResizedImageUrlFromKey = function (key, height) {
         //the key must have no initial slash
-        var domain = 'https://assets.africanexponent.com/';
+        var domain = 'http://www.pluschat.net/';
         var keyWithoutExt = key.substr(0, key.lastIndexOf('.'));
         var ext = key.substr(key.lastIndexOf('.') + 1);
 
@@ -94,7 +94,7 @@ module.exports = function (app) {
 
     app.locals.getResizedProfilePictureKey = function (key, height) {
         //the key must have no initial slash
-        var domain = 'https://assets.africanexponent.com/';
+        var domain = 'http://www.pluschat.net/';
 
         if (!key || key.length == 0) {
             //return the default profile picture url
@@ -292,15 +292,15 @@ module.exports = function (app) {
 
     app.locals.getMetaUrl = function (localUrlWithSlash) {
         if (process.env.NODE_ENV === 'production') {
-            return 'http://www.africanexponent.com' + localUrlWithSlash;
+            return 'http://www.pluschat.net/' + localUrlWithSlash;
         } else {
-            return 'http://localhost:3000' + localUrlWithSlash;
+            return 'http://localhost:7000' + localUrlWithSlash;
         }
     };
 
     app.locals.getAssetUrl = function (localUrlWithSlash) {
         if (process.env.NODE_ENV === 'production') {
-            return '//assets.africanexponent.com' + localUrlWithSlash;
+            return 'http://www.pluschat.net/' + localUrlWithSlash;
         } else {
             return localUrlWithSlash;
         }

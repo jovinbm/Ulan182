@@ -66,7 +66,7 @@ module.exports = {
     },
 
     getLastPage: function (req, referrer) {
-        if (req.query.lastpage && req.query.lastpage.length > 0 && (referrer.indexOf('localhost') != -1 || referrer.indexOf('africanexponent.com') != -1 )) {
+        if (req.query.lastpage && req.query.lastpage.length > 0 && (referrer.indexOf('localhost') != -1 || referrer.indexOf('pluschat.net') != -1 )) {
             return referrer;
         } else if (req.session) {
             if (req.session.lastPage) {
