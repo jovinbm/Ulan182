@@ -292,7 +292,7 @@ module.exports = function (app) {
 
     app.locals.getMetaUrl = function (localUrlWithSlash) {
         if (process.env.NODE_ENV === 'production') {
-            return 'http://www.pluschat.net/' + localUrlWithSlash;
+            return 'http://www.pluschat.net' + localUrlWithSlash;
         } else {
             return 'http://localhost:7000' + localUrlWithSlash;
         }
@@ -300,7 +300,7 @@ module.exports = function (app) {
 
     app.locals.getAssetUrl = function (localUrlWithSlash) {
         if (process.env.NODE_ENV === 'production') {
-            return 'http://www.pluschat.net/' + localUrlWithSlash;
+            return 'http://www.pluschat.net' + localUrlWithSlash;
         } else {
             return localUrlWithSlash;
         }
