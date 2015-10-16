@@ -27,7 +27,7 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/localUserLogin', loginData);
+                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;

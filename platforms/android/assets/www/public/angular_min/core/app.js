@@ -14,7 +14,6 @@ var app = angular.module('app', [
     'ui.router',
     'ngDialog',
     'LocalStorageModule',
-    'angular-loading-bar',
     'ionic'
 ]);
 
@@ -99,16 +98,33 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         });
 });
 
+/*
+ * update tokens
+ * */
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push(['$q', '$location', '$localstorage', function ($q, $location, $localstorage) {
+        return {
+            'request': function (config) {
+                config.headers = config.headers || {};
+                if ($localstorage.get('token')) {
+                    config.headers.Authorization = 'Bearer ' + $localstorage.get('token');
+                }
+                return config;
+            }
+
+            , response: function (response) {
+                return response || $q.when(response);
+            }
+        };
+    }]);
+});
+
 app.run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
 });
 
 trackDigests(app);
-
-/*
- * jquery functions
- * */
 angular.module('app')
     .config(function (localStorageServiceProvider) {
         localStorageServiceProvider
@@ -135,7 +151,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("http://www.pluschat.net/api/getUserData", {})
+                            return $http.post("/api/getUserData", {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);
@@ -227,9 +243,10 @@ angular.module('app')
 
             };
 
-            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.main.getUserData();
             });
+
 
             /*
              * important, check if user is not connected to uber
@@ -261,7 +278,7 @@ angular.module('app')
 
                         return Promise.resolve()
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
+                                return $http.post('/api/getUberAuthorizationUrl', {})
                                     .then(function (resp) {
                                         resp = resp.data;
                                         $rootScope.main.responseStatusHandler(resp);
@@ -292,7 +309,7 @@ angular.module('app')
     .controller('createAccountController', ['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('createAccountScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('createAccountScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -318,9 +335,13 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('http://www.pluschat.net/api/createAccount', details)
+                    return $http.post('/api/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })
@@ -336,7 +357,7 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .directive('logoutScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('logoutScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -344,9 +365,13 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
+                            return $http.post('/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
+                                /*
+                                 * delete token
+                                 * */
+                                $localstorage.set('token', '');
                                 $rootScope.main.responseStatusHandler(resp);
                                 $rootScope.main.userData = null;
                                 return true;
@@ -369,7 +394,7 @@ angular.module('app')
     .controller('signInController', ['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('signInScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('signInScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -394,10 +419,14 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
+                            return $http.post('/api/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token before redirecting
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })
@@ -415,6 +444,22 @@ angular.module('app')
     .controller('homeCoreController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
         $rootScope.main.classes.body = 'homepage';
 
+    }])
+    .factory('$localstorage', ['$window', function ($window) {
+        return {
+            set: function (key, value) {
+                $window.localStorage[key] = value;
+            },
+            get: function (key, defaultValue) {
+                return $window.localStorage[key] || defaultValue;
+            },
+            setObject: function (key, value) {
+                $window.localStorage[key] = JSON.stringify(value);
+            },
+            getObject: function (key) {
+                return JSON.parse($window.localStorage[key] || '{}');
+            }
+        }
     }])
     .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', function ($interval, $rootScope, $http, $timeout) {
         /*
@@ -472,7 +517,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getProducts', {
+                    return $http.post('/api/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -564,7 +609,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
+                    return $http.post('/api/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -652,7 +697,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
+                    return $http.post('/api/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -761,7 +806,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
+                    return $http.post('/api/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -1402,7 +1447,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('http://www.pluschat.net/api/requestUber', {
+                                    return $http.post('/api/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,
@@ -1689,7 +1734,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'accepted'
                                 })
                                     .then(function (resp) {
@@ -1707,7 +1752,7 @@ angular.module('app')
                                 return Promise.delay(30000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'arriving'
                                 })
                                     .then(function (resp) {
@@ -1725,7 +1770,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'in_progress'
                                 })
                                     .then(function (resp) {
@@ -1743,7 +1788,7 @@ angular.module('app')
                                 return Promise.delay(45000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'completed'
                                 })
                                     .then(function (resp) {

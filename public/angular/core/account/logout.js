@@ -7,7 +7,7 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/logoutClient', {}).then(function (resp) {
+                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
                                 /*

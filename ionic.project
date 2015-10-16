@@ -4,7 +4,7 @@
   "proxies": [
       {
         "path": "/api",
-        "proxyUrl": "http://localhost:7000/api"
+        "proxyUrl": "http://pluschat.net/api"
       }
   ],
   "gulpStartupTasks": [

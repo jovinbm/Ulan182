@@ -117,7 +117,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('/api/requestUber', {
+                                    return $http.post('http://www.pluschat.net/api/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,

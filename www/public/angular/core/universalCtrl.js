@@ -24,7 +24,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("/api/getUserData", {})
+                            return $http.post("http://www.pluschat.net/api/getUserData", {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);

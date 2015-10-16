@@ -60,11 +60,12 @@ redisClient.on("ready", function () {
 });
 require('./db_redis/keys.js')(app);
 
+app.use(cors());
+app.options('*', cors());
+
 /*static components*/
 var endPoints = rq.endPoints();
 endPoints.static(app, rq);  //static endpoints here, before parsing cookies
-
-app.use(cors());
 
 /*
  * authentications

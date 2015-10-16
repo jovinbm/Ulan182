@@ -14,7 +14,7 @@ angular.module('app')
 
                         return Promise.resolve()
                             .then(function () {
-                                return $http.post('/api/getUberAuthorizationUrl', {})
+                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
                                     .then(function (resp) {
                                         resp = resp.data;
                                         $rootScope.main.responseStatusHandler(resp);

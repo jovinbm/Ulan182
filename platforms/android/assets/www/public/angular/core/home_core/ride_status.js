@@ -55,7 +55,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'accepted'
                                 })
                                     .then(function (resp) {
@@ -73,7 +73,7 @@ angular.module('app')
                                 return Promise.delay(30000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'arriving'
                                 })
                                     .then(function (resp) {
@@ -91,7 +91,7 @@ angular.module('app')
                                 return Promise.delay(15000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'in_progress'
                                 })
                                     .then(function (resp) {
@@ -109,7 +109,7 @@ angular.module('app')
                                 return Promise.delay(45000);
                             })
                             .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
+                                return $http.post('/api/updateUberRequestSandbox', {
                                     status: 'completed'
                                 })
                                     .then(function (resp) {
