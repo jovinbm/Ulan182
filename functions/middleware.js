@@ -473,7 +473,7 @@ module.exports = {
                 .then(function () {
                     throw {
                         code: 301,
-                        redirectPath: 'http://www.pluschat.net' + req.originalUrl
+                        redirectPath: 'https://www.pluschat.net' + req.originalUrl
                     };
                 })
                 .catch(function (e) {
