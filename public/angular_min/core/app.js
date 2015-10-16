@@ -18,18 +18,18 @@ var app = angular.module('app', [
     'ionic'
 ]);
 
-//app.config(function ($httpProvider) {
-//    $httpProvider.interceptors.push(function ($q) {
-//        return {
-//            'request': function (config) {
-//                config.url = config.url + '?id=123';
-//                return config || $q.when(config);
-//
-//            }
-//
-//        }
-//    });
-//});
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push(function ($q) {
+        return {
+            'request': function (config) {
+                config.url = 'http://localhost:8000 ' + config.url;
+                return config || $q.when(config);
+
+            }
+
+        }
+    });
+});
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
     //
@@ -401,6 +401,17 @@ angular.module('app')
                             return true;
                         });
                 }
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);
@@ -1844,17 +1855,6 @@ angular.module('app')
                     checkStatus();
                 }, 3000);
 
-            }
-        };
-    }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
             }
         };
     }]);

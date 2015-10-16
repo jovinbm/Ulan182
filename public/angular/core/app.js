@@ -18,18 +18,18 @@ var app = angular.module('app', [
     'ionic'
 ]);
 
-//app.config(function ($httpProvider) {
-//    $httpProvider.interceptors.push(function ($q) {
-//        return {
-//            'request': function (config) {
-//                config.url = config.url + '?id=123';
-//                return config || $q.when(config);
-//
-//            }
-//
-//        }
-//    });
-//});
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push(function ($q) {
+        return {
+            'request': function (config) {
+                config.url = 'http://localhost:8000 ' + config.url;
+                return config || $q.when(config);
+
+            }
+
+        }
+    });
+});
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
     //
