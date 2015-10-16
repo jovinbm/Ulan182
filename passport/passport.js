@@ -459,7 +459,7 @@ module.exports = function (app, passport, LocalStrategy) {
                 if (process.env.NODE_ENV == 'production') {
                     url = 'https://login.uber.com/oauth/v2/authorize?' +
                         'response_type=code' +
-                        '&redirect_uri=' + encodeURIComponent('http:s//www.pluschat.net/api/uberauth/callback') +
+                        '&redirect_uri=' + encodeURIComponent('https://www.pluschat.net/api/uberauth/callback') +
                         '&scope=request history profile' +
                         '&client_id=' + rq.uber.defaults.client_id;
                 } else {
