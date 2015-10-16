@@ -79,6 +79,26 @@ angular.module('app')
                     }
                 },
 
+                redirectToLogin: function () {
+                    $window.location.href = '/notLoggedIn';
+                },
+
+                reloadPage: function () {
+                    $window.location.reload();
+                },
+
+                redirectToHome: function () {
+                    $window.location.href = '/';
+                },
+
+                redirectToPage: function (path) {
+                    $window.location.href = path;
+                },
+
+                redirectToPreviousPage: function () {
+                    window.location.href = document.referrer;
+                },
+
                 responseStatusHandler: function (resp) {
                     $filter('responseFilter')(resp);
                 },

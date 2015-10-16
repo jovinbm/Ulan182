@@ -190,6 +190,26 @@ angular.module('app')
                     }
                 },
 
+                redirectToLogin: function () {
+                    $window.location.href = '/notLoggedIn';
+                },
+
+                reloadPage: function () {
+                    $window.location.reload();
+                },
+
+                redirectToHome: function () {
+                    $window.location.href = '/';
+                },
+
+                redirectToPage: function (path) {
+                    $window.location.href = path;
+                },
+
+                redirectToPreviousPage: function () {
+                    window.location.href = document.referrer;
+                },
+
                 responseStatusHandler: function (resp) {
                     $filter('responseFilter')(resp);
                 },
@@ -388,6 +408,17 @@ angular.module('app')
                             return true;
                         });
                 }
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);
@@ -1831,17 +1862,6 @@ angular.module('app')
                     checkStatus();
                 }, 3000);
 
-            }
-        };
-    }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
             }
         };
     }]);

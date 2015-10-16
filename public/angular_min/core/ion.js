@@ -288,6 +288,17 @@ angular.module('app')
         };
     }]);
 angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
+            }
+        };
+    }]);
+angular.module('app')
     .controller('homeCoreController', ['$rootScope', '$scope', '$http', function ($rootScope, $scope, $http) {
         $rootScope.main.classes.body = 'homepage';
 
@@ -1731,17 +1742,6 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-            }
-        };
-    }]);
-angular.module('app')
     .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {
 
@@ -1890,6 +1890,26 @@ angular.module('app')
                         //do nothing
                         return true;
                     }
+                },
+
+                redirectToLogin: function () {
+                    $window.location.href = '/notLoggedIn';
+                },
+
+                reloadPage: function () {
+                    $window.location.reload();
+                },
+
+                redirectToHome: function () {
+                    $window.location.href = '/';
+                },
+
+                redirectToPage: function (path) {
+                    $window.location.href = path;
+                },
+
+                redirectToPreviousPage: function () {
+                    window.location.href = document.referrer;
                 },
 
                 responseStatusHandler: function (resp) {
