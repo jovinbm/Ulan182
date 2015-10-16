@@ -1,6 +1,7 @@
 var envVariables = require('./environment_config.js');
 var databaseURL = "mongodb://" + envVariables.uberUsername() + ":" + envVariables.uberPassword() + "@localhost:27017/uber";
 var databaseURL2 = "mongodb://" + envVariables.uberUsername() + ":" + envVariables.uberPassword() + "@ds039674.mongolab.com:39674/uberlan";
+console.log(databaseURL2);
 
 var dbUrl;
 if (process.env.NODE_ENV == 'production') {
