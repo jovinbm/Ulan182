@@ -519,6 +519,7 @@ module.exports = function (app, passport, LocalStrategy) {
                     })
             })
             .catch(function (e) {
+                console.log(e);
                 if (!e.code) {
                     throw {
                         err: e,
