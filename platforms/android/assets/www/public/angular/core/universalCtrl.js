@@ -112,6 +112,10 @@ angular.module('app')
                         title: heading,
                         template: content
                     });
+                },
+
+                showIonicJSONAlert: function (data) {
+                    $rootScope.main.showIonicAlert('JSON', JSON.stringify(data))
                 }
 
             };

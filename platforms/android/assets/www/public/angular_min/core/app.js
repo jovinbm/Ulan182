@@ -127,7 +127,7 @@ app.run(function ($rootScope, $state, $stateParams) {
 });
 
 app.constant("GLOBAL", {
-    baseUrl: 'http://localhost:7000/api'
+    baseUrl: 'http://www.pluschat.net/api'
 });
 
 trackDigests(app);
@@ -245,6 +245,10 @@ angular.module('app')
                         title: heading,
                         template: content
                     });
+                },
+
+                showIonicJSONAlert: function (data) {
+                    $rootScope.main.showIonicAlert('JSON', JSON.stringify(data))
                 }
 
             };
@@ -290,7 +294,6 @@ angular.module('app')
                                             console.log("Response Object -> " + JSON.stringify(result));
                                         }, function (error) {
                                             console.log("Error -> " + error);
-                                            ß
                                         });
                                 });
 
@@ -344,9 +347,9 @@ angular.module('app')
                     password2: ""
                 };
 
-                $scope.createAccount = function (redirect) {
+                $scope.createAccount = function () {
                     $scope.createMain.isBusy = true;
-                    return createAccount($scope.registrationDetails, redirect)
+                    return createAccount($scope.registrationDetails)
                         .then(function () {
                             $scope.createMain.isBusy = false;
                         });
@@ -449,12 +452,24 @@ angular.module('app')
                             return true;
                         })
                         .catch(function (err) {
+                            $rootScope.main.responseStatusHandler(err);
                             err = err.data;
                             $scope.loginFormModel.password = "";
                             $rootScope.main.responseStatusHandler(err);
                             return true;
                         });
                 }
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);
@@ -1918,17 +1933,6 @@ angular.module('app')
                 }
             };
         }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-            }
-        };
-    }]);
 angular.module('app')
     .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {

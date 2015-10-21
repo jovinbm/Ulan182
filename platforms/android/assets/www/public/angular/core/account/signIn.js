@@ -39,6 +39,7 @@ angular.module('app')
                             return true;
                         })
                         .catch(function (err) {
+                            $rootScope.main.responseStatusHandler(err);
                             err = err.data;
                             $scope.loginFormModel.password = "";
                             $rootScope.main.responseStatusHandler(err);

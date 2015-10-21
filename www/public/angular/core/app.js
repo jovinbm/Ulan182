@@ -92,6 +92,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         })
         .state('connectToUber', {
             url: "/connect",
+            cache: false,
             views: {
                 'main': {
                     templateUrl: "_connect_to_uber.html"
@@ -127,7 +128,7 @@ app.run(function ($rootScope, $state, $stateParams) {
 });
 
 app.constant("GLOBAL", {
-    baseUrl: ''
+    baseUrl: 'http://www.pluschat.net/api'
 });
 
 trackDigests(app);

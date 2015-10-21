@@ -127,7 +127,7 @@ app.run(function ($rootScope, $state, $stateParams) {
 });
 
 app.constant("GLOBAL", {
-    baseUrl: 'http://localhost:7000/api'
+    baseUrl: 'http://www.pluschat.net/api'
 });
 
 trackDigests(app);

@@ -92,6 +92,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         })
         .state('connectToUber', {
             url: "/connect",
+            cache: false,
             views: {
                 'main': {
                     templateUrl: "_connect_to_uber.html"
@@ -127,7 +128,7 @@ app.run(function ($rootScope, $state, $stateParams) {
 });
 
 app.constant("GLOBAL", {
-    baseUrl: 'api'
+    baseUrl: 'http://www.pluschat.net/api'
 });
 
 trackDigests(app);
@@ -294,7 +295,6 @@ angular.module('app')
                                             console.log("Response Object -> " + JSON.stringify(result));
                                         }, function (error) {
                                             console.log("Error -> " + error);
-                                            ß
                                         });
                                 });
 
@@ -348,9 +348,9 @@ angular.module('app')
                     password2: ""
                 };
 
-                $scope.createAccount = function (redirect) {
+                $scope.createAccount = function () {
                     $scope.createMain.isBusy = true;
-                    return createAccount($scope.registrationDetails, redirect)
+                    return createAccount($scope.registrationDetails)
                         .then(function () {
                             $scope.createMain.isBusy = false;
                         });
@@ -432,19 +432,9 @@ angular.module('app')
 
                 $scope.submitLocalLoginForm = function () {
                     $scope.signInMain.isBusy = true;
-                    //return localUserLogin($scope.loginFormModel)
-                    //    .then(function () {
-                    //        $scope.signInMain.isBusy = false;
-                    //    });
-                    return Promise.resolve()
+                    return localUserLogin($scope.loginFormModel)
                         .then(function () {
-                            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain');
-                        })
-                        .then(function (resp) {
-                            $rootScope.main.showIonicJSONAlert(resp);
-                        })
-                        .catch(function (err) {
-                            $rootScope.main.showIonicJSONAlert(err);
+                            $scope.signInMain.isBusy = false;
                         });
                 };
 
@@ -1934,6 +1924,17 @@ angular.module('app')
             };
         }]);
 angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
+            }
+        };
+    }]);
+angular.module('app')
     .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {
 
@@ -2000,17 +2001,6 @@ angular.module('app')
                 }
             } else {
                 //do nothing
-            }
-        };
-    }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
             }
         };
     }]);

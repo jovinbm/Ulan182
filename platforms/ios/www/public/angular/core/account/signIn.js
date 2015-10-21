@@ -18,19 +18,9 @@ angular.module('app')
 
                 $scope.submitLocalLoginForm = function () {
                     $scope.signInMain.isBusy = true;
-                    //return localUserLogin($scope.loginFormModel)
-                    //    .then(function () {
-                    //        $scope.signInMain.isBusy = false;
-                    //    });
-                    return Promise.resolve()
+                    return localUserLogin($scope.loginFormModel)
                         .then(function () {
-                            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain');
-                        })
-                        .then(function (resp) {
-                            $rootScope.main.showIonicJSONAlert(resp);
-                        })
-                        .catch(function (err) {
-                            $rootScope.main.showIonicJSONAlert(err);
+                            $scope.signInMain.isBusy = false;
                         });
                 };
 

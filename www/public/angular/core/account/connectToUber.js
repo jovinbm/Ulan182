@@ -20,7 +20,6 @@ angular.module('app')
                                             console.log("Response Object -> " + JSON.stringify(result));
                                         }, function (error) {
                                             console.log("Error -> " + error);
-                                            ß
                                         });
                                 });
 

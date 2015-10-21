@@ -46,6 +46,7 @@
 		D54F5E41D4334F628F2A3764 /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C44078EAEDF94AD3BC2C855C /* CDVStatusBar.m */; };
 		BF77EA757C1A4280B6809772 /* IonicKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B532E63C4766496DB524B92D /* IonicKeyboard.m */; };
 		5A160711E8204FA6BD6A30CB /* UIWebViewExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 0684C00642CF4E0DAEF82A26 /* UIWebViewExtension.m */; };
+		0B12162264034ADBB977C395 /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 036DA23CA89441BC8B166ABF /* CDVInAppBrowser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +126,8 @@
 		0684C00642CF4E0DAEF82A26 /* UIWebViewExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIWebViewExtension.m"; path = "ionic-plugin-keyboard/UIWebViewExtension.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		747B54DFD5944D378C5CA633 /* IonicKeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "IonicKeyboard.h"; path = "ionic-plugin-keyboard/IonicKeyboard.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		55F17C7BFC734A8AAF4BDCC0 /* UIWebViewExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIWebViewExtension.h"; path = "ionic-plugin-keyboard/UIWebViewExtension.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		036DA23CA89441BC8B166ABF /* CDVInAppBrowser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVInAppBrowser.m"; path = "cordova-plugin-inappbrowser/CDVInAppBrowser.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		5F9F35C252404A4E8C82B586 /* CDVInAppBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVInAppBrowser.h"; path = "cordova-plugin-inappbrowser/CDVInAppBrowser.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -237,6 +240,8 @@
 				0684C00642CF4E0DAEF82A26 /* UIWebViewExtension.m */,
 				747B54DFD5944D378C5CA633 /* IonicKeyboard.h */,
 				55F17C7BFC734A8AAF4BDCC0 /* UIWebViewExtension.h */,
+				036DA23CA89441BC8B166ABF /* CDVInAppBrowser.m */,
+				5F9F35C252404A4E8C82B586 /* CDVInAppBrowser.h */,
 			);
 			name = Plugins;
 			path = "uber_ionic/Plugins";
@@ -428,6 +433,7 @@
 				D54F5E41D4334F628F2A3764 /* CDVStatusBar.m in Sources */,
 				BF77EA757C1A4280B6809772 /* IonicKeyboard.m in Sources */,
 				5A160711E8204FA6BD6A30CB /* UIWebViewExtension.m in Sources */,
+				0B12162264034ADBB977C395 /* CDVInAppBrowser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

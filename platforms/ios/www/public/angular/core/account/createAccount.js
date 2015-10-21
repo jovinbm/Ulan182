@@ -19,9 +19,9 @@ angular.module('app')
                     password2: ""
                 };
 
-                $scope.createAccount = function (redirect) {
+                $scope.createAccount = function () {
                     $scope.createMain.isBusy = true;
-                    return createAccount($scope.registrationDetails, redirect)
+                    return createAccount($scope.registrationDetails)
                         .then(function () {
                             $scope.createMain.isBusy = false;
                         });

@@ -68,7 +68,6 @@ gulp.task('concatenateUberCoreDev', function () {
         'bower_components/underscore/underscore.js',
         'bower_components/underscore.string/dist/underscore.string.js',
         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-        'bower_components/respond/dest/respond.min.js',
         'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
         'bower_components/angular-toastr/dist/angular-toastr.tpls.js',
         'bower_components/ngDialog/js/ngDialog.js',
@@ -79,16 +78,30 @@ gulp.task('concatenateUberCoreDev', function () {
         'bower_components/matchheight/jquery.matchHeight.js',
         'bower_components/aaCustom-js-files/geocomplete/jquery.geocomplete.js',
         'bower_components/ngCordova/dist/ng-cordova.js',
-        'bower_components/ng-cordova-oauth/dist/ng-cordova-oauth.js',
-        'www/public/jsmin/vendor/gmaps.js',
-        'www/public/jsmin/vendor/bluebird.min.js',
-        'www/public/jsmin/vendor/bluebird_retry.js'
+        'bower_components/ng-cordova-oauth/dist/ng-cordova-oauth.js'
 
     ])
         .pipe(sourcemaps.init())
-        .pipe(concat('jsfiles.min.js'))
+        .pipe(concat('core.min.js'))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('www/public/uberjs'));
+        .pipe(gulp.dest('www/public/js_final'));
+});
+
+gulp.task('minifyHelperJs', function () {
+    return gulp.src(['www/public/js_helpers/**/*.js'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('js_helpers.min.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('www/public/js_final'));
+});
+
+gulp.task('concatenateVendorJs', function () {
+    return gulp.src(['www/public/js_vendor/**/*.js'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('js_vendor.min.js'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('www/public/js_final'));
 });
 
 gulp.task('compile_handlebars', function () {
@@ -137,6 +150,8 @@ gulp.task('watch', function () {
     gulp.watch('www/public/css/**/*.scss', ['minifyAllScss']);
     gulp.watch('www/public/imgs/**/*', ['minifyAllImages']);
     gulp.watch('www/public/angular/core/**/*.js', ['minifyUberAppJS']);
+    gulp.watch('www/public/js_helpers/**/*.js', ['minifyHelperJs']);
+    gulp.watch('www/public/js_vendor/**/*.js', ['concatenateVendorJs']);
 });
 
 // Default Task
@@ -145,6 +160,8 @@ gulp.task('default', [
     'minifyAllScss',
     'minifyAllImages',
     'concatenateUberCoreDev',
+    'minifyHelperJs',
+    'concatenateVendorJs',
     'minifyUberAppJS',
     'watch'
 ]);
