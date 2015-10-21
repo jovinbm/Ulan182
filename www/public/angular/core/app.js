@@ -14,7 +14,9 @@ var app = angular.module('app', [
     'ui.router',
     'ngDialog',
     'LocalStorageModule',
-    'ionic'
+    'ionic',
+    'ngCordova',
+    'ngCordovaOauth'
 ]);
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -122,6 +124,10 @@ app.config(function ($httpProvider) {
 app.run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
+});
+
+app.constant("GLOBAL", {
+    baseUrl: ''
 });
 
 trackDigests(app);

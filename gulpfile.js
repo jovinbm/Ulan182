@@ -21,41 +21,36 @@ gulp.task('minifyAllScss', function () {
     var options = {
         extensions: ["css, !less", "!sass"]
     };
-    return gulp.src(['public/css/pages/**/*.scss'])
+    return gulp.src(['www/public/css/pages/**/*.scss'])
         .pipe(sourcemaps.init())
         .pipe(cssimport(options))
         .pipe(sass().on('error', sass.logError))
         .pipe(minifyCss())
         .pipe(sourcemaps.write('.'))
         .pipe(ext_replace('.min.css'))
-        .pipe(gulp.dest('public/cssmin'));
+        .pipe(gulp.dest('www/public/cssmin'));
 });
 
 gulp.task('minifyAllImages', function () {
-    return gulp.src('public/imgs/**/*')
+    return gulp.src('www/public/imgs/**/*')
         .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
-        .pipe(gulp.dest('public/imgsmin'));
+        .pipe(gulp.dest('www/public/imgsmin'));
 });
 
 gulp.task('minifyUberAppJS', function () {
-    return gulp.src(['public/angular/core/app.js', 'public/angular/core/**/*.js'])
+    return gulp.src(['www/public/angular/core/app.js', 'www/public/angular/core/**/*.js'])
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
-        .pipe(gulp.dest('public/angular_min/core'))
+        .pipe(gulp.dest('www/public/angular_min/core'))
         .pipe(rename('app.min.js'))
         .pipe(ngAnnotate())
         .pipe(uglify())
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('public/angular_min/core'));
-});
-
-gulp.task('copy', function () {
-    return gulp.src(['public/**/*', 'www/public'])
-        .pipe(gulp.dest('www/public'));
+        .pipe(gulp.dest('www/public/angular_min/core'));
 });
 
 gulp.task('concatenateUberCoreDev', function () {
@@ -83,15 +78,17 @@ gulp.task('concatenateUberCoreDev', function () {
         'bower_components/angular-loading-bar/src/loading-bar.js',
         'bower_components/matchheight/jquery.matchHeight.js',
         'bower_components/aaCustom-js-files/geocomplete/jquery.geocomplete.js',
-        'public/jsmin/vendor/gmaps.js',
-        'public/jsmin/vendor/bluebird.min.js',
-        'public/jsmin/vendor/bluebird_retry.js'
+        'bower_components/ngCordova/dist/ng-cordova.js',
+        'bower_components/ng-cordova-oauth/dist/ng-cordova-oauth.js',
+        'www/public/jsmin/vendor/gmaps.js',
+        'www/public/jsmin/vendor/bluebird.min.js',
+        'www/public/jsmin/vendor/bluebird_retry.js'
 
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('jsfiles.min.js'))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest('public/uberjs'));
+        .pipe(gulp.dest('www/public/uberjs'));
 });
 
 gulp.task('compile_handlebars', function () {
@@ -115,25 +112,17 @@ gulp.task('compile_handlebars', function () {
  * ionic consistency tasks
  * */
 
-var paths = {
-    sass: ['./public/css_ionic/**/*.scss']
-};
-
 gulp.task('sass', function (done) {
-    gulp.src('./public/css_ionic/**/*.scss')
+    gulp.src('www/public/css_ionic/**/*.scss')
         .pipe(sass())
         .on('error', sass.logError)
-        .pipe(gulp.dest('./www/css/'))
+        .pipe(gulp.dest('www/css/'))
         .pipe(minifyCss({
             keepSpecialComments: 0
         }))
         .pipe(rename({extname: '.min.css'}))
-        .pipe(gulp.dest('./www/css/'))
+        .pipe(gulp.dest('www/css/'))
         .on('end', done);
-});
-
-gulp.task('watch', function () {
-    gulp.watch(paths.sass, ['sass']);
 });
 
 /*
@@ -143,11 +132,11 @@ gulp.task('watch', function () {
 
 // Watch Files For Changes
 gulp.task('watch', function () {
-    gulp.watch(paths.sass, ['sass']);
+    gulp.watch('www/public/css_ionic/**/*.scss', ['sass']);
     gulp.watch('bower_components/bootstrap-sass/**/*.scss', ['minifyAllScss']);
-    gulp.watch('public/css/**/*.scss', ['minifyAllScss']);
-    gulp.watch('public/imgs/**/*', ['minifyAllImages']);
-    gulp.watch('public/angular/core/**/*.js', ['minifyUberAppJS', 'copy']);
+    gulp.watch('www/public/css/**/*.scss', ['minifyAllScss']);
+    gulp.watch('www/public/imgs/**/*', ['minifyAllImages']);
+    gulp.watch('www/public/angular/core/**/*.js', ['minifyUberAppJS']);
 });
 
 // Default Task

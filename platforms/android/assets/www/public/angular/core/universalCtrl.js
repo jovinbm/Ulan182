@@ -8,8 +8,8 @@ angular.module('app')
 
 angular.module('app')
     .controller('UniversalController',
-    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout',
-        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout) {
+    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout', 'GLOBAL',
+        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout, GLOBAL) {
 
             $rootScope.main = {
 
@@ -24,7 +24,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("/api/getUserData", {})
+                            return $http.post(GLOBAL.baseUrl + '/getUserData', {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);

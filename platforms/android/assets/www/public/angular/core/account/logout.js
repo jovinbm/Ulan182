@@ -1,5 +1,5 @@
 angular.module('app')
-    .directive('logoutScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
+    .directive('logoutScope', ['$rootScope', '$http', '$localstorage','GLOBAL', function ($rootScope, $http, $localstorage,GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -7,7 +7,7 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/logoutClient', {}).then(function (resp) {
+                            return $http.post(GLOBAL.baseUrl + '/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
                                 /*

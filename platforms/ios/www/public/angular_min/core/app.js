@@ -14,8 +14,9 @@ var app = angular.module('app', [
     'ui.router',
     'ngDialog',
     'LocalStorageModule',
-    'angular-loading-bar',
-    'ionic'
+    'ionic',
+    'ngCordova',
+    'ngCordovaOauth'
 ]);
 
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -99,16 +100,37 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         });
 });
 
+/*
+ * update tokens
+ * */
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push(['$q', '$location', '$localstorage', function ($q, $location, $localstorage) {
+        return {
+            'request': function (config) {
+                config.headers = config.headers || {};
+                if ($localstorage.get('token')) {
+                    config.headers.Authorization = 'Bearer ' + $localstorage.get('token');
+                }
+                return config;
+            }
+
+            , response: function (response) {
+                return response || $q.when(response);
+            }
+        };
+    }]);
+});
+
 app.run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
 });
 
-trackDigests(app);
+app.constant("GLOBAL", {
+    baseUrl: 'api'
+});
 
-/*
- * jquery functions
- * */
+trackDigests(app);
 angular.module('app')
     .config(function (localStorageServiceProvider) {
         localStorageServiceProvider
@@ -119,8 +141,8 @@ angular.module('app')
 
 angular.module('app')
     .controller('UniversalController',
-    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout',
-        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout) {
+    ['$filter', '$window', '$location', '$scope', '$rootScope', 'ngDialog', '$anchorScroll', 'localStorageService', '$http', '$state', 'toastr', '$interval', 'service_rideStatus', '$ionicPopup', '$ionicPopover', '$timeout', 'GLOBAL',
+        function ($filter, $window, $location, $scope, $rootScope, ngDialog, $anchorScroll, localStorageService, $http, $state, toastr, $interval, service_rideStatus, $ionicPopup, $ionicPopover, $timeout, GLOBAL) {
 
             $rootScope.main = {
 
@@ -135,7 +157,7 @@ angular.module('app')
                 getUserData: function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post("http://www.pluschat.net/api/getUserData", {})
+                            return $http.post(GLOBAL.baseUrl + '/getUserData', {})
                                 .then(function (resp) {
                                     resp = resp.data;
                                     $rootScope.main.responseStatusHandler(resp);
@@ -223,13 +245,18 @@ angular.module('app')
                         title: heading,
                         template: content
                     });
+                },
+
+                showIonicJSONAlert: function (data) {
+                    $rootScope.main.showIonicAlert('JSON', JSON.stringify(data))
                 }
 
             };
 
-            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.main.getUserData();
             });
+
 
             /*
              * important, check if user is not connected to uber
@@ -246,53 +273,65 @@ angular.module('app')
         }
     ]);
 angular.module('app')
-    .directive('uberConnect', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-                $scope.uberConnect = {
-                    isBusy: false,
-                    status: '',
+    .directive('uberConnect', ['$rootScope', '$http', '$cordovaOauth', 'GLOBAL',
+        function ($rootScope, $http, $cordovaOauth, GLOBAL) {
+            return {
+                restrict: 'AE',
+                link: function ($scope) {
+                    $scope.uberConnect = {
+                        isBusy: false,
+                        status: '',
 
-                    getUberAuthorizationUrl: function () {
+                        getUberAuthorizationUrl: function () {
 
-                        $scope.uberConnect.isBusy = true;
-                        $scope.uberConnect.status = 'Connecting...';
+                            $scope.uberConnect.isBusy = true;
+                            $scope.uberConnect.status = 'Connecting...';
 
-                        return Promise.resolve()
-                            .then(function () {
-                                return $http.post('http://www.pluschat.net/api/getUberAuthorizationUrl', {})
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return resp;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        throw err;
-                                    })
-                            })
-                            .then(function (resp) {
-                                $scope.uberConnect.isBusy = false;
-                                $rootScope.main.redirectToPage(resp.url);
-                                return true;
-                            })
-                            .catch(function (err) {
-                                $scope.uberConnect.isBusy = false;
-                                console.log(err);
-                                return true;
-                            })
+                            return Promise.resolve()
+                                .then(function () {
+                                    $cordovaOauth.uber('5ZCEhRHb7dPloybTSGa3mojIcRIMBXVg', ['request', 'profile', 'history'], {})
+                                        .then(function (result) {
+                                            console.log("Response Object -> " + JSON.stringify(result));
+                                        }, function (error) {
+                                            console.log("Error -> " + error);
+                                            ß
+                                        });
+                                });
+
+                            //return Promise.resolve()
+                            //    .then(function () {
+                            //        return $http.post(GLOBAL.baseUrl + '/getUberAuthorizationUrl', {})
+                            //            .then(function (resp) {
+                            //                resp = resp.data;
+                            //                $rootScope.main.responseStatusHandler(resp);
+                            //                return resp;
+                            //            })
+                            //            .catch(function (err) {
+                            //                err = err.data;
+                            //                $rootScope.main.responseStatusHandler(err);
+                            //                throw err;
+                            //            })
+                            //    })
+                            //    .then(function (resp) {
+                            //        $scope.uberConnect.isBusy = false;
+                            //        $rootScope.main.redirectToPage(resp.url);
+                            //        return true;
+                            //    })
+                            //    .catch(function (err) {
+                            //        $scope.uberConnect.isBusy = false;
+                            //        console.log(err);
+                            //        return true;
+                            //    })
+                        }
                     }
                 }
-            }
-        };
-    }])
+            };
+        }])
 angular.module('app')
     .controller('createAccountController', ['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('createAccountScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('createAccountScope', ['$rootScope', '$http', '$localstorage', 'GLOBAL', function ($rootScope, $http, $localstorage, GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -318,9 +357,13 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('http://www.pluschat.net/api/createAccount', details)
+                    return $http.post(GLOBAL.baseUrl + '/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })
@@ -336,7 +379,7 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .directive('logoutScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('logoutScope', ['$rootScope', '$http', '$localstorage','GLOBAL', function ($rootScope, $http, $localstorage,GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -344,9 +387,13 @@ angular.module('app')
                 $scope.logout = function () {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/logoutClient', {}).then(function (resp) {
+                            return $http.post(GLOBAL.baseUrl + '/logoutClient', {}).then(function (resp) {
                                 console.log(resp);
                                 resp = resp.data;
+                                /*
+                                 * delete token
+                                 * */
+                                $localstorage.set('token', '');
                                 $rootScope.main.responseStatusHandler(resp);
                                 $rootScope.main.userData = null;
                                 return true;
@@ -366,10 +413,10 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .controller('signInController', ['$rootScope', '$http', function ($rootScope, $http) {
+    .controller('signInController', ['$rootScope', '$http', 'GLOBAL', function ($rootScope, $http, GLOBAL) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('signInScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('signInScope', ['$rootScope', '$http', '$localstorage', 'GLOBAL', function ($rootScope, $http, $localstorage, GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -385,23 +432,38 @@ angular.module('app')
 
                 $scope.submitLocalLoginForm = function () {
                     $scope.signInMain.isBusy = true;
-                    return localUserLogin($scope.loginFormModel)
+                    //return localUserLogin($scope.loginFormModel)
+                    //    .then(function () {
+                    //        $scope.signInMain.isBusy = false;
+                    //    });
+                    return Promise.resolve()
                         .then(function () {
-                            $scope.signInMain.isBusy = false;
+                            return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain');
+                        })
+                        .then(function (resp) {
+                            $rootScope.main.showIonicJSONAlert(resp);
+                        })
+                        .catch(function (err) {
+                            $rootScope.main.showIonicJSONAlert(err);
                         });
                 };
 
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('http://www.pluschat.net/api/localUserLogin', loginData);
+                            return $http.post(GLOBAL.baseUrl + '/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token before redirecting
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })
                         .catch(function (err) {
+                            $rootScope.main.responseStatusHandler(err);
                             err = err.data;
                             $scope.loginFormModel.password = "";
                             $rootScope.main.responseStatusHandler(err);
@@ -416,7 +478,23 @@ angular.module('app')
         $rootScope.main.classes.body = 'homepage';
 
     }])
-    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', function ($interval, $rootScope, $http, $timeout) {
+    .factory('$localstorage', ['$window', function ($window) {
+        return {
+            set: function (key, value) {
+                $window.localStorage[key] = value;
+            },
+            get: function (key, defaultValue) {
+                return $window.localStorage[key] || defaultValue;
+            },
+            setObject: function (key, value) {
+                $window.localStorage[key] = JSON.stringify(value);
+            },
+            getObject: function (key) {
+                return JSON.parse($window.localStorage[key] || '{}');
+            }
+        }
+    }])
+    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', 'GLOBAL', function ($interval, $rootScope, $http, $timeout, GLOBAL) {
         /*
          * polls the available products etc
          * */
@@ -472,7 +550,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getProducts', {
+                    return $http.post(GLOBAL.baseUrl + '/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -519,7 +597,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_uberPrices", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberPrices", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * polls the available products, estimates etc
          * */
@@ -564,7 +642,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
+                    return $http.post(GLOBAL.baseUrl + '/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -613,7 +691,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_uberTimeEstimates", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberTimeEstimates", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * pickup time estimates for various products etc
          * */
@@ -652,7 +730,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
+                    return $http.post(GLOBAL.baseUrl + '/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -699,7 +777,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_rideStatus", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_rideStatus", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * polls the ride status
          * */
@@ -761,7 +839,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
+                    return $http.post(GLOBAL.baseUrl + '/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);
@@ -1284,7 +1362,7 @@ angular.module('app')
         };
     }]);
 angular.module('app')
-    .controller('requestUberController', ['$rootScope', '$scope', '$http','$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+    .controller('requestUberController', ['$rootScope', '$scope', '$http', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
 
         $rootScope.main.classes.body = 'requestUber';
 
@@ -1326,8 +1404,8 @@ angular.module('app')
 
     }])
     .directive('requestUberDirective',
-    ['$rootScope', '$http', '$interval', 'service_uberProducts', 'service_uberPrices', 'service_uberTimeEstimates', 'service_rideStatus',
-        function ($rootScope, $http, $interval, service_uberProducts, service_uberPrices, service_uberTimeEstimates, service_rideStatus) {
+    ['$rootScope', '$http', '$interval', 'service_uberProducts', 'service_uberPrices', 'service_uberTimeEstimates', 'service_rideStatus', 'GLOBAL',
+        function ($rootScope, $http, $interval, service_uberProducts, service_uberPrices, service_uberTimeEstimates, service_rideStatus, GLOBAL) {
             return {
                 restrict: 'AE',
                 link: function ($scope, $element, $attr) {
@@ -1402,7 +1480,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('http://www.pluschat.net/api/requestUber', {
+                                    return $http.post(GLOBAL.baseUrl + '/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,
@@ -1660,211 +1738,201 @@ angular.module('app')
         };
 
     }])
-    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', '$timeout', function ($rootScope, $http, service_rideStatus, $interval, $timeout) {
-        return {
-            restrict: 'AE',
-            link: function ($scope, $element, $attr) {
+    .directive('uberRideStatusDirective', ['$rootScope', '$http', 'service_rideStatus', '$interval', '$timeout', 'GLOBAL',
+        function ($rootScope, $http, service_rideStatus, $interval, $timeout, GLOBAL) {
+            return {
+                restrict: 'AE',
+                link: function ($scope, $element, $attr) {
 
-                /*
-                 * clear all markers, then start updating map with new info
-                 * */
-                $rootScope.map._removeAllPresentMarkers();
-
-                /*
-                 * check the uberStatus and keep updating the map with the driver position
-                 * */
-                $scope.uberRideStatusMain = {
-                    rideStatus: null,
-                    driver_latitude: null,
-                    driver_longitude: null,
-                    driver_info_window_marker: null,
-                    start_lat: null,
-                    start_lng: null,
-                    end_lat: null,
-                    end_lng: null,
-
-                    updateUberRequestSandbox: function () {
-                        Promise.resolve()
-                            .then(function () {
-                                return Promise.delay(15000);
-                            })
-                            .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
-                                    status: 'accepted'
-                                })
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return true;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        return true;
-                                    })
-                            })
-                            .then(function () {
-                                return Promise.delay(30000);
-                            })
-                            .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
-                                    status: 'arriving'
-                                })
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return true;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        return true;
-                                    })
-                            })
-                            .then(function () {
-                                return Promise.delay(15000);
-                            })
-                            .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
-                                    status: 'in_progress'
-                                })
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return true;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        return true;
-                                    })
-                            })
-                            .then(function () {
-                                return Promise.delay(45000);
-                            })
-                            .then(function () {
-                                return $http.post('http://www.pluschat.net/api/updateUberRequestSandbox', {
-                                    status: 'completed'
-                                })
-                                    .then(function (resp) {
-                                        resp = resp.data;
-                                        $rootScope.main.responseStatusHandler(resp);
-                                        return true;
-                                    })
-                                    .catch(function (err) {
-                                        err = err.data;
-                                        $rootScope.main.responseStatusHandler(err);
-                                        return true;
-                                    })
-                            })
-                            .catch(function (e) {
-                                console.log(e);
-                                return true;
-                            })
-                    }
-                };
-
-                $scope.uberRideStatusMain.updateUberRequestSandbox();
-
-                /*
-                 * watch for the start and end, update on map
-                 * */
-                $timeout(function () {
-                    $scope.$watch(function () {
-                        return $scope.uberRideStatusMain.start_lat;
-                    }, function (val) {
-                        if (val) {
-                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
-                            $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
-                            /*
-                             * set center to me
-                             * */
-                            $rootScope.map._setCenterToMe();
-                        }
-                    });
-                }, 3000);
-
-                function checkStatus() {
                     /*
-                     * poll from service
+                     * clear all markers, then start updating map with new info
                      * */
-                    var val = service_rideStatus.rideStatus();
+                    $rootScope.map._removeAllPresentMarkers();
 
-                    if (val) {
+                    /*
+                     * check the uberStatus and keep updating the map with the driver position
+                     * */
+                    $scope.uberRideStatusMain = {
+                        rideStatus: null,
+                        driver_latitude: null,
+                        driver_longitude: null,
+                        driver_info_window_marker: null,
+                        start_lat: null,
+                        start_lng: null,
+                        end_lat: null,
+                        end_lng: null,
 
-                        $scope.uberRideStatusMain.rideStatus = val;
-                        $scope.uberRideStatusMain.start_lat = val.lastRide.startLatitude;
-                        $scope.uberRideStatusMain.start_lng = val.lastRide.startLongitude;
-                        $scope.uberRideStatusMain.end_lat = val.lastRide.endLatitude;
-                        $scope.uberRideStatusMain.end_lng = val.lastRide.endLongitude;
-
-                        /*
-                         * put user's position on map
-                         * */
-                        $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
-
-                        /*
-                         * set center to driver
-                         * */
-                        if (val.status == 'in_progress') {
-                            $rootScope.map._setCenter($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
-                        } else {
-                            $rootScope.map._setCenterToMe();
+                        updateUberRequestSandbox: function () {
+                            Promise.resolve()
+                                .then(function () {
+                                    return Promise.delay(15000);
+                                })
+                                .then(function () {
+                                    return $http.post(GLOBAL.baseUrl + '/updateUberRequestSandbox', {
+                                        status: 'accepted'
+                                    })
+                                        .then(function (resp) {
+                                            resp = resp.data;
+                                            $rootScope.main.responseStatusHandler(resp);
+                                            return true;
+                                        })
+                                        .catch(function (err) {
+                                            err = err.data;
+                                            $rootScope.main.responseStatusHandler(err);
+                                            return true;
+                                        })
+                                })
+                                .then(function () {
+                                    return Promise.delay(30000);
+                                })
+                                .then(function () {
+                                    return $http.post(GLOBAL.baseUrl + '/updateUberRequestSandbox', {
+                                        status: 'arriving'
+                                    })
+                                        .then(function (resp) {
+                                            resp = resp.data;
+                                            $rootScope.main.responseStatusHandler(resp);
+                                            return true;
+                                        })
+                                        .catch(function (err) {
+                                            err = err.data;
+                                            $rootScope.main.responseStatusHandler(err);
+                                            return true;
+                                        })
+                                })
+                                .then(function () {
+                                    return Promise.delay(15000);
+                                })
+                                .then(function () {
+                                    return $http.post(GLOBAL.baseUrl + '/updateUberRequestSandbox', {
+                                        status: 'in_progress'
+                                    })
+                                        .then(function (resp) {
+                                            resp = resp.data;
+                                            $rootScope.main.responseStatusHandler(resp);
+                                            return true;
+                                        })
+                                        .catch(function (err) {
+                                            err = err.data;
+                                            $rootScope.main.responseStatusHandler(err);
+                                            return true;
+                                        })
+                                })
+                                .then(function () {
+                                    return Promise.delay(45000);
+                                })
+                                .then(function () {
+                                    return $http.post(GLOBAL.baseUrl + '/updateUberRequestSandbox', {
+                                        status: 'completed'
+                                    })
+                                        .then(function (resp) {
+                                            resp = resp.data;
+                                            $rootScope.main.responseStatusHandler(resp);
+                                            return true;
+                                        })
+                                        .catch(function (err) {
+                                            err = err.data;
+                                            $rootScope.main.responseStatusHandler(err);
+                                            return true;
+                                        })
+                                })
+                                .catch(function (e) {
+                                    console.log(e);
+                                    return true;
+                                })
                         }
+                    };
 
+                    $scope.uberRideStatusMain.updateUberRequestSandbox();
 
+                    /*
+                     * watch for the start and end, update on map
+                     * */
+                    $timeout(function () {
+                        $scope.$watch(function () {
+                            return $scope.uberRideStatusMain.start_lat;
+                        }, function (val) {
+                            if (val) {
+                                $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.start_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.start_lng).toFixed(10));
+                                $rootScope.map._addMarker(parseFloat($scope.uberRideStatusMain.end_lat).toFixed(10), parseFloat($scope.uberRideStatusMain.end_lng).toFixed(10));
+                                /*
+                                 * set center to me
+                                 * */
+                                $rootScope.map._setCenterToMe();
+                            }
+                        });
+                    }, 3000);
+
+                    function checkStatus() {
                         /*
-                         * start updating the ride status
+                         * poll from service
                          * */
+                        var val = service_rideStatus.rideStatus();
 
-                        if (val.location) {
-                            $scope.uberRideStatusMain.driver_latitude = parseFloat(val.location.latitude).toFixed(10);
-                            $scope.uberRideStatusMain.driver_longitude = parseFloat(val.location.longitude).toFixed(10);
+                        if (val) {
+
+                            $scope.uberRideStatusMain.rideStatus = val;
+                            $scope.uberRideStatusMain.start_lat = val.lastRide.startLatitude;
+                            $scope.uberRideStatusMain.start_lng = val.lastRide.startLongitude;
+                            $scope.uberRideStatusMain.end_lat = val.lastRide.endLatitude;
+                            $scope.uberRideStatusMain.end_lng = val.lastRide.endLongitude;
+
+                            /*
+                             * put user's position on map
+                             * */
+                            $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+
+                            /*
+                             * set center to driver
+                             * */
+                            if (val.status == 'in_progress') {
+                                $rootScope.map._setCenter($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude);
+                            } else {
+                                $rootScope.map._setCenterToMe();
+                            }
 
 
                             /*
-                             * update the cars location
+                             * start updating the ride status
                              * */
-                            if (!$scope.uberRideStatusMain.driver_info_window_marker) {
-                                $scope.uberRideStatusMain.driver_info_window_marker = $rootScope.map._addInfoWindowMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude, 'Driver');
-                            } else {
-                                $rootScope.map._removeMarker($scope.uberRideStatusMain.driver_info_window_marker);
-                                $scope.uberRideStatusMain.driver_info_window_marker = $rootScope.map._addInfoWindowMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude, 'Driver');
+
+                            if (val.location) {
+                                $scope.uberRideStatusMain.driver_latitude = parseFloat(val.location.latitude).toFixed(10);
+                                $scope.uberRideStatusMain.driver_longitude = parseFloat(val.location.longitude).toFixed(10);
+
+
+                                /*
+                                 * update the cars location
+                                 * */
+                                if (!$scope.uberRideStatusMain.driver_info_window_marker) {
+                                    $scope.uberRideStatusMain.driver_info_window_marker = $rootScope.map._addInfoWindowMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude, 'Driver');
+                                } else {
+                                    $rootScope.map._removeMarker($scope.uberRideStatusMain.driver_info_window_marker);
+                                    $scope.uberRideStatusMain.driver_info_window_marker = $rootScope.map._addInfoWindowMarker($scope.uberRideStatusMain.driver_latitude, $scope.uberRideStatusMain.driver_longitude, 'Driver');
+                                }
                             }
+                        } else {
+                            /*
+                             * if there is nothing after, then trip is finished
+                             * */
+                            $scope.uberRideStatusMain.rideStatus = null;
+                            if ($rootScope.main && $rootScope.main.userData) {
+                                $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
+                            }
+                            $rootScope.map._setCenterToMe();
                         }
-                    } else {
-                        /*
-                         * if there is nothing after, then trip is finished
-                         * */
-                        $scope.uberRideStatusMain.rideStatus = null;
-                        if ($rootScope.main && $rootScope.main.userData) {
-                            $rootScope.map._updateUserInfoWindowMarker($rootScope.main.userData.firstName);
-                        }
-                        $rootScope.map._setCenterToMe();
                     }
-                }
 
-                $timeout(function () {
-                    $interval(function () {
+                    $timeout(function () {
+                        $interval(function () {
+                            checkStatus();
+                        }, 5000); //update every 5 secs
                         checkStatus();
-                    }, 5000); //update every 5 secs
-                    checkStatus();
-                }, 3000);
+                    }, 3000);
 
-            }
-        };
-    }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-            }
-        };
-    }]);
+                }
+            };
+        }]);
 angular.module('app')
     .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {
@@ -1932,6 +2000,17 @@ angular.module('app')
                 }
             } else {
                 //do nothing
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);

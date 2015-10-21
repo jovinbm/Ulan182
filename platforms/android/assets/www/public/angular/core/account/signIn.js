@@ -1,8 +1,8 @@
 angular.module('app')
-    .controller('signInController', ['$rootScope', '$http', function ($rootScope, $http) {
+    .controller('signInController', ['$rootScope', '$http', 'GLOBAL', function ($rootScope, $http, GLOBAL) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('signInScope', ['$rootScope', '$http', '$localstorage', function ($rootScope, $http, $localstorage) {
+    .directive('signInScope', ['$rootScope', '$http', '$localstorage', 'GLOBAL', function ($rootScope, $http, $localstorage, GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -27,7 +27,7 @@ angular.module('app')
                 function localUserLogin(loginData) {
                     return Promise.resolve()
                         .then(function () {
-                            return $http.post('/api/localUserLogin', loginData);
+                            return $http.post(GLOBAL.baseUrl + '/localUserLogin', loginData);
                         })
                         .then(function (resp) {
                             resp = resp.data;

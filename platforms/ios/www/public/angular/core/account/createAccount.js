@@ -2,7 +2,7 @@ angular.module('app')
     .controller('createAccountController', ['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.main.classes.body = 'account-crud';
     }])
-    .directive('createAccountScope', ['$rootScope', '$http', function ($rootScope, $http) {
+    .directive('createAccountScope', ['$rootScope', '$http', '$localstorage', 'GLOBAL', function ($rootScope, $http, $localstorage, GLOBAL) {
         return {
             restrict: 'AE',
             link: function ($scope) {
@@ -28,9 +28,13 @@ angular.module('app')
                 };
 
                 function createAccount(details) {
-                    return $http.post('http://www.pluschat.net/api/createAccount', details)
+                    return $http.post(GLOBAL.baseUrl + '/createAccount', details)
                         .then(function (resp) {
                             resp = resp.data;
+                            /*
+                             * save the users token
+                             * */
+                            $localstorage.set('token', resp.token);
                             $rootScope.main.responseStatusHandler(resp);
                             return true;
                         })

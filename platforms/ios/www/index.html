@@ -7,47 +7,26 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible"
           content="IE=edge">
-    <meta name="theme-color"
-          content="#09091A">
     <meta name="viewport"
           content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     
-    <!--fonts-->
-    <link href='https://fonts.googleapis.com/css?family=PT+Serif'
-          rel='stylesheet'
-          type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Maven+Pro'
           rel='stylesheet'
           type='text/css'>
-    
-    <!--angular ui select IE8 and firefox 3.6 support-->
-    <!--
-        IE8 support, see AngularJS Internet Explorer Compatibility http://docs.angularjs.org/guide/ie
-        For Firefox 3.6, you will also need to include jQuery and ECMAScript 5 shim
-      -->
-    <!--[if lt IE 9]>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/2.2.0/es5-shim.js"></script>
-    <script>
-        document.createElement('ui-select');
-        document.createElement('ui-select-match');
-        document.createElement('ui-select-choices');
-    </script>
-    <![endif]-->
     <!--js-->
 
     <script src="https://maps.google.com/maps/api/js?libraries=places&sensor=true"></script>
 
     <script type="text/javascript"
-            src="/public/uberjs/jsfiles.min.js"></script>
+            src="public/uberjs/jsfiles.min.js"></script>
 
     <script type="text/javascript"
-            src="/public/angular_min/core/app.js"></script>
+            src="public/angular_min/core/app.js"></script>
     <link rel="stylesheet"
-          href="/public/cssmin/core/core.min.css" />
+          href="public/cssmin/core/core.min.css" />
 
     <!-- compiled css output -->
-    <link href="/lib/ionic/css/ionic.css"
+    <link href="lib/ionic/css/ionic.css"
           rel="stylesheet">
     
     <!-- cordova script (this will be a 404 during development) -->
@@ -134,7 +113,7 @@
 
             <div class="row">
                 <img class="logo-image"
-                     src="/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg" />
+                     src="public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg" />
             </div>
 
             <div>
@@ -423,7 +402,7 @@
 
             <div class="row">
                 <img class="logo-image"
-                     src="/public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg" />
+                     src="public/uber_assets/UBER%20BADGE/Source%20Files/UBER_API_Badge.svg" />
             </div>
 
             <div sign-in-scope>
@@ -557,8 +536,11 @@
 
         <h1 class="title">UberLAN - Welcome</h1>
 
-        <div class="buttons">
-            <button class="button">Settings</button>
+        <div class="buttons"
+             logout-scope>
+            <button class="button"
+                    ng-click="logout()">Logout
+            </button>
         </div>
 
     </ion-header-bar>
@@ -626,6 +608,13 @@
                     class="bar-stable">
 
         <h1 class="title">UberLAN - Connect</h1>
+
+        <div class="buttons"
+             logout-scope>
+            <button class="button"
+                    ng-click="logout()">Logout
+            </button>
+        </div>
 
     </ion-header-bar>
 

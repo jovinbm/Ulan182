@@ -19,7 +19,7 @@ angular.module('app')
             }
         }
     }])
-    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', function ($interval, $rootScope, $http, $timeout) {
+    .factory("service_uberProducts", ['$interval', '$rootScope', '$http', '$timeout', 'GLOBAL', function ($interval, $rootScope, $http, $timeout, GLOBAL) {
         /*
          * polls the available products etc
          * */
@@ -75,7 +75,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getProducts', {
+                    return $http.post(GLOBAL.baseUrl + '/getProducts', {
                         latitude: lat,
                         longitude: lng
                     })
@@ -122,7 +122,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_uberPrices", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberPrices", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * polls the available products, estimates etc
          * */
@@ -167,7 +167,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getPriceEstimate', {
+                    return $http.post(GLOBAL.baseUrl + '/getPriceEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng,
                         end_latitude: end_lat,
@@ -216,7 +216,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_uberTimeEstimates", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_uberTimeEstimates", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * pickup time estimates for various products etc
          * */
@@ -255,7 +255,7 @@ angular.module('app')
                 })
                 .timeout(55000) // timeout in 55 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getTimeEstimate', {
+                    return $http.post(GLOBAL.baseUrl + '/getTimeEstimate', {
                         start_latitude: start_lat,
                         start_longitude: start_lng
                     })
@@ -302,7 +302,7 @@ angular.module('app')
             }
         };
     }])
-    .factory("service_rideStatus", ['$interval', '$rootScope', '$http', function ($interval, $rootScope, $http) {
+    .factory("service_rideStatus", ['$interval', '$rootScope', '$http', 'GLOBAL', function ($interval, $rootScope, $http, GLOBAL) {
         /*
          * polls the ride status
          * */
@@ -364,7 +364,7 @@ angular.module('app')
             return Promise.resolve()
                 .timeout(8000) // timeout in 13 secs
                 .then(function () {
-                    return $http.post('http://www.pluschat.net/api/getRideStatus', {})
+                    return $http.post(GLOBAL.baseUrl + '/getRideStatus', {})
                         .then(function (resp) {
                             resp = resp.data;
                             $rootScope.main.responseStatusHandler(resp);

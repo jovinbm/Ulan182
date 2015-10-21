@@ -1,5 +1,5 @@
 angular.module('app')
-    .controller('requestUberController', ['$rootScope', '$scope', '$http','$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
+    .controller('requestUberController', ['$rootScope', '$scope', '$http', '$ionicSlideBoxDelegate', function ($rootScope, $scope, $http, $ionicSlideBoxDelegate) {
 
         $rootScope.main.classes.body = 'requestUber';
 
@@ -41,8 +41,8 @@ angular.module('app')
 
     }])
     .directive('requestUberDirective',
-    ['$rootScope', '$http', '$interval', 'service_uberProducts', 'service_uberPrices', 'service_uberTimeEstimates', 'service_rideStatus',
-        function ($rootScope, $http, $interval, service_uberProducts, service_uberPrices, service_uberTimeEstimates, service_rideStatus) {
+    ['$rootScope', '$http', '$interval', 'service_uberProducts', 'service_uberPrices', 'service_uberTimeEstimates', 'service_rideStatus', 'GLOBAL',
+        function ($rootScope, $http, $interval, service_uberProducts, service_uberPrices, service_uberTimeEstimates, service_rideStatus, GLOBAL) {
             return {
                 restrict: 'AE',
                 link: function ($scope, $element, $attr) {
@@ -117,7 +117,7 @@ angular.module('app')
                                     }
                                 })
                                 .then(function () {
-                                    return $http.post('/api/requestUber', {
+                                    return $http.post(GLOBAL.baseUrl + '/requestUber', {
                                         start_latitude: $scope.requestUberMain.start_latitude,
                                         start_longitude: $scope.requestUberMain.start_longitude,
                                         end_latitude: $scope.requestUberMain.end_latitude,

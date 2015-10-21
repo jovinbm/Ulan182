@@ -1,10 +1,10 @@
 {
-  "name": "uber_ionic",
+  "name": "UberLAN",
   "app_id": "",
   "proxies": [
       {
         "path": "/api",
-        "proxyUrl": "http://pluschat.net/api"
+        "proxyUrl": "http://localhost:7000/api"
       }
   ],
   "gulpStartupTasks": [
@@ -13,6 +13,6 @@
   ],
   "watchPatterns": [
     "www/**/*",
-    "!www/lib/**/*"
+    "!www/www/lib/**/*"
   ]
 }
