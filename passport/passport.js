@@ -525,6 +525,8 @@ module.exports = function (app, passport, LocalStrategy) {
 
     function saveUberToken(req, res) {
         var module = 'saveUberToken';
+        receivedLogger(module);
+
         var uAuthorization = Promise.promisify(rq.uber.authorization, rq.uber);
         return Promise.resolve()
             .then(function () {
@@ -562,6 +564,7 @@ module.exports = function (app, passport, LocalStrategy) {
                     })
             })
             .catch(function (e) {
+                console.log("1: Error after seeking to authenticate with uber, error = ");
                 console.log(e);
                 if (!e.code) {
                     throw {
@@ -575,7 +578,6 @@ module.exports = function (app, passport, LocalStrategy) {
             })
             .then(function () {
                 rq.consoleLogger(successLogger(module));
-                //return res.status(200).redirect('/');
                 return res.status(200).send({
                     code: 200,
                     token: req.token,
@@ -584,7 +586,6 @@ module.exports = function (app, passport, LocalStrategy) {
                 });
             })
             .catch(function (e) {
-                //rq.catchXhrErrors(req, res, e);
                 rq.catchNonXhrErrors(req, res, e);
             });
     }

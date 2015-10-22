@@ -12,7 +12,7 @@ module.exports = function (app, rq) {
                 };
             })
             .catch(function (e) {
-                return rq.catchXhrErrors(req, res, e);
+                return rq.catchNonXhrErrors(req, res, e);
             });
     });
     app.post('*', function (req, res) {
@@ -25,7 +25,7 @@ module.exports = function (app, rq) {
                 };
             })
             .catch(function (e) {
-                return rq.catchXhrErrors(req, res, e);
+                return rq.catchNonXhrErrors(req, res, e);
             });
     });
 

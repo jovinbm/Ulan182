@@ -1340,13 +1340,15 @@ angular.module("oauth.providers", ["oauth.utils"])
                                  * my code
                                  * */
                                 function getParameterByName(name, urlString) {
-                                    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-                                    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                                        results = regex.exec(urlString.search);
-                                    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+                                    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(urlString);
+                                    if (results == null) {
+                                        return null;
+                                    }
+                                    else {
+                                        return results[1] || 0;
+                                    }
                                 }
 
-                                console.log(event.url);
                                 var authCode = getParameterByName("code", event.url);
                                 deferred.resolve({
                                     authorizationCode: authCode
