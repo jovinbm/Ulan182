@@ -290,11 +290,15 @@ angular.module('app')
 
                             return Promise.resolve()
                                 .then(function () {
-                                    $cordovaOauth.uber('5ZCEhRHb7dPloybTSGa3mojIcRIMBXVg', ['request', 'profile', 'history'], {})
+                                    $cordovaOauth.uber('5ZCEhRHb7dPloybTSGa3mojIcRIMBXVg', ['request profile history'], {})
                                         .then(function (result) {
                                             console.log("Response Object -> " + JSON.stringify(result));
+                                            $scope.uberConnect.isBusy = false;
+                                            $scope.uberConnect.status = '';
                                         }, function (error) {
                                             console.log("Error -> " + error);
+                                            $scope.uberConnect.isBusy = false;
+                                            $scope.uberConnect.status = '';
                                         });
                                 });
 
@@ -460,6 +464,17 @@ angular.module('app')
                             return true;
                         });
                 }
+            }
+        };
+    }]);
+angular.module('app')
+    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
+        $rootScope.main.classes.body = 'index';
+    }])
+    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
+        return {
+            restrict: 'AE',
+            link: function ($scope) {
             }
         };
     }]);
@@ -1923,17 +1938,6 @@ angular.module('app')
                 }
             };
         }]);
-angular.module('app')
-    .controller('indexController', ['$rootScope', '$http', function ($rootScope, $http) {
-        $rootScope.main.classes.body = 'index';
-    }])
-    .directive('indexnScope', ['$rootScope', '$http', function ($rootScope, $http) {
-        return {
-            restrict: 'AE',
-            link: function ($scope) {
-            }
-        };
-    }]);
 angular.module('app')
     .filter("responseFilter", ['$q', '$log', '$window', '$rootScope', function ($q, $log, $window, $rootScope) {
         return function (resp) {

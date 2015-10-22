@@ -15,11 +15,15 @@ angular.module('app')
 
                             return Promise.resolve()
                                 .then(function () {
-                                    $cordovaOauth.uber('5ZCEhRHb7dPloybTSGa3mojIcRIMBXVg', ['request', 'profile', 'history'], {})
+                                    $cordovaOauth.uber('5ZCEhRHb7dPloybTSGa3mojIcRIMBXVg', ['request profile history'], {})
                                         .then(function (result) {
                                             console.log("Response Object -> " + JSON.stringify(result));
+                                            $scope.uberConnect.isBusy = false;
+                                            $scope.uberConnect.status = '';
                                         }, function (error) {
                                             console.log("Error -> " + error);
+                                            $scope.uberConnect.isBusy = false;
+                                            $scope.uberConnect.status = '';
                                         });
                                 });
 

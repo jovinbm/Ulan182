@@ -77,8 +77,7 @@ gulp.task('concatenateUberCoreDev', function () {
         'bower_components/angular-loading-bar/src/loading-bar.js',
         'bower_components/matchheight/jquery.matchHeight.js',
         'bower_components/aaCustom-js-files/geocomplete/jquery.geocomplete.js',
-        'bower_components/ngCordova/dist/ng-cordova.js',
-        'bower_components/ng-cordova-oauth/dist/ng-cordova-oauth.js'
+        'bower_components/ngCordova/dist/ng-cordova.js'
 
     ])
         .pipe(sourcemaps.init())

@@ -503,7 +503,7 @@ module.exports = function (app, passport, LocalStrategy) {
                 if (process.env.NODE_ENV == 'production') {
                     url = 'https://login.uber.com/oauth/v2/authorize?' +
                         'response_type=code' +
-                        '&redirect_uri=' + encodeURIComponent('http://localhost/callback?ubtoken=' + req.token) +
+                        '&redirect_uri=' + encodeURIComponent('https://www.pluschat.net/api/uberauth/callback?ubtoken=' + req.token) +
                         '&scope=request history profile' +
                         '&client_id=' + rq.uber.defaults.client_id;
                 } else {
@@ -575,10 +575,17 @@ module.exports = function (app, passport, LocalStrategy) {
             })
             .then(function () {
                 rq.consoleLogger(successLogger(module));
-                return res.status(200).redirect('/');
+                //return res.status(200).redirect('/');
+                return res.status(200).send({
+                    code: 200,
+                    token: req.token,
+                    redirect: true,
+                    redirectState: 'home'
+                });
             })
             .catch(function (e) {
-                rq.catchXhrErrors(req, res, e);
+                //rq.catchXhrErrors(req, res, e);
+                rq.catchNonXhrErrors(req, res, e);
             });
     }
 
