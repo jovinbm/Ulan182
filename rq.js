@@ -7,7 +7,8 @@ var uberDetails = {
     client_id: process.env.uberClientId,
     client_secret: process.env.uberClientSecret,
     server_token: process.env.uberServerToken,
-    redirect_uri: process.env.NODE_ENV == 'production' ? 'https://www.pluschat.net/api/uberauth/callback' : 'http://localhost:7000/api/uberauth/callback',
+    //redirect_uri: process.env.NODE_ENV == 'production' ? 'https://www.pluschat.net/api/uberauth/callback' : 'http://localhost:7000/api/uberauth/callback',
+    redirect_uri: 'http://localhost/callback',
     name: 'ubLan'
 };
 
