@@ -21,6 +21,42 @@ var errorLogger = function (module, text, err) {
  * */
 
 module.exports = {
+
+    showErrorStack: function (e) {
+        if (e) {
+            if (e.err) {
+                if (e.err.stack) {
+                    rq.consoleLogger(e.err.stack);
+                }
+                if (!e.err.message || !e.err.stack) {
+                    rq.consoleLogger('**************** SHOWERRORSTACK called with e.err == ' + e.err);
+                }
+            } else if (e.msg) {
+                showDetails(e);
+            } else if (e.stack) {
+                //means this is just a normal error object
+                rq.consoleLogger(e.stack);
+            } else {
+                rq.consoleLogger(e);
+            }
+
+        } else {
+            rq.consoleLogger('***************** SHOWERRORSTACK called with e == ' + e);
+        }
+
+
+        //function shows other error details available in the passed obj in new lines
+        function showDetails(obj) {
+            var line = '';
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    line = line + p + ' = ' + obj[p] + ' && ';
+                }
+            }
+            rq.consoleLogger(line);
+        }
+    },
+
     catchExcessErrors: function (e) {
         var rq = require('../rq.js');
         return Promise.resolve()
@@ -261,41 +297,6 @@ module.exports = {
                     msg: e.msg || "An error occurred while processing your request. Please try again."
                 });
             });
-    },
-
-    showErrorStack: function (e) {
-        if (e) {
-            if (e.err) {
-                if (e.err.stack) {
-                    rq.consoleLogger(e.err.stack);
-                }
-                if (!e.err.message || !e.err.stack) {
-                    rq.consoleLogger('**************** SHOWERRORSTACK called with e.err == ' + e.err);
-                }
-            } else if (e.msg) {
-                showDetails(e);
-            } else if (e.stack) {
-                //means this is just a normal error object
-                rq.consoleLogger(e.stack);
-            } else {
-                rq.consoleLogger(e);
-            }
-
-        } else {
-            rq.consoleLogger('***************** SHOWERRORSTACK called with e == ' + e);
-        }
-
-
-        //function shows other error details available in the passed obj in new lines
-        function showDetails(obj) {
-            var line = '';
-            for (var p in obj) {
-                if (obj.hasOwnProperty(p)) {
-                    line = line + p + ' = ' + obj[p] + ' && ';
-                }
-            }
-            rq.consoleLogger(line);
-        }
     },
 
     catchEmptyArgs: function (arrOfArguments) {

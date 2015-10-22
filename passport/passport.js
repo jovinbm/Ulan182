@@ -586,7 +586,7 @@ module.exports = function (app, passport, LocalStrategy) {
                 });
             })
             .catch(function (e) {
-                rq.catchNonXhrErrors(req, res, e);
+                rq.catchXhrErrors(req, res, e);
             });
     }
 
