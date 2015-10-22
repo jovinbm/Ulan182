@@ -11,6 +11,8 @@ var uberDetails = {
     name: 'ubLan'
 };
 
+console.log(uberDetails.redirect_uri);
+
 var uber = new Uber(uberDetails);
 
 module.exports = {
